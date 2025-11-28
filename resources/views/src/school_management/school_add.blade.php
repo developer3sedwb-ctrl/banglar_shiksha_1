@@ -63,7 +63,7 @@
                 <label class="form-label small">Block / Municipality / Corporation <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book"></i></span>
-                    <select name="block_id" class="form-select" required onchange="getWardsByBlock()">
+                    <select name="block_id" id="block_id" class="form-select" required onchange="getWardsByBlock()">
                     <option value="">-Please Select-</option>
                     </select>
                 </div>
@@ -73,7 +73,7 @@
                 <label class="form-label small">Circle <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book"></i></span>
-                    <select name="circle_id" class="form-select" required>
+                    <select name="circle_id" id="circle_id" class="form-select" required>
                     <option value="">-Please Select-</option>
                     </select>
                 </div>
@@ -83,7 +83,7 @@
                 <label class="form-label small">Cluster <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book"></i></span>
-                    <select name="cluster_id" class="form-select" required>
+                    <select name="cluster_id" id="cluster_id" class="form-select" required>
                     <option value="">-Please Select-</option>
                     </select>
                 </div>
@@ -93,7 +93,7 @@
                 <label class="form-label small">GS WARD <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book"></i></span>
-                    <select name="ward_id" class="form-select" required onchange="getDiseCode()">
+                    <select name="ward_id" id="ward_id" class="form-select" required onchange="getDiseCode()">
                     <option value="">-Please Select-</option>
                     </select>
                 </div>
@@ -366,11 +366,21 @@
         const selectedBlockId = blockSelect.value;
 
         wardSelect.innerHTML   = '';
+        const optionWard = document.createElement('option');
+        optionWard.value = "";
+        optionWard.textContent = "-Please Select-";
+        wardSelect.appendChild(optionWard);
 
         if (selectedBlockId) {
             fetch(`/api/wards/${selectedBlockId}`)
                 .then(response => response.json())
                 .then(data => {
+                    if(data.data.length < 1){
+                        const option = document.createElement('option');
+                        option.value = 0;
+                        option.textContent = 'Not Available';
+                        wardSelect.appendChild(option);
+                    }
                     data.data.forEach(ward => {
                         const option = document.createElement('option');
                         option.value = ward.id;
@@ -398,12 +408,19 @@
         clusterSelect.innerHTML = '';
         subdivisionSelect.innerHTML = '';
 
-        const option = document.createElement('option');
-        option.value = "";
-        option.textContent = "-Please Select-";
-        blockSelect.appendChild(option);
-        circleSelect.appendChild(option);
-        clusterSelect.appendChild(option);
+        const optionBlock = document.createElement('option');
+        optionBlock.value = "";
+        optionBlock.textContent = "-Please Select-";
+        const optionCircle = document.createElement('option');
+        optionCircle.value = "";
+        optionCircle.textContent = "-Please Select-";
+        const optionCluster = document.createElement('option');
+        optionCluster.value = "";
+        optionCluster.textContent = "-Please Select-";
+
+        blockSelect.appendChild(optionBlock);
+        circleSelect.appendChild(optionCircle);
+        clusterSelect.appendChild(optionCluster);
 
         if (selectedDistrictId) {
             fetch(`/api/blocks/${selectedDistrictId}`)
