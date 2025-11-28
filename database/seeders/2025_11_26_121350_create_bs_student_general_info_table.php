@@ -32,7 +32,7 @@ return new class extends Migration
             $table->smallInteger('gender_code_fk');
             $table->foreign('gender_code_fk')->references('id')->on('bs_gender_master');
 
-            $table->smallInteger('dob');
+            $table->date('dob');
 
             $table->string('fathername',500);
             $table->string('mothername',500);

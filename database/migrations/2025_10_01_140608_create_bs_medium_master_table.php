@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bs_medium_master', function (Blueprint $table) {
+        Schema::create('bs_school_medium_master', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name', 50)->unique()->comment('Medium name');
             $table->smallInteger('status')->default(1)->comment('1 = active');
