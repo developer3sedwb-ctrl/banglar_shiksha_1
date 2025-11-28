@@ -1,0 +1,1 @@
+//Here we will write down all the common js functions which will be used across the application

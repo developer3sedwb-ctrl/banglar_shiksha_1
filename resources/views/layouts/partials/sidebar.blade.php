@@ -1,0 +1,357 @@
+<!-- resources/views/layouts/partials/sidebar.blade.php -->
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+    <!-- Brand / Logo Section -->
+    <div class="app-brand demo text-center bg-primary py-3">
+        <a href="{{ route('dashboard') }}" class="d-inline-block">
+            <img class="img-fluid" src="{{ asset('images/central-portal.png') }}" alt="Banglar Shiksha Logo">
+        </a>
+    </div>
+
+    <ul class="menu-inner pt-3">
+        <!-- Dashboard -->
+        @can('view dashboard')
+            <li class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <a href="{{ route('dashboard') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                    <div>Dashboard</div>
+                </a>
+            </li>
+        @endcan
+
+        <!-- Access Control -->
+        @canany(['view users', 'view roles', 'view permissions'])
+            <li
+                class="menu-item {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('modules.*') || request()->routeIs('permissions.*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-layout"></i>
+                    <div data-i18n="Layouts">Access Control</div>
+                </a>
+
+                <ul class="menu-sub">
+                    @can('view users')
+                        <li class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.users.index') }}" class="menu-link">
+                                <div data-i18n="Without menu">Users</div>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('view roles')
+                        <li class="menu-item {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.roles.index') }}" class="menu-link">
+                                <div data-i18n="Without menu">Roles</div>
+                            </a>
+                        </li>
+                    @endcan
+
+
+                    @can('view permissions')
+                        <li class="menu-item {{ request()->routeIs('admin.permissions.*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.permissions.index') }}" class="menu-link">
+                                <div data-i18n="Without menu">Permissions</div>
+                            </a>
+                        </li>
+                    @endcan
+                </ul>
+            </li>
+        @endcanany
+        <!-- ------------ Uniform SCMS Module -------------- -->
+        @canany(['view uniform', 'view scms', 'view delivery'])
+            <li class="menu-item {{ request()->routeIs('uniform_scms.*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-data"></i>
+                    <div>Uniform-SCMS</div>
+                </a>
+
+                <ul class="menu-sub">
+                    @can('view uniform')
+                        <li class="menu-item {{ request()->routeIs('uniform_scms.dashboard') ? 'active' : '' }}">
+                            <a href="{{ route('uniform_scms.dashboard') }}" class="menu-link">
+                                <div>Dashboard</div>
+                            </a>
+                        </li>
+                    @endcan
+                </ul>
+
+                <ul class="menu-sub">
+                    @can('view delivery')
+                        <li
+                            class="menu-item {{ request()->routeIs('uniform_scms.uniform_delivery_status_1st_set') ? 'active' : '' }}">
+                            <a href="{{ route('uniform_scms.uniform_delivery_status_1st_set') }}" class="menu-link">
+                                <div>Uniform Delivery Status for 1st set</div>
+                            </a>
+                        </li>
+                    @endcan
+                </ul>
+            </li>
+        @endcanany
+
+        <!-- Student Delete / Deactivate -->
+        @canany(['view delete', 'manage delete', 'view deactivate', 'manage deactivate'])
+            <li
+                class="menu-item {{ request()->routeIs('student_delete') || request()->routeIs('student_deactivated') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-data"></i>
+                    <div>Student Delete / Deactivate</div>
+                </a>
+
+                <ul class="menu-sub">
+                    @canany(['view delete', 'manage delete'])
+                        <li class="menu-item {{ request()->routeIs('student_delete') ? 'active' : '' }}">
+                            <a href="{{ route('student_delete') }}" class="menu-link">
+                                <div>Students Delete</div>
+                            </a>
+                        </li>
+                    @endcanany
+
+                    @canany(['view deactivate', 'manage deactivate'])
+                        <li class="menu-item {{ request()->routeIs('student_deactivated') ? 'active' : '' }}">
+                            <a href="{{ route('student_deactivated') }}" class="menu-link">
+                                <div>Enrollment Deactivate</div>
+                            </a>
+                        </li>
+                    @endcanany
+                </ul>
+            </li>
+        @endcanany
+
+
+        <!-- Student Entry / Update -->
+        @canany(['view entry', 'create entry', 'edit entry', 'view profile', 'edit profile', 'download profile', 'update
+            basic', 'update aadhar', 'manage mapping', 'update identity', 'manage additional', 'update section', 'bulk
+            upload', 'update polling'])
+            <li class="menu-item {{ request()->routeIs('student.*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-user"></i>
+                    <div>Student Entry / Update</div>
+                </a>
+
+                <ul class="menu-sub">
+                    @canany(['view entry', 'create entry'])
+                        <li class="menu-item {{ request()->routeIs('student.entry') ? 'active' : '' }}">
+                            <a href="{{ route('student.entry') }}" class="menu-link">
+                                <div>Student Entry</div>
+                            </a>
+                        </li>
+                    @endcanany
+
+                    @canany(['view profile', 'edit profile', 'download profile'])
+                        <li class="menu-item {{ request()->routeIs('student.edit') ? 'active' : '' }}">
+                            <a href="{{ route('student.edit') }}" class="menu-link">
+                                <div>Student Profile Edit / Download</div>
+                            </a>
+                        </li>
+                    @endcanany
+
+                    @can('update basic')
+                        <li class="menu-item {{ request()->routeIs('student.update_basic_details') ? 'active' : '' }}">
+                            <a href="{{ route('student.update_basic_details') }}" class="menu-link">
+                                <div>Update Student Basic Details</div>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('update aadhar')
+                        <li class="menu-item {{ request()->routeIs('student.update_aadhar') ? 'active' : '' }}">
+                            <a href="{{ route('student.update_aadhar') }}" class="menu-link">
+                                <div>Update Aadhar</div>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('manage mapping')
+                        <li class="menu-item {{ request()->routeIs('student.student_mapping_with_awc') ? 'active' : '' }}">
+                            <a href="{{ route('student.update_aadhar') }}" class="menu-link">
+                                <div>Student Mapping with AWC</div>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('update identity')
+                        <li class="menu-item {{ request()->routeIs('student.update_identity') ? 'active' : '' }}">
+                            <a href="{{ route('student.update_aadhar') }}" class="menu-link">
+                                <div>Update Student Identity</div>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('manage additional')
+                        <li class="menu-item {{ request()->routeIs('student.additional_info') ? 'active' : '' }}">
+                            <a href="{{ route('student.update_aadhar') }}" class="menu-link">
+                                <div>Addl. Information UDISE+ 2023–24</div>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('update section')
+                        <li class="menu-item {{ request()->routeIs('student.update_section') ? 'active' : '' }}">
+                            <a href="{{ route('student.update_aadhar') }}" class="menu-link">
+                                <div>Update Section / Roll No</div>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('bulk upload')
+                        <li class="menu-item {{ request()->routeIs('student.bulk_upload') ? 'active' : '' }}">
+                            <a href="{{ route('student.update_aadhar') }}" class="menu-link">
+                                <div>Student Entry Bulk Upload</div>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('update polling')
+                        <li class="menu-item {{ request()->routeIs('student.update_polling') ? 'active' : '' }}">
+                            <a href="{{ route('student.update_aadhar') }}" class="menu-link">
+                                <div>Updating Polling Station & Disability Certificate Reference</div>
+                            </a>
+                        </li>
+                    @endcan
+                </ul>
+            </li>
+        @endcanany
+
+        <!-- School Information -->
+        @canany(['view school', 'create school', 'edit school', 'delete school', 'list schools', 'view survey', 'manage
+            survey', 'view contacts', 'update contacts'])
+            <li class="menu-item {{ request()->routeIs('school.*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-data"></i>
+                    <div>School Information</div>
+                </a>
+
+                <ul class="menu-sub">
+                    @can('create school')
+                        <li class="menu-item {{ request()->routeIs('school.addfrm') ? 'active' : '' }}">
+                            <a href="{{ route('school.addfrm') }}" class="menu-link">
+                                <div>School Add</div>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('edit school')
+                        <li class="menu-item {{ request()->routeIs('school.update') ? 'active' : '' }}">
+                            <a href="{{ route('school.update') }}" class="menu-link">
+                                <div>School Update</div>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('list schools')
+                        <li class="menu-item {{ request()->routeIs('school.list') ? 'active' : '' }}">
+                            <a href="{{ route('school.list') }}" class="menu-link">
+                                <div>School List</div>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @canany(['view survey', 'manage survey'])
+                        <li class="menu-item {{ request()->routeIs('school.infrastructureSurvey.*') ? 'active' : '' }}">
+                            <a href="{{ route('school.infrastructureSurvey.index') }}" class="menu-link">
+                                <div>Infrastructure Survey Progress monitoring report (District Wise)</div>
+                            </a>
+                        </li>
+                    @endcanany
+
+                    @canany(['view contacts', 'update contacts'])
+                        <li class="menu-item {{ request()->routeIs('school.contactDetails.*') ? 'active' : '' }}">
+                            <a href="{{ route('school.contactDetails.index') }}" class="menu-link">
+                                <div>District wise Primary & Secondary School Contact Details Update Report</div>
+                            </a>
+                        </li>
+                    @endcanany
+                </ul>
+            </li>
+        @endcanany
+
+        <!-- Student Information -->
+        @canany(['view students', 'export students', 'view enrollment', 'generate enrollment', 'export enrollment'])
+            <li
+                class="menu-item {{ request()->routeIs('student_list.*') || request()->routeIs('enrollment_report.*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-data"></i>
+                    <div>Student Information</div>
+                </a>
+
+                <ul class="menu-sub">
+                    @canany(['view students', 'export students'])
+                        <li class="menu-item {{ request()->routeIs('student_list.list') ? 'active' : '' }}">
+                            <a href="{{ route('student_list.list') }}" class="menu-link">
+                                <div>Students' List View</div>
+                            </a>
+                        </li>
+                    @endcanany
+
+                    @canany(['view enrollment', 'generate enrollment', 'export enrollment'])
+                        <li class="menu-item {{ request()->routeIs('enrollment_report.report') ? 'active' : '' }}">
+                            <a href="{{ route('enrollment_report.report') }}" class="menu-link">
+                                <div>Enrollment Report</div>
+                            </a>
+                        </li>
+                    @endcanany
+                </ul>
+            </li>
+        @endcanany
+
+        <!-- Employee Management -->
+        @canany(['view employees', 'create employees', 'edit employees', 'delete employees', 'export employees'])
+            <li class="menu-item {{ request()->routeIs('employee_list') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-data"></i>
+                    <div>Employee Management</div>
+                </a>
+
+                <ul class="menu-sub">
+                    @canany(['view employees', 'create employees', 'edit employees', 'delete employees', 'export
+                        employees'])
+                        <li class="menu-item {{ request()->routeIs('employee_list') ? 'active' : '' }}">
+                            <a href="{{ route('employee_list') }}" class="menu-link">
+                                <div>Employee List</div>
+                            </a>
+                        </li>
+                    @endcanany
+                </ul>
+            </li>
+        @endcanany
+
+        <!-- School Management -->
+        @canany(['view management', 'manage management', 'view udise'])
+            <li class="menu-item {{ request()->routeIs('bs_udise') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-data"></i>
+                    <div>School Management</div>
+                </a>
+
+                <ul class="menu-sub">
+                    @canany(['view management', 'manage management', 'view udise'])
+                        <li class="menu-item {{ request()->routeIs('bs_udise') ? 'active' : '' }}">
+                            <a href="{{ route('bs_udise') }}" class="menu-link">
+                                <div>School Information</div>
+                            </a>
+                        </li>
+                    @endcanany
+                </ul>
+            </li>
+        @endcanany
+
+        <!-- Reports -->
+        @canany(['view reports', 'generate reports', 'export reports', 'view beneficiary', 'export beneficiary'])
+            <li class="menu-item {{ request()->routeIs('beneficiary_verification_status_report') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-data"></i>
+                    <div>Reports</div>
+                </a>
+
+                <ul class="menu-sub">
+                    @canany(['view beneficiary', 'export beneficiary'])
+                        <li
+                            class="menu-item {{ request()->routeIs('beneficiary_verification_status_report') ? 'active' : '' }}">
+                            <a href="{{ route('beneficiary_verification_status_report') }}" class="menu-link">
+                                <div>Student wise Beneficiary Verification Status Report</div>
+                            </a>
+                        </li>
+                    @endcanany
+                </ul>
+            </li>
+        @endcanany
+    </ul>
+</aside>
