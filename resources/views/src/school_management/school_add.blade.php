@@ -491,9 +491,47 @@
         }
     }
 
+    // Custom validation for form submission
+    function validateForm() {
+        let isValid = true;
+        const requiredFields = document.querySelectorAll('[required]');
+        
+        requiredFields.forEach(field => {
+            const value = field.value.trim();
+            
+            if (field.type === 'select-multiple') {
+                // For multiple selects, check if at least one option is selected
+                if (field.selectedOptions.length === 0) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            } else if (!value) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            alert('Please fill in all required fields');
+        }
+        return isValid;
+    }
+
     $(document).ready(function() {
         $('.select2').select2({
             width: '100%' // Tells JS to fill the container we defined in CSS
+        });
+
+        // Validate form on submit
+        $('form').on('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+                return false;
+            }
         });
     });
 </script>
