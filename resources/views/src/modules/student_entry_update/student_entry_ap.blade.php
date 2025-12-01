@@ -590,36 +590,27 @@
                 </div>
 
             </div>
-
-
             <!-- ========================================================= -->
             <!-- SCHOLARSHIP DETAILS -->
             <!-- ========================================================= -->
             <h6 class="card-header bg-heading-primary text-white py-2 mt-3">
               SCHOLARSHIP RECEIVED BY STUDENT
             </h6>
-
             <div class="row mt-3">
-
                 <div class="col-md-6">
                   <label class="form-label small">Central Scholarship</label>
                   <select name="central_scholarship" class="form-select">
                     <option value="">-Select-</option><option>YES</option><option>NO</option>
                   </select>
                 </div>
-
                 <div class="col-md-6">
                   <label class="form-label small">Name and Code of Central Scholarship</label>
                   <input type="text" name="central_scholarship_name" class="form-control">
                 </div>
-
                 <div class="col-md-6">
                   <label class="form-label small">Scholarship Amount (per annum)</label>
                   <input type="number" name="central_scholarship_amount" class="form-control">
                 </div>
-
-
-
                 <div class="col-md-6">
                   <label class="form-label small">State Scholarship</label>
                   <select name="state_scholarship" class="form-select">
