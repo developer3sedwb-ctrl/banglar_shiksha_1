@@ -30,13 +30,18 @@ class StoreUserRequestStudentEntry extends FormRequest
             'social_category'                 => 'required|integer|exists:bs_social_category_master,id',
             'religion'                        => 'required|integer|exists:bs_religion_master,id',
 
-            'bpl_beneficiary'                   => 'required|in:0,1',
+            'bpl_beneficiary'                 => 'required|in:0,1',
+            'antyodaya_anna_yojana'           => 'nullable|in:0,1',  
+
+
 
             'disadvantaged_group'               => 'required|in:0,1',
-            'cwsn'                              => 'required|in:0,1',
+
+            'cwsn'                             => 'required|in:0,1',
+            'type_of_impairment'               => 'nullable',
 
             'nationality'                     => 'required|integer|exists:bs_nationality_master,id',
-            'out_of_school'                     => 'required|in:0,1',
+            'out_of_school'                   => 'required|in:0,1',
 
             'blood_group'                     => 'nullable|integer|exists:bs_blood_group_master,id',
 
@@ -54,20 +59,19 @@ class StoreUserRequestStudentEntry extends FormRequest
         ];
     }
 
-    protected function prepareForValidation()
-    {
-        $intFields = [
-            'gender', 'mother_tongue', 'social_category', 'religion',
-            'nationality', 'blood_group', 'relationship_with_guardian',
-            'family_income', 'guardian_qualifications',
-        ];
+        protected function prepareForValidation()
+        {
+            $intFields = [
+                'gender', 'mother_tongue', 'social_category', 'religion',
+                'nationality', 'blood_group', 'relationship_with_guardian',
+                'family_income', 'guardian_qualifications' , 'antyodaya_anna_yojana',
+            ];
 
-        foreach ($intFields as $field) {
-            if ($this->has($field)) {
-                $this->merge([
-                    $field => (int) $this->{$field},
-                ]);
+            foreach ($intFields as $field) {
+                if ($this->filled($field)) {
+                    $this->merge([$field => (int) $this->{$field}]);
+                }
             }
         }
-    }
+
 }

@@ -22,6 +22,17 @@ return [
     ],
 
 
+    'accademic' => [
+    1 => '',
+    2 => 'SC',
+    3 => 'ST',
+    4 => 'OBC',
+    5 => 'OTHERS',
+    6 => 'NOT APPLICABLE',
+    ],
+
+
+
     'religions' => [
         12 => 'CWSN',
         0  => 'HINDU',
