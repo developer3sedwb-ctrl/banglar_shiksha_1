@@ -19,7 +19,7 @@
     $income_master = DB::table('bs_income_master')->pluck('name', 'id')->toArray();
     $guardian_qualification_master = DB::table('bs_guardian_qualification_master')->pluck('name', 'id')->toArray();  
     $bs_stu_disability_type_master = DB::table('bs_stu_disability_type_master')->pluck('name', 'id')->toArray();  
-
+    $bs_child_mainstreamed_master = DB::table('bs_child_mainstreamed_master')->pluck('name', 'id')->toArray();  
 
 
 
@@ -37,6 +37,8 @@
 
     $guardian_qualification = $guardian_qualification_master;
     $stu_disability_type_master = $bs_stu_disability_type_master;
+
+    $child_mainstreamed_master = $bs_child_mainstreamed_master;
 @endphp
 
 <div class="container-fluid full-width-content">
@@ -226,6 +228,14 @@
                       </div>
                   </div>
 
+                  <div class="mb-3" id="bpl_numberID" style="display:none;">
+                      <label class="form-label small">BPL Number<span class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bx bx-check"></i></span>
+                        <input name="bpl_number" id ="bpl_number" type="text" class="form-control" placeholder="Enter Your BPL Number" required>
+                      </div>
+                  </div>
+
                   <div class="mb-3">
                     <label class="form-label small">Whether belongs to EWS / Disadvantaged Group</label>
                     <div class="input-group">
@@ -268,6 +278,15 @@
                     </div>
                   </div>
 
+
+                   <div class="mb-3" id="disability"  style="display:none;">
+                    <label class="form-label small">(b) Disability Percentage (in %)<span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bx bx-info-circle"></i></span>
+                        <input name="disability_percentage"  id ="disability_percentage" type="text" class="form-control" placeholder="Enter Disability in %">
+                    </div>
+                  </div>
+
                   <div class="mb-3">
                     <label class="form-label small">Nationality</label>
                     <div class="input-group">
@@ -286,9 +305,24 @@
                     <label class="form-label small">Is the Child enrolled as Out of School Child?</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bx bx-school"></i></span>
-                      <select name="out_of_school" class="form-select">
+                      <select name="out_of_school" id="out_of_school" class="form-select">
                         <option value="">-Please Select-</option>
                         @foreach($dropdowns['yes_no'] as $val => $label)
+                        
+                            <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                  </div>
+
+                   <div class="mb-3" id="mainstreamed_section" style="display:none;">
+                    <label class="form-label small">When the child is mainstreamed</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bx bx-school"></i></span>
+                      <select name="mainstreamed" id="mainstreamed" class="form-select">
+                        <option value="">-Please Select-</option>
+                        
+                          @foreach($child_mainstreamed_master ?? [] as $val => $label)
                         
                             <option value="{{ $val }}">{{ $label }}</option>
                         @endforeach
@@ -540,33 +574,55 @@
 <script>
 
     document.addEventListener("DOMContentLoaded", function () {
-        let input = document.getElementById("aadhaar_child");
+        let aadhaar_child = document.getElementById("aadhaar_child");
 
-        input.addEventListener("input", function () {
+        aadhaar_child.addEventListener("input", function () {
             this.value = this.value.replace(/[^0-9]/g, "").slice(0, 12);
         });
     });
     // ====================================
        document.getElementById('bpl_beneficiary').addEventListener('change', function () {
         let aay = document.getElementById('aay_section');
+        let bplNumber = document.getElementById('bpl_numberID');
         
         if (this.value == '1' || this.value.toLowerCase() === 'yes') {
             aay.style.display = 'block';
+            bplNumber.style.display = 'block';
         } else {
             aay.style.display = 'none';
             document.getElementById('antyodaya_anna_yojana').value = '';
+
+            bplNumber.style.display = 'none';
+            document.getElementById('bpl_number').value = '';
         }
     });
     // ======================================
 
     document.getElementById('cwsn').addEventListener('change', function () {
         let impairment = document.getElementById('impairment');
-
+        let dis_percentage = document.getElementById('disability');
         if (this.value == '1' || this.value.toLowerCase() === 'yes') {
             impairment.style.display = 'block';
+            dis_percentage.style.display = 'block';
         } else {
             impairment.style.display = 'none';
+            dis_percentage.style.display = 'none';
             document.getElementById('type_of_impairment').value = '';
+            document.getElementById('disability_percentage').value = '';
+        }
+    });
+
+// =======================================================================
+       document.getElementById('out_of_school').addEventListener('change', function () {
+        let mainstreamed_sec = document.getElementById('mainstreamed_section');
+
+        if (this.value == '1' || this.value.toLowerCase() === 'yes') {
+            mainstreamed_sec.style.display = 'block';
+
+        } else {
+            mainstreamed_sec.style.display = 'none';
+
+            document.getElementById('mainstreamed').value = '';
         }
     });
 
