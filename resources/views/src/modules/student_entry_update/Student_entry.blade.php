@@ -132,13 +132,20 @@
                     </div>
                   </div>
 
-                  <div class="mb-3">
-                    <label class="form-label small">Aadhaar No of Child</label>
-                    <div class="input-group">
-                      <span class="input-group-text"><i class="bx bx-id-card"></i></span>
-                      <input name="aadhaar_child" type="text" class="form-control" placeholder="Aadhaar no of child">
-                    </div>
-                  </div>
+                 <div class="mb-3">
+    <label class="form-label small">Aadhaar No of Child</label>
+    <div class="input-group">
+        <span class="input-group-text"><i class="bx bx-id-card"></i></span>
+        <input 
+            id="aadhaar_child"
+            name="aadhaar_child"
+            type="text"
+            class="form-control"
+            placeholder="Aadhaar no of child"
+            maxlength="12"
+        >
+    </div>
+</div>
 
                   <div class="mb-3">
                     <label class="form-label small">Name of Student as Per Aadhaar</label>
@@ -499,6 +506,14 @@
 @section('scripts')
 @push('scripts')
 <script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let input = document.getElementById("aadhaar_child");
+
+        input.addEventListener("input", function () {
+            this.value = this.value.replace(/[^0-9]/g, "").slice(0, 12);
+        });
+    });
 $(function() {
 
   function clearInlineErrors() {
