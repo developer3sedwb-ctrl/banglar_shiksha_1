@@ -37,7 +37,7 @@ class StoreUserRequestStudentEntry extends FormRequest
             'nationality'                     => 'required|integer|exists:bs_nationality_master,id',
             'out_of_school'                   => 'required|in:0,1',
             'mainstreamed'                    => 'required_if:out_of_school,1|nullable',
-            'blood_group'                         => 'nullable|integer|exists:bs_blood_group_master,id',
+            'blood_group'                     => 'nullable|integer|exists:bs_blood_group_master,id',
             'birth_reg_no'                    => 'nullable|string|max:50',
             'identification_mark'             => 'nullable|string|max:100',
             'health_id'                       => 'nullable|string|max:50',
