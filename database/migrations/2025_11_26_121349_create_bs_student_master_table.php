@@ -13,7 +13,7 @@ return new class extends Migration
         // ---------------------------------------------------
         DB::statement("
             CREATE TABLE bs_student_master (
-                id BIGINT NOT NULL,
+                id BIGINT GENERATED ALWAYS AS IDENTITY,
                 district_code_fk SMALLINT NOT NULL,
                 subdivision_code_fk SMALLINT NOT NULL,
                 circle_code_fk SMALLINT NOT NULL,
@@ -26,7 +26,7 @@ return new class extends Migration
 
                 school_id_fk BIGINT,
                 gender_code_fk SMALLINT,
-                dob SMALLINT,
+                dob date,
 
                 fathername VARCHAR(500),
                 mothername VARCHAR(500),
@@ -49,7 +49,7 @@ return new class extends Migration
 
                 nationality_code_fk SMALLINT,
                 out_of_sch_child_y_n SMALLINT,
-
+                child_mainstreamed SMALLINT,
                 blood_group_code_fk SMALLINT,
                 birth_registration_number VARCHAR(50),
                 identification_mark VARCHAR(100),

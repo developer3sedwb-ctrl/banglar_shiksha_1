@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreUserRequestStudentEntry;
+use Exception;
 
 
 class StudentInfoController extends Controller
@@ -82,5 +83,44 @@ class StudentInfoController extends Controller
             ], 500);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //Section Aziza start date:01-12-2025
+    public function getStudentEntry()
+    {
+        try{
+            return view('src.modules.student_entry_update.student_entry_ap');
+        }
+        catch(Exception $e){
+            Log::error('Error in StudentInfoController@getStudentInfo: '.$e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error while fetching student info',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+
+    }
+
+    //Section Aziza end date:01-12-2025
+
 
 }

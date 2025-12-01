@@ -12,7 +12,7 @@ return new class extends Migration
          ----------------------------------------------------- */
         DB::statement("
             CREATE TABLE IF NOT EXISTS bs_student_facilities_and_other_details (
-                id BIGINT NOT NULL,
+                id BIGINT GENERATED ALWAYS AS IDENTITY,
                 district_id_fk SMALLINT NOT NULL,   -- PARTITION KEY
                 school_id_fk BIGINT NOT NULL,
 

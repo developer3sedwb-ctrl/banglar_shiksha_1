@@ -12,7 +12,7 @@ return new class extends Migration
          ---------------------------------------------------- */
         DB::statement("
             CREATE TABLE IF NOT EXISTS bs_student_vocational_details (
-                id BIGINT NOT NULL,
+                id BIGINT GENERATED ALWAYS AS IDENTITY,
                 -- partition key (must match parent bs_student_master's partition column)
                 district_code_fk SMALLINT NOT NULL,
                 school_id_fk BIGINT NOT NULL,

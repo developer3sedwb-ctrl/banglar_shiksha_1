@@ -67,7 +67,7 @@ return new class extends Migration
                 ->on('bs_nationality_master');
 
             $table->smallInteger('out_of_sch_child_y_n');
-
+            $table->smallInteger('child_mainstreamed')->nullable();
             // FK: blood group
             $table->smallInteger('blood_group_code_fk')->nullable();
             $table->foreign('blood_group_code_fk')

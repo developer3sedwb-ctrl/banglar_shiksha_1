@@ -221,6 +221,11 @@ Route::post('/student/store', [StudentInfoController::class, 'store'])
         Route::get('/total-teacher', [SiController::class, 'totalTeacher'])->name('si.total_teacher');
         Route::get('/school-class-gender-wise-enrollment', [SiController::class, 'schoolClassGenderWiseEnrollmentReport'])->name('si.school_class_gender_wise_enrollment_report');
     });
+    Route::prefix('hoi')->group(function () {
+
+        Route::get('/student-entry-ap', [StudentInfoController::class, 'getStudentEntry'])->name('si.student_entry_form');
+    });
+
     // Route::get('/test-error', function () {
     //     // wrong SQL to trigger QueryException
     //     DB::select("SELECT * FORM schools");
