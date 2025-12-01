@@ -23,23 +23,21 @@ class StoreUserRequestStudentEntry extends FormRequest
             'father_name'                     => 'required|string|max:500',
             'mother_name'                     => 'required|string|max:500',
             'guardian_name'                   => 'required|string|max:500',
-
             'aadhaar_child'                   => 'nullable|digits:12|unique:bs_student_general_info_temp,aadhaar_number',
-
             'mother_tongue'                   => 'required|integer|exists:bs_mother_tongue_master,id',
             'social_category'                 => 'required|integer|exists:bs_social_category_master,id',
             'religion'                        => 'required|integer|exists:bs_religion_master,id',
-
-            'bpl_beneficiary'                   => 'required|in:0,1',
-
-            'disadvantaged_group'               => 'required|in:0,1',
-            'cwsn'                              => 'required|in:0,1',
-
+            'bpl_beneficiary'                 => 'required|in:0,1',
+            'antyodaya_anna_yojana'           => 'required_if:bpl_beneficiary,1|nullable',
+            'bpl_number'                      => 'required_if:bpl_beneficiary,1|nullable',
+            'disadvantaged_group'             => 'required|in:0,1',
+            'cwsn'                            => 'required|in:0,1',
+            'type_of_impairment'              => 'required_if:cwsn,1|nullable',
+            'disability_percentage'           => 'required_if:cwsn,1|nullable|integer|min:0|max:100',
             'nationality'                     => 'required|integer|exists:bs_nationality_master,id',
-            'out_of_school'                     => 'required|in:0,1',
-
+            'out_of_school'                   => 'required|in:0,1',
+            'mainstreamed'                    => 'required_if:out_of_school,1|nullable',
             'blood_group'                     => 'nullable|integer|exists:bs_blood_group_master,id',
-
             'birth_reg_no'                    => 'nullable|string|max:50',
             'identification_mark'             => 'nullable|string|max:100',
             'health_id'                       => 'nullable|string|max:50',
@@ -54,20 +52,19 @@ class StoreUserRequestStudentEntry extends FormRequest
         ];
     }
 
-    protected function prepareForValidation()
-    {
-        $intFields = [
-            'gender', 'mother_tongue', 'social_category', 'religion',
-            'nationality', 'blood_group', 'relationship_with_guardian',
-            'family_income', 'guardian_qualifications',
-        ];
+        protected function prepareForValidation()
+        {
+            $intFields = [
+                'gender', 'mother_tongue', 'social_category', 'religion',
+                'nationality', 'blood_group', 'relationship_with_guardian',
+                'family_income', 'guardian_qualifications' , 'antyodaya_anna_yojana',
+            ];
 
-        foreach ($intFields as $field) {
-            if ($this->has($field)) {
-                $this->merge([
-                    $field => (int) $this->{$field},
-                ]);
+            foreach ($intFields as $field) {
+                if ($this->filled($field)) {
+                    $this->merge([$field => (int) $this->{$field}]);
+                }
             }
         }
-    }
+
 }

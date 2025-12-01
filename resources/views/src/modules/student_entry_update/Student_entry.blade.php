@@ -18,6 +18,10 @@
     $guardian_relationship_master = DB::table('bs_guardian_relationship_master')->pluck('name', 'id')->toArray();
     $income_master = DB::table('bs_income_master')->pluck('name', 'id')->toArray();
     $guardian_qualification_master = DB::table('bs_guardian_qualification_master')->pluck('name', 'id')->toArray();  
+    $bs_stu_disability_type_master = DB::table('bs_stu_disability_type_master')->pluck('name', 'id')->toArray();  
+    $bs_child_mainstreamed_master = DB::table('bs_child_mainstreamed_master')->pluck('name', 'id')->toArray();  
+
+
 
     $genders = $gender_master;
     $mother_tongue = $mother_tongue_master;
@@ -32,7 +36,9 @@
     $income = $income_master;
 
     $guardian_qualification = $guardian_qualification_master;
+    $stu_disability_type_master = $bs_stu_disability_type_master;
 
+    $child_mainstreamed_master = $bs_child_mainstreamed_master;
 @endphp
 
 <div class="container-fluid full-width-content">
@@ -133,19 +139,19 @@
                   </div>
 
                  <div class="mb-3">
-    <label class="form-label small">Aadhaar No of Child</label>
-    <div class="input-group">
-        <span class="input-group-text"><i class="bx bx-id-card"></i></span>
-        <input 
-            id="aadhaar_child"
-            name="aadhaar_child"
-            type="text"
-            class="form-control"
-            placeholder="Aadhaar no of child"
-            maxlength="12"
-        >
-    </div>
-</div>
+                      <label class="form-label small">Aadhaar No of Child</label>
+                      <div class="input-group">
+                          <span class="input-group-text"><i class="bx bx-id-card"></i></span>
+                          <input 
+                              id="aadhaar_child"
+                              name="aadhaar_child"
+                              type="text"
+                              class="form-control"
+                              placeholder="Aadhaar no of child"
+                              maxlength="12"
+                          >
+                      </div>
+                  </div>
 
                   <div class="mb-3">
                     <label class="form-label small">Name of Student as Per Aadhaar</label>
@@ -196,16 +202,38 @@
                   </div>
 
                   <div class="mb-3">
-                    <label class="form-label small">Whether BPL Beneficiary?</label>
+                    <label class="form-label small">Whether BPL Beneficiary?<span class="text-danger">*</span></label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bx bx-check"></i></span>
-                      <select name="bpl_beneficiary" class="form-select">
+                      <select name="bpl_beneficiary" id="bpl_beneficiary"  class="form-select">
                         <option value="">-Please Select-</option>
                         @foreach($dropdowns['yes_no'] as $val => $label)
                             <option value="{{ $val }}">{{ $label }}</option>
                         @endforeach
                       </select>
                     </div>
+                  </div>
+
+                  
+                  <div class="mb-3" id="aay_section" style="display:none;">
+                      <label class="form-label small">Whether Antyodaya Anna Yojana (AAY) beneficiary?<span class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bx bx-check"></i></span>
+                        <select name="antyodaya_anna_yojana" id="antyodaya_anna_yojana" class="form-select">
+                          <option value="">-Please Select-</option>
+                          @foreach($dropdowns['yes_no'] as $val => $label)
+                              <option value="{{ $val }}">{{ $label }}</option>
+                          @endforeach
+                        </select>
+                      </div>
+                  </div>
+
+                  <div class="mb-3" id="bpl_numberID" style="display:none;">
+                      <label class="form-label small">BPL Number<span class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bx bx-check"></i></span>
+                        <input name="bpl_number" id ="bpl_number" type="text" class="form-control" placeholder="Enter Your BPL Number" required>
+                      </div>
                   </div>
 
                   <div class="mb-3">
@@ -227,12 +255,35 @@
                     <label class="form-label small">Whether CWSN (Child with Special Needs)?</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bx bx-heart"></i></span>
-                      <select name="cwsn" class="form-select">
+                      <select name="cwsn" id ="cwsn"class="form-select">
                         <option value="">-Please Select-</option>
                             @foreach($dropdowns['yes_no'] as $val => $label)
                                 <option value="{{ $val }}">{{ $label }}</option>
                             @endforeach
                       </select>
+                    </div>
+                  </div>
+
+
+                  <div class="mb-3" id="impairment"  style="display:none;">
+                    <label class="form-label small">(a) Type of Impairment *</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bx bx-info-circle"></i></span>
+                      <select name="type_of_impairment" id="type_of_impairment" class="form-select">
+                        <option value="">-Please Select-</option>
+                            @foreach($stu_disability_type_master ?? [] as $val => $label)
+                          <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                  </div>
+
+
+                   <div class="mb-3" id="disability"  style="display:none;">
+                    <label class="form-label small">(b) Disability Percentage (in %)<span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bx bx-info-circle"></i></span>
+                        <input name="disability_percentage"  id ="disability_percentage" type="text" class="form-control" placeholder="Enter Disability in %">
                     </div>
                   </div>
 
@@ -254,9 +305,24 @@
                     <label class="form-label small">Is the Child enrolled as Out of School Child?</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bx bx-school"></i></span>
-                      <select name="out_of_school" class="form-select">
+                      <select name="out_of_school" id="out_of_school" class="form-select">
                         <option value="">-Please Select-</option>
                         @foreach($dropdowns['yes_no'] as $val => $label)
+                        
+                            <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                  </div>
+
+                   <div class="mb-3" id="mainstreamed_section" style="display:none;">
+                    <label class="form-label small">When the child is mainstreamed</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bx bx-school"></i></span>
+                      <select name="mainstreamed" id="mainstreamed" class="form-select">
+                        <option value="">-Please Select-</option>
+                        
+                          @foreach($child_mainstreamed_master ?? [] as $val => $label)
                         
                             <option value="{{ $val }}">{{ $label }}</option>
                         @endforeach
@@ -508,180 +574,229 @@
 <script>
 
     document.addEventListener("DOMContentLoaded", function () {
-        let input = document.getElementById("aadhaar_child");
+        let aadhaar_child = document.getElementById("aadhaar_child");
 
-        input.addEventListener("input", function () {
+        aadhaar_child.addEventListener("input", function () {
             this.value = this.value.replace(/[^0-9]/g, "").slice(0, 12);
         });
     });
-$(function() {
-
-  function clearInlineErrors() {
-    $('.is-invalid').removeClass('is-invalid');
-    $('.invalid-feedback.js-dynamic').remove();
-  }
-
-  function getCsrfToken() {
-    return $('meta[name="csrf-token"]').attr('content') || '';
-  }
-
-  $('#basic_info_save_btn').off('click').on('click', function () {
-    var $btn = $(this);
-    var $basicForm = $('#basic_info_of_student');
-    var $enrollForm = $('#enrollment_details_form'); // must exist (see blade change)
-
-    clearInlineErrors();
-
-    $btn.prop('disabled', true).text('Saving...');
-
-    // Start with FormData from basic info form
-    var formData = new FormData($basicForm[0]);
-
-    // If enrollment form exists, append its fields to the same FormData
-    if ($enrollForm.length) {
-      // Use native elements to include file inputs correctly and match browser behavior.
-      // We'll append each input/select/textarea that has a name and is not disabled.
-      $enrollForm.find('input, select, textarea').each(function() {
-        var el = this;
-        var $el = $(el);
-        var name = $el.attr('name');
-
-        if (!name || $el.prop('disabled')) return;
-
-        // For checkboxes/radios: only append if checked
-        if (el.type === 'checkbox' || el.type === 'radio') {
-          if (!el.checked) return;
-        }
-
-        // For file inputs: append all files
-        if (el.type === 'file') {
-          var files = el.files;
-          for (var i = 0; i < files.length; i++) {
-            // Append multiple files using same field name (as browser does)
-            formData.append(name, files[i]);
-          }
+    // ====================================
+       document.getElementById('bpl_beneficiary').addEventListener('change', function () {
+        let aay = document.getElementById('aay_section');
+        let bplNumber = document.getElementById('bpl_numberID');
+        
+        if (this.value == '1' || this.value.toLowerCase() === 'yes') {
+            aay.style.display = 'block';
+            bplNumber.style.display = 'block';
         } else {
-          // Normal inputs/selects/textareas: append value.
-          // Note: if name already exists, FormData.append will create a second entry.
-          formData.append(name, $el.val());
+            aay.style.display = 'none';
+            document.getElementById('antyodaya_anna_yojana').value = '';
+
+            bplNumber.style.display = 'none';
+            document.getElementById('bpl_number').value = '';
+        }
+    });
+    // ======================================
+
+    document.getElementById('cwsn').addEventListener('change', function () {
+        let impairment = document.getElementById('impairment');
+        let dis_percentage = document.getElementById('disability');
+        if (this.value == '1' || this.value.toLowerCase() === 'yes') {
+            impairment.style.display = 'block';
+            dis_percentage.style.display = 'block';
+        } else {
+            impairment.style.display = 'none';
+            dis_percentage.style.display = 'none';
+            document.getElementById('type_of_impairment').value = '';
+            document.getElementById('disability_percentage').value = '';
+        }
+    });
+
+// =======================================================================
+       document.getElementById('out_of_school').addEventListener('change', function () {
+        let mainstreamed_sec = document.getElementById('mainstreamed_section');
+
+        if (this.value == '1' || this.value.toLowerCase() === 'yes') {
+            mainstreamed_sec.style.display = 'block';
+
+        } else {
+            mainstreamed_sec.style.display = 'none';
+
+            document.getElementById('mainstreamed').value = '';
+        }
+    });
+
+
+
+    // ================================
+  $(function() {
+
+    function clearInlineErrors() {
+      $('.is-invalid').removeClass('is-invalid');
+      $('.invalid-feedback.js-dynamic').remove();
+    }
+
+    function getCsrfToken() {
+      return $('meta[name="csrf-token"]').attr('content') || '';
+    }
+
+    $('#basic_info_save_btn').off('click').on('click', function () {
+      var $btn = $(this);
+      var $basicForm = $('#basic_info_of_student');
+      var $enrollForm = $('#enrollment_details_form'); // must exist (see blade change)
+
+      clearInlineErrors();
+
+      $btn.prop('disabled', true).text('Saving...');
+
+      // Start with FormData from basic info form
+      var formData = new FormData($basicForm[0]);
+
+      // If enrollment form exists, append its fields to the same FormData
+      if ($enrollForm.length) {
+        // Use native elements to include file inputs correctly and match browser behavior.
+        // We'll append each input/select/textarea that has a name and is not disabled.
+        $enrollForm.find('input, select, textarea').each(function() {
+          var el = this;
+          var $el = $(el);
+          var name = $el.attr('name');
+
+          if (!name || $el.prop('disabled')) return;
+
+          // For checkboxes/radios: only append if checked
+          if (el.type === 'checkbox' || el.type === 'radio') {
+            if (!el.checked) return;
+          }
+
+          // For file inputs: append all files
+          if (el.type === 'file') {
+            var files = el.files;
+            for (var i = 0; i < files.length; i++) {
+              // Append multiple files using same field name (as browser does)
+              formData.append(name, files[i]);
+            }
+          } else {
+            // Normal inputs/selects/textareas: append value.
+            // Note: if name already exists, FormData.append will create a second entry.
+            formData.append(name, $el.val());
+          }
+        });
+      }
+
+      // Debug: list entries (optional, safe to remove in production)
+      console.log("------ MERGED FORM DATA ------");
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ':', pair[1]);
+      }
+      console.log("------ END MERGED FORM DATA ------");
+
+      $.ajax({
+        url: "{{ route('student.store') }}",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        headers: {
+          'X-CSRF-TOKEN': getCsrfToken(),
+          'Accept': 'application/json'
+        },
+        timeout: 20000,
+
+        beforeSend: function() {
+          console.log('Sending merged AJAX to {{ route("student.store") }}');
+        },
+
+        success: function (res, textStatus, jqXHR) {
+          console.log("AJAX success", res);
+
+          if (res && res.success) {
+            if (window.toastr) {
+              toastr.success(res.message || 'Saved successfully');
+            } else {
+              alert(res.message || 'Saved successfully');
+            }
+
+            // Move to enrollment details tab after successful save
+            var $nextTabBtn = $('#enrollment_details-tab');
+            if ($nextTabBtn.length) {
+              $nextTabBtn.tab('show');
+            }
+          } else {
+            console.warn('Unexpected body', res);
+            alert(res.message || 'Saved but unexpected response. Check console.');
+          }
+
+          $btn.prop('disabled', false).text('Next');
+        },
+
+        error: function (jqXHR, textStatus, errorThrown) {
+          console.error("AJAX error. Status:", jqXHR.status, errorThrown);
+
+          clearInlineErrors();
+
+          if (jqXHR.status === 422) {
+            var resp = jqXHR.responseJSON || {};
+            var errors = resp.errors || {};
+
+            $.each(errors, function(field, messages) {
+              var selector = '[name="'+field+'"]';
+              var $el = $(selector);
+
+              if (!$el.length) {
+                var alt = field.replace(/\.(\w+)/g, '[$1]');
+                $el = $('[name="'+alt+'"]');
+              }
+
+              if ($el.length) {
+                $el.addClass('is-invalid');
+                var $group = $el.closest('.input-group');
+                var messageHtml = '<div class="invalid-feedback d-block js-dynamic">' + (messages[0] || '') + '</div>';
+
+                if ($group.length) {
+                  $group.after(messageHtml);
+                } else {
+                  $el.after(messageHtml);
+                }
+              } else {
+                console.warn('Field not found in DOM for error:', field, messages);
+              }
+            });
+
+            var $first = $('.is-invalid').first();
+            if ($first.length) {
+              $('html, body').animate({ scrollTop: $first.offset().top - 90 }, 400);
+              $first.focus();
+            }
+          } else if (jqXHR.status === 419) {
+            alert('Session expired (419). Please reload the page and try again.');
+          } else {
+            alert('Something went wrong. See console & network tab for details.');
+          }
+
+          $btn.prop('disabled', false).text('Next');
+        },
+
+        complete: function() {
+          console.log('AJAX complete');
+        }
+      });
+    });
+
+    // Keep your clickable date-group behavior unchanged
+    const dobGroup = document.getElementById('dobGroup');
+    const dobField = document.getElementById('dobField');
+    if (dobGroup && dobField) {
+      dobGroup.addEventListener('click', () => {
+        if (typeof dobField.showPicker === 'function') {
+          dobField.showPicker();
+        } else {
+          dobField.focus();
         }
       });
     }
 
-    // Debug: list entries (optional, safe to remove in production)
-    console.log("------ MERGED FORM DATA ------");
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ':', pair[1]);
-    }
-    console.log("------ END MERGED FORM DATA ------");
-
-    $.ajax({
-      url: "{{ route('student.store') }}",
-      type: "POST",
-      data: formData,
-      processData: false,
-      contentType: false,
-      dataType: 'json',
-      headers: {
-        'X-CSRF-TOKEN': getCsrfToken(),
-        'Accept': 'application/json'
-      },
-      timeout: 20000,
-
-      beforeSend: function() {
-        console.log('Sending merged AJAX to {{ route("student.store") }}');
-      },
-
-      success: function (res, textStatus, jqXHR) {
-        console.log("AJAX success", res);
-
-        if (res && res.success) {
-          if (window.toastr) {
-            toastr.success(res.message || 'Saved successfully');
-          } else {
-            alert(res.message || 'Saved successfully');
-          }
-
-          // Move to enrollment details tab after successful save
-          var $nextTabBtn = $('#enrollment_details-tab');
-          if ($nextTabBtn.length) {
-            $nextTabBtn.tab('show');
-          }
-        } else {
-          console.warn('Unexpected body', res);
-          alert(res.message || 'Saved but unexpected response. Check console.');
-        }
-
-        $btn.prop('disabled', false).text('Next');
-      },
-
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.error("AJAX error. Status:", jqXHR.status, errorThrown);
-
-        clearInlineErrors();
-
-        if (jqXHR.status === 422) {
-          var resp = jqXHR.responseJSON || {};
-          var errors = resp.errors || {};
-
-          $.each(errors, function(field, messages) {
-            var selector = '[name="'+field+'"]';
-            var $el = $(selector);
-
-            if (!$el.length) {
-              var alt = field.replace(/\.(\w+)/g, '[$1]');
-              $el = $('[name="'+alt+'"]');
-            }
-
-            if ($el.length) {
-              $el.addClass('is-invalid');
-              var $group = $el.closest('.input-group');
-              var messageHtml = '<div class="invalid-feedback d-block js-dynamic">' + (messages[0] || '') + '</div>';
-
-              if ($group.length) {
-                $group.after(messageHtml);
-              } else {
-                $el.after(messageHtml);
-              }
-            } else {
-              console.warn('Field not found in DOM for error:', field, messages);
-            }
-          });
-
-          var $first = $('.is-invalid').first();
-          if ($first.length) {
-            $('html, body').animate({ scrollTop: $first.offset().top - 90 }, 400);
-            $first.focus();
-          }
-        } else if (jqXHR.status === 419) {
-          alert('Session expired (419). Please reload the page and try again.');
-        } else {
-          alert('Something went wrong. See console & network tab for details.');
-        }
-
-        $btn.prop('disabled', false).text('Next');
-      },
-
-      complete: function() {
-        console.log('AJAX complete');
-      }
-    });
   });
-
-  // Keep your clickable date-group behavior unchanged
-  const dobGroup = document.getElementById('dobGroup');
-  const dobField = document.getElementById('dobField');
-  if (dobGroup && dobField) {
-    dobGroup.addEventListener('click', () => {
-      if (typeof dobField.showPicker === 'function') {
-        dobField.showPicker();
-      } else {
-        dobField.focus();
-      }
-    });
-  }
-
-});
 </script>
 
 @endpush

@@ -39,9 +39,20 @@ class StudentInfoController extends Controller
             $student->nationality_code_fk = $request->nationality;
             $student->blood_group_code_fk = $request->blood_group;
             $student->bpl_y_n = $request->bpl_beneficiary;
+
+            $student->bpl_aay_beneficiary_y_n =  $request->antyodaya_anna_yojana;
+            $student->bpl_no =  $request->bpl_number;
+            
+
             $student->disadvantaged_group_y_n = $request->disadvantaged_group;
-            $student->cwsn_y_n = $request->cwsn;
+
+
+            $student->cwsn_y_n = $request->cwsn; // if cwsn is yes then only type of impairment
+            $student->cwsn_disability_type_code_fk = $request->type_of_impairment;
+            $student->disability_percentage = $request->disability_percentage;
+
             $student->out_of_sch_child_y_n = $request->out_of_school;
+            $student->child_mainstreamed = $request->mainstreamed;
 
             $student->birth_registration_number = $request->birth_reg_no;
             $student->identification_mark = $request->identification_mark;
