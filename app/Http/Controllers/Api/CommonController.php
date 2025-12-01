@@ -142,11 +142,8 @@ class CommonController extends Controller
     public function getSchoolCategoryTypesByManagement(Request $request, $management_id)
     {
         try{
-            $categoryTypes = \App\Models\SchoolCategoryTypeMaster::whereIn(
-                'id',
-                \App\Models\ManagementAndSchoolCategoryTypeMappingMaster::where('management_id', $management_id)->pluck('management_id')
-            )->get();
-
+            $subcatids = \App\Models\ManagementAndSchoolCategoryTypeMappingMaster::where('management_id', $management_id)->pluck('school_category_type_id');
+            $categoryTypes = \App\Models\SchoolCategoryTypeMaster::whereIn('id',$subcatids)->get();
             return response()->json(['data' => $categoryTypes]);
         }
         catch (\Throwable $e) {

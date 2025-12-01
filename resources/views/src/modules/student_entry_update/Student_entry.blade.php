@@ -209,7 +209,7 @@
                
                 
                 <div class="mb-3">
-                  <label class="form-label small">Multi Select Dropdown</label>
+                  <label class="form-label small">5. Multi Select Dropdown</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
                     <select class="selectpicker form-select" multiple aria-label="Default select example" data-live-search="true">
@@ -223,11 +223,11 @@
                 
                 
                 <div class="mb-3">
-                  <label class="form-label small">Multi Select Dropdown</label>
+                  <label class="form-label small">6. Multi Select Dropdown</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
                     <select class="select2 form-select2">
-                        <option value="1">Option 1</option>
+                        <option value="1">Option 1333</option>
                         <option value="2">Option 2</option>
                         <option value="3">Option 3</option>
                         <option value="4">Option 4</option>
@@ -238,7 +238,6 @@
                		 </select>
                   </div>
                 </div>        
-                
               </div>
 
               <div class="col-md-6">

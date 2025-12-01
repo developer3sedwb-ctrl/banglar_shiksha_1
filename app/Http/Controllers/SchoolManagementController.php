@@ -127,10 +127,9 @@ class SchoolManagementController extends Controller
             $data['circles']            = CircleMaster::where('district_id', $data['school']->district_code_fk)->get();
             $data['clusters']           = ClusterMaster::where('district_id', $data['school']->district_code_fk)->get();
 
-            $data['school_management_category_types'] = SchoolCategoryTypeMaster::whereIn(
-                            'id',
-                            ManagementAndSchoolCategoryTypeMappingMaster::where('school_management_code_pk', $data['school']->school_management_code_fk)->pluck('school_category_type_code_pk')
-                        )->get();
+            $subcatids = \App\Models\ManagementAndSchoolCategoryTypeMappingMaster::where('management_id', $data['school']->school_management_code_fk)->pluck('school_category_type_id');
+            $data['school_management_category_types'] = \App\Models\SchoolCategoryTypeMaster::whereIn('id',$subcatids)->get();
+
 
         }
 
