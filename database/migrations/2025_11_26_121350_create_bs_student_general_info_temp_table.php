@@ -27,7 +27,7 @@ return new class extends Migration
                 ->on('bs_gender_master');
 
             // dob (NOT FK)
-            $table->smallInteger('dob');
+            $table->date('dob');
 
             $table->string('fathername',500);
             $table->string('mothername',500);
@@ -106,8 +106,8 @@ return new class extends Migration
 
             $table->softDeletes();
             $table->unique(['school_id_fk', 'deleted_at'], 'unique_school_student_general_info');
-            $table->unique(['studentname', 'dob', 'fathername', 'mothername', 'deleted_at'], 'unique_student_identity');
-            $table->index(['studentname', 'dob', 'fathername', 'mothername', 'deleted_at'], 'idx_student_identity');
+            $table->unique(['studentname', 'dob', 'fathername', 'mothername', 'deleted_at'], 'unique_student_identity_temp');
+            $table->index(['studentname', 'dob', 'fathername', 'mothername', 'deleted_at'], 'idx_student_identity_temp');
         });
     }
     /**

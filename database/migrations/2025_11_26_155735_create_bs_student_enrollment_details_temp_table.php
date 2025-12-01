@@ -50,6 +50,9 @@ return new class extends Migration
             $table->foreign('medium_code_fk')->references('id')->on('bs_medium_master');
             $table->smallInteger('admission_type_code_fk');
             $table->foreign('admission_type_code_fk')->references('id')->on('bs_admission_type_master');
+            $table->string('entry_ip', 15)->nullable();
+            $table->string('update_ip', 15)->nullable();
+            $table->smallInteger('status')->default(1);
             $table->timestamps();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();

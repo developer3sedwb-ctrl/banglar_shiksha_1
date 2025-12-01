@@ -17,7 +17,6 @@ return new class extends Migration
             $table->smallInteger('status')->default(1)->comment('1 = active');
             // Audit fields
             $table->timestamps();
-            
             $table->softDeletes();
             // Indexes
             $table->index(['status', 'name']);

@@ -49,6 +49,9 @@ return new class extends Migration
             $table->bigInteger('vocational_salary_offered')->nullable();
 
             // System fields
+            $table->smallInteger('status')->default(1);
+            $table->string('entry_ip', 15)->nullable();
+            $table->string('update_ip', 15)->nullable();
             $table->timestamps();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
