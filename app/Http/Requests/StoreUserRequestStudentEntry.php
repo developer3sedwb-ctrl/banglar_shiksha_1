@@ -24,7 +24,7 @@ class StoreUserRequestStudentEntry extends FormRequest
             'mother_name'                     => 'required|string|max:500',
             'guardian_name'                   => 'required|string|max:500',
 
-            'aadhaar_child'                   => 'nullable|digits:2|unique:bs_student_general_info_temp,aadhaar_number',
+            'aadhaar_child'                   => 'nullable|digits:12|unique:bs_student_general_info_temp,aadhaar_number',
 
             'mother_tongue'                   => 'required|integer|exists:bs_mother_tongue_master,id',
             'social_category'                 => 'required|integer|exists:bs_social_category_master,id',
