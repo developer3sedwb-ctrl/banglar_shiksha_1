@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Api\CommonController;
 use App\Http\Controllers\AccessControl\ModuleController;
+use App\Http\Controllers\student_info\StudentInfoController;
 // use App\Http\Controllers\AccessControl\PermissionController;
 // use App\Http\Controllers\AccessControl\RoleController;
 use App\Http\Controllers\{
@@ -68,6 +69,11 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
     // routes/web.php
     Route::view('/student-entry', 'src.modules.student_entry_update.Student_entry')
         ->name('student.entry');
+
+        
+Route::post('/student/store', [StudentInfoController::class, 'store'])
+     ->name('student.store');
+     
     Route::view('/student-edit', 'src.modules.student_entry_update.Student_edit')
         ->name('student.edit');
 
