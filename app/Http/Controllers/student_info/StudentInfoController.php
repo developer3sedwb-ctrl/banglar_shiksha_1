@@ -134,8 +134,8 @@ class StudentInfoController extends Controller
         // $enroll->school_id_fk             = session('current_school_id') ?? 1;
         // $enroll->created_by               = Auth::id();
         // $enroll->updated_by               = Auth::id();
-      $enroll->created_by = auth()->id() ?? 1;
-        $enroll->save();
+         $enroll->created_by = auth()->id() ?? 1;
+         $enroll->save();
 
             DB::commit();
 
