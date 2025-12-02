@@ -52,19 +52,19 @@ class StoreUserRequestStudentEntry extends FormRequest
         ];
     }
 
-        protected function prepareForValidation()
-        {
-            $intFields = [
-                'gender', 'mother_tongue', 'social_category', 'religion',
-                'nationality', 'blood_group', 'relationship_with_guardian',
-                'family_income', 'guardian_qualifications' , 'antyodaya_anna_yojana',
-            ];
+    protected function prepareForValidation()
+    {
+        $intFields = [
+            'gender', 'mother_tongue', 'social_category', 'religion',
+            'nationality', 'blood_group', 'relationship_with_guardian',
+            'family_income', 'guardian_qualifications' , 'antyodaya_anna_yojana',
+        ];
 
-            foreach ($intFields as $field) {
-                if ($this->filled($field)) {
-                    $this->merge([$field => (int) $this->{$field}]);
-                }
+        foreach ($intFields as $field) {
+            if ($this->filled($field)) {
+                $this->merge([$field => (int) $this->{$field}]);
             }
         }
+    }
 
 }

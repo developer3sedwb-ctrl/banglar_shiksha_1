@@ -223,7 +223,8 @@ Route::post('/student/store', [StudentInfoController::class, 'store'])
     });
     Route::prefix('hoi')->group(function () {
 
-        Route::get('/student-entry-ap', [StudentInfoController::class, 'getStudentEntry'])->name('si.student_entry_form');
+        Route::get('/student-entry-ap', [StudentInfoController::class, 'getStudentEntry'])->name('hoi.get_student_entry_form');
+        Route::post('/save-studen-facility-and-other-details', [StudentInfoController::class, 'storeStudentFacilityAndOtherDetails'])->name('hoi.student.facility');
     });
 
     // Route::get('/test-error', function () {
