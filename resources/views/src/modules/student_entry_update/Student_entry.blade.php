@@ -791,8 +791,6 @@
 
             if (selected === showValue) {
               $('#prev_class_studied_appeared_exam').show();
-              // $('#previous_class_studied_result_examination').show();
-              // $('#percentage_of_overall_marks_section').show();
               $('#no_of_days_attended_section').show();
               $('#previous_class_studied').show();
               $('#previous_section_section').show();
@@ -800,8 +798,6 @@
               $('#previous_stream_section').show();
             } else {
               $('#previous_class_studied_result_examination').hide();
-              // $('#prev_class_studied_appeared_exam').hide();
-              // $('#percentage_of_overall_marks_section').hide();
               $('#no_of_days_attended_section').hide();
               $('#previous_class_studied').hide();
               $('#previous_section_section').hide();
@@ -809,8 +805,6 @@
               $('#previous_stream_section').hide();
               // clear selection
               $('#prev_class_appeared_exam').val('');
-              // $('#previous_class_result_examination').val(''); 
-              // $('#percentage_of_overall_marks').val('');
               $('#no_of_days_attended').val('');  
               $('#previous_class').val('');  
               $('#class_section').val('');  
@@ -819,86 +813,211 @@
             }
         });
 
- $('#prev_class_appeared_exam').on('change', function () {
-        let value = $(this).val();
+        $('#prev_class_appeared_exam').on('change', function () {
+          let value = $(this).val();
 
-        if (value === "1") {
-            $('#previous_class_studied_result_examination').show();
-            $('#percentage_of_overall_marks_section').show();
-        } else {
-            $('#previous_class_studied_result_examination').hide();
-            $('#percentage_of_overall_marks_section').hide();
+          if (value === "1") {
+              $('#previous_class_studied_result_examination').show();
+              $('#percentage_of_overall_marks_section').show();
+          } else {
+              $('#previous_class_studied_result_examination').hide();
+              $('#percentage_of_overall_marks_section').hide();
 
-            // Clear fields
-            $('#previous_class_result_examination').val('');
-            $('#percentage_of_overall_marks').val('');
-        }
-    });
+              // Clear fields
+              $('#previous_class_result_examination').val('');
+              $('#percentage_of_overall_marks').val('');
+          }
+        });
+
+
+
+
     // ================================
   $(function() {
 
-    function clearInlineErrors() {
-      $('.is-invalid').removeClass('is-invalid');
-      $('.invalid-feedback.js-dynamic').remove();
-    }
+      function clearInlineErrors() {
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback.js-dynamic').remove();
+      }
 
-    function getCsrfToken() {
-      return $('meta[name="csrf-token"]').attr('content') || '';
-    }
+      function getCsrfToken() {
+        return $('meta[name="csrf-token"]').attr('content') || '';
+      }
 
-    $('#basic_info_save_btn').off('click').on('click', function () {
+
+      // ==================================
+      // Student Basic  Details Save 
+      $('#basic_info_save_btn').off('click').on('click', function () {
+        var $btn = $(this);
+        var $basicForm = $('#basic_info_of_student');
+        var $enrollForm = $('#student_enrollment_details'); // must exist (see blade change)
+
+        clearInlineErrors();
+
+        $btn.prop('disabled', true).text('Saving...');
+
+        // Start with FormData from basic info form
+        var formData = new FormData($basicForm[0]);
+
+        // If enrollment form exists, append its fields to the same FormData
+        if ($enrollForm.length) {
+          // Use native elements to include file inputs correctly and match browser behavior.
+          // We'll append each input/select/textarea that has a name and is not disabled.
+          $enrollForm.find('input, select, textarea').each(function() {
+            var el = this;
+            var $el = $(el);
+            var name = $el.attr('name');
+
+            if (!name || $el.prop('disabled')) return;
+
+            // For checkboxes/radios: only append if checked
+            if (el.type === 'checkbox' || el.type === 'radio') {
+              if (!el.checked) return;
+            }
+
+            // For file inputs: append all files
+            if (el.type === 'file') {
+              var files = el.files;
+              for (var i = 0; i < files.length; i++) {
+                // Append multiple files using same field name (as browser does)
+                formData.append(name, files[i]);
+              }
+            } else {
+              // Normal inputs/selects/textareas: append value.
+              // Note: if name already exists, FormData.append will create a second entry.
+              formData.append(name, $el.val());
+            }
+          });
+        }
+
+        // Debug: list entries (optional, safe to remove in production)
+        console.log("------ MERGED FORM DATA ------");
+        for (let pair of formData.entries()) {
+          console.log(pair[0] + ':', pair[1]);
+        }
+        console.log("------ END MERGED FORM DATA ------");
+
+        $.ajax({
+          url: "{{ route('student.store_student_entry_basic_details') }}",
+
+          type: "POST",
+          data: formData,
+          processData: false,
+          contentType: false,
+          dataType: 'json',
+          headers: {
+            'X-CSRF-TOKEN': getCsrfToken(),
+            'Accept': 'application/json'
+          },
+          timeout: 20000,
+
+          beforeSend: function() {
+          console.log('Sending merged AJAX to {{ route("student.store_student_entry_basic_details") }}');
+          },
+
+          success: function (res, textStatus, jqXHR) {
+            console.log("AJAX success", res);
+
+            if (res && res.success) {
+              if (window.toastr) {
+                toastr.success(res.message || 'Saved successfully');
+              } else {
+                alert(res.message || 'Saved successfully');
+              }
+
+              // Move to enrollment details tab after successful save
+              var $nextTabBtn = $('#enrollment_details-tab');
+              if ($nextTabBtn.length) {
+                $nextTabBtn.tab('show');
+              }
+            } else {
+              console.warn('Unexpected body', res);
+              alert(res.message || 'Saved but unexpected response. Check console.');
+            }
+
+            $btn.prop('disabled', false).text('Next');
+          },
+
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.error("AJAX error. Status:", jqXHR.status, errorThrown);
+
+            clearInlineErrors();
+
+            if (jqXHR.status === 422) {
+              var resp = jqXHR.responseJSON || {};
+              var errors = resp.errors || {};
+
+              $.each(errors, function(field, messages) {
+                var selector = '[name="'+field+'"]';
+                var $el = $(selector);
+
+                if (!$el.length) {
+                  var alt = field.replace(/\.(\w+)/g, '[$1]');
+                  $el = $('[name="'+alt+'"]');
+                }
+
+                if ($el.length) {
+                  $el.addClass('is-invalid');
+                  var $group = $el.closest('.input-group');
+                  var messageHtml = '<div class="invalid-feedback d-block js-dynamic">' + (messages[0] || '') + '</div>';
+
+                  if ($group.length) {
+                    $group.after(messageHtml);
+                  } else {
+                    $el.after(messageHtml);
+                  }
+                } else {
+                  console.warn('Field not found in DOM for error:', field, messages);
+                }
+              });
+
+              var $first = $('.is-invalid').first();
+              if ($first.length) {
+                $('html, body').animate({ scrollTop: $first.offset().top - 90 }, 400);
+                $first.focus();
+              }
+            } else if (jqXHR.status === 419) {
+              alert('Session expired (419). Please reload the page and try again.');
+            } else {
+              alert('Something went wrong. See console & network tab for details.');
+            }
+
+            $btn.prop('disabled', false).text('Next');
+          },
+
+          complete: function() {
+            console.log('AJAX complete');
+          }
+        });
+      });
+
+
+     // ==================================
+      // Student Enrollment Details Save 
+    $('#enrollment_details_save_btn').off('click').on('click', function () {
       var $btn = $(this);
-      var $basicForm = $('#basic_info_of_student');
-      var $enrollForm = $('#student_enrollment_details'); // must exist (see blade change)
+      var $enrollForm = $('#student_enrollment_details');
 
       clearInlineErrors();
 
       $btn.prop('disabled', true).text('Saving...');
 
-      // Start with FormData from basic info form
-      var formData = new FormData($basicForm[0]);
+      // Build FormData only from enrollment form
+      var formData = new FormData($enrollForm[0]);
 
-      // If enrollment form exists, append its fields to the same FormData
-      if ($enrollForm.length) {
-        // Use native elements to include file inputs correctly and match browser behavior.
-        // We'll append each input/select/textarea that has a name and is not disabled.
-        $enrollForm.find('input, select, textarea').each(function() {
-          var el = this;
-          var $el = $(el);
-          var name = $el.attr('name');
+      // Ensure a single CSRF token (optional, but avoids duplicate _token entries)
+      formData.delete('_token');
+      formData.append('_token', getCsrfToken());
 
-          if (!name || $el.prop('disabled')) return;
-
-          // For checkboxes/radios: only append if checked
-          if (el.type === 'checkbox' || el.type === 'radio') {
-            if (!el.checked) return;
-          }
-
-          // For file inputs: append all files
-          if (el.type === 'file') {
-            var files = el.files;
-            for (var i = 0; i < files.length; i++) {
-              // Append multiple files using same field name (as browser does)
-              formData.append(name, files[i]);
-            }
-          } else {
-            // Normal inputs/selects/textareas: append value.
-            // Note: if name already exists, FormData.append will create a second entry.
-            formData.append(name, $el.val());
-          }
-        });
-      }
-
-      // Debug: list entries (optional, safe to remove in production)
-      console.log("------ MERGED FORM DATA ------");
+      // Debug logging (optional)
+      console.log("------ ENROLLMENT FORM DATA ------");
       for (let pair of formData.entries()) {
         console.log(pair[0] + ':', pair[1]);
       }
-      console.log("------ END MERGED FORM DATA ------");
+      console.log("------ END ENROLLMENT FORM DATA ------");
 
       $.ajax({
-        url: "{{ route('student.store_student_entry_basic_details') }}",
-
+        url: "{{ route('student.store_enrollment_details') }}",
         type: "POST",
         data: formData,
         processData: false,
@@ -910,63 +1029,46 @@
         },
         timeout: 20000,
 
-        beforeSend: function() {
-        console.log('Sending merged AJAX to {{ route("student.store_student_entry_basic_details") }}');
+        beforeSend: function () {
+          console.log('Sending enrollment AJAX to {{ route("student.store_enrollment_details") }}');
         },
 
-        success: function (res, textStatus, jqXHR) {
-          console.log("AJAX success", res);
-
+        success: function (res) {
           if (res && res.success) {
-            if (window.toastr) {
-              toastr.success(res.message || 'Saved successfully');
-            } else {
-              alert(res.message || 'Saved successfully');
-            }
+            if (window.toastr) toastr.success(res.message || 'Enrollment saved.');
+            else alert(res.message || 'Enrollment saved.');
 
-            // Move to enrollment details tab after successful save
-            var $nextTabBtn = $('#enrollment_details-tab');
-            if ($nextTabBtn.length) {
-              $nextTabBtn.tab('show');
-            }
+            // If you want to switch tabs programmatically after save, do it here:
+            // $('#someNextTabButton').tab('show');
           } else {
             console.warn('Unexpected body', res);
-            alert(res.message || 'Saved but unexpected response. Check console.');
+            alert(res.message || 'Saved but unexpected response.');
           }
 
           $btn.prop('disabled', false).text('Next');
         },
 
-        error: function (jqXHR, textStatus, errorThrown) {
-          console.error("AJAX error. Status:", jqXHR.status, errorThrown);
-
+        error: function (jqXHR) {
           clearInlineErrors();
 
           if (jqXHR.status === 422) {
             var resp = jqXHR.responseJSON || {};
             var errors = resp.errors || {};
 
-            $.each(errors, function(field, messages) {
-              var selector = '[name="'+field+'"]';
+            $.each(errors, function (field, messages) {
+              var selector = '[name="' + field + '"]';
               var $el = $(selector);
-
               if (!$el.length) {
                 var alt = field.replace(/\.(\w+)/g, '[$1]');
-                $el = $('[name="'+alt+'"]');
+                $el = $('[name="' + alt + '"]');
               }
-
               if ($el.length) {
                 $el.addClass('is-invalid');
                 var $group = $el.closest('.input-group');
                 var messageHtml = '<div class="invalid-feedback d-block js-dynamic">' + (messages[0] || '') + '</div>';
-
-                if ($group.length) {
-                  $group.after(messageHtml);
-                } else {
-                  $el.after(messageHtml);
-                }
+                if ($group.length) $group.after(messageHtml); else $el.after(messageHtml);
               } else {
-                console.warn('Field not found in DOM for error:', field, messages);
+                console.warn('Field not found for error:', field, messages);
               }
             });
 
@@ -984,15 +1086,17 @@
           $btn.prop('disabled', false).text('Next');
         },
 
-        complete: function() {
-          console.log('AJAX complete');
+        complete: function () {
+          console.log('Enrollment AJAX complete');
         }
       });
     });
 
-    // Keep your clickable date-group behavior unchanged
-    const dobGroup = document.getElementById('dobGroup');
-    const dobField = document.getElementById('dobField');
+    // ================================
+
+      // Keep your clickable date-group behavior unchanged
+      const dobGroup = document.getElementById('dobGroup');
+      const dobField = document.getElementById('dobField');
     if (dobGroup && dobField) {
       dobGroup.addEventListener('click', () => {
         if (typeof dobField.showPicker === 'function') {
@@ -1002,107 +1106,6 @@
         }
       });
     }
-// ==================================
- /// Enrollment save handler — send ONLY enrollment form fields
-$('#enrollment_details_save_btn').off('click').on('click', function () {
-  var $btn = $(this);
-  var $enrollForm = $('#student_enrollment_details');
-
-  clearInlineErrors();
-
-  $btn.prop('disabled', true).text('Saving...');
-
-  // Build FormData only from enrollment form
-  var formData = new FormData($enrollForm[0]);
-
-  // Ensure a single CSRF token (optional, but avoids duplicate _token entries)
-  formData.delete('_token');
-  formData.append('_token', getCsrfToken());
-
-  // Debug logging (optional)
-  console.log("------ ENROLLMENT FORM DATA ------");
-  for (let pair of formData.entries()) {
-    console.log(pair[0] + ':', pair[1]);
-  }
-  console.log("------ END ENROLLMENT FORM DATA ------");
-
-  $.ajax({
-    url: "{{ route('student.store_enrollment_details') }}",
-    type: "POST",
-    data: formData,
-    processData: false,
-    contentType: false,
-    dataType: 'json',
-    headers: {
-      'X-CSRF-TOKEN': getCsrfToken(),
-      'Accept': 'application/json'
-    },
-    timeout: 20000,
-
-    beforeSend: function () {
-      console.log('Sending enrollment AJAX to {{ route("student.store_enrollment_details") }}');
-    },
-
-    success: function (res) {
-      if (res && res.success) {
-        if (window.toastr) toastr.success(res.message || 'Enrollment saved.');
-        else alert(res.message || 'Enrollment saved.');
-
-        // If you want to switch tabs programmatically after save, do it here:
-        // $('#someNextTabButton').tab('show');
-      } else {
-        console.warn('Unexpected body', res);
-        alert(res.message || 'Saved but unexpected response.');
-      }
-
-      $btn.prop('disabled', false).text('Next');
-    },
-
-    error: function (jqXHR) {
-      clearInlineErrors();
-
-      if (jqXHR.status === 422) {
-        var resp = jqXHR.responseJSON || {};
-        var errors = resp.errors || {};
-
-        $.each(errors, function (field, messages) {
-          var selector = '[name="' + field + '"]';
-          var $el = $(selector);
-          if (!$el.length) {
-            var alt = field.replace(/\.(\w+)/g, '[$1]');
-            $el = $('[name="' + alt + '"]');
-          }
-          if ($el.length) {
-            $el.addClass('is-invalid');
-            var $group = $el.closest('.input-group');
-            var messageHtml = '<div class="invalid-feedback d-block js-dynamic">' + (messages[0] || '') + '</div>';
-            if ($group.length) $group.after(messageHtml); else $el.after(messageHtml);
-          } else {
-            console.warn('Field not found for error:', field, messages);
-          }
-        });
-
-        var $first = $('.is-invalid').first();
-        if ($first.length) {
-          $('html, body').animate({ scrollTop: $first.offset().top - 90 }, 400);
-          $first.focus();
-        }
-      } else if (jqXHR.status === 419) {
-        alert('Session expired (419). Please reload the page and try again.');
-      } else {
-        alert('Something went wrong. See console & network tab for details.');
-      }
-
-      $btn.prop('disabled', false).text('Next');
-    },
-
-    complete: function () {
-      console.log('Enrollment AJAX complete');
-    }
-  });
-});
-
-// ================================
   });
 </script>
 
