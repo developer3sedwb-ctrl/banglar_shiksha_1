@@ -13,11 +13,11 @@ use App\Http\Requests\StoreUserRequestStudentEntry;
 
 class StudentInfoController extends Controller
 {
- public function store(StoreUserRequestStudentEntry $request)
+    public function StoreStudentEntryStoreBasicDetails(StoreUserRequestStudentEntry $request)
     {
 
         DB::beginTransaction();
-// dd($request->all());
+        // dd($request->all());
         try {
             $student = new StudentInfo();
 
@@ -93,5 +93,14 @@ class StudentInfoController extends Controller
             ], 500);
         }
     }
+
+
+public function storeEnrollmentDetails(Request $request)
+{
+    // Validate + Save Enrollment Details
+}
+
+
+
 
 }

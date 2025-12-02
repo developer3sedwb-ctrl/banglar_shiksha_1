@@ -104,7 +104,8 @@
       <div class="tab-content" id="studentTabContent">
         <!-- ========================== -->
           <div class="tab-pane fade show active" id="general_info" role="tabpanel" aria-labelledby="general_info-tab">
-            <form id="basic_info_of_student" method="POST" action="#" novalidate>
+            <form id="basic_info_of_student" method="POST" action="{{ route('student.store_student_entry_basic_details') }}" novalidate>
+
               @csrf
               <h6 class=" card-header bg-heading-primary text-white py-2">
               GENERAL INFORMATION OF THE STUDENT
@@ -460,7 +461,8 @@
          <!-- ========================== -->
          <!-- TAB 2: ENROLMENT DETAILS -->
         <div class="tab-pane fade" id="enrollment_details" role="tabpanel" aria-labelledby="enrollment_details-tab">
-          <form id="enrollment_details_form" method="POST" action="#" novalidate>
+      <form id="student_enrollment_details" method="POST" action="{{ route('student.store_enrollment_details') }}" novalidate>
+
             @csrf
 
             <h6 class=" card-header bg-heading-primary text-white py-2">
@@ -485,11 +487,11 @@
                 </div>
 
                 <!-- Status of Admission in Previous Academic Year -->
-                <div class="mb-3">
+                <div class="mb-3" id ="previous_school_status">
                   <label class="form-label small">Status of student in Previous Academic Year of Schooling<span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-history"></i></span>
-                    <select name="admission_status_prev" class="form-select">
+                    <select name="admission_status_prev"  id="admission_status_prev" class="form-select">
                           <option value="">-Please Select-</option>
                           @foreach($previous_schooling_type_master ?? [] as $val => $label)
                           <option value="{{ $val }}">{{ $label }}</option>
@@ -500,7 +502,7 @@
 
 
 
-                <div class="mb-3">
+                <div class="mb-3"  id ="prev_class_studied_appeared_exam" style="display:none;">
                   <label class="form-label small">In the Previous class studied – whether appeared for examinations<span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-history"></i></span>
@@ -514,7 +516,7 @@
                 </div>
 
 
-                <div class="mb-3">
+                <div class="mb-3" id="previous_class_studied_result_examination" style="display:none;">
                   <label class="form-label small">In the previous class studied – Result of the examination<span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-history"></i></span>
@@ -528,11 +530,11 @@
                 </div>
 
 
-                <div class="mb-3">
+                <div class="mb-3" id="percentage_of_overall_marks_section" style="display:none;">
                   <label class="form-label small">In the previous class studied - % of overall marks obtained in the examination<span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-history"></i></span>
-                      <input name="percentage_of_overall_marks" 
+                      <input name="percentage_of_overall_marks" id="percentage_of_overall_marks"
                       type="text" 
                       class="form-control" 
                       placeholder="% of overall marks obtained"
@@ -543,11 +545,11 @@
                   </div>
                 </div>
 
-                  <div class="mb-3">
+                  <div class="mb-3" id="no_of_days_attended_section" style="display:none;">
                   <label class="form-label small">No. of days child attended school (in the previous academic year)<span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-history"></i></span>
-                   <input name="admission_number" 
+                   <input name="no_of_days_attended" id="no_of_days_attended" 
                       type="text" 
                       class="form-control" 
                       placeholder="No of days child attended school"
@@ -557,7 +559,7 @@
                     >
                   </div>
                 </div>
-                  <div class="mb-3">
+                  <div class="mb-3" id="previous_class_studied" style="display:none;">
                   <label class="form-label small">Grade/Class Studied in the Previous/Last Academic Year (Previous Class)*<span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-history"></i></span>
@@ -569,7 +571,7 @@
                     </select>
                   </div>
                 </div>
-                  <div class="mb-3">
+                  <div class="mb-3" id="previous_section_section" style="display:none;">
                   <label class="form-label small">Previous Section<span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-history"></i></span>
@@ -581,7 +583,7 @@
                     </select>
                   </div>
                 </div>
-                  <div class="mb-3">
+                  <div class="mb-3" id="previous_stream_section" style="display:none;">
                   <label class="form-label small">Previous Stream<span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-history"></i></span>
@@ -593,11 +595,11 @@
                     </select>
                   </div>
                 </div>
-                  <div class="mb-3">
+                  <div class="mb-3" id="previous_roll_no_section" style="display:none;">
                   <label class="form-label small">Previous Roll No.<span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-history"></i></span>
-                     <input name="previous_student_roll_no" 
+                     <input name="previous_student_roll_no" id="previous_student_roll_no"
                       type="text" 
                       class="form-control" 
                       placeholder="Enter Previous Roll Number"
@@ -707,9 +709,10 @@
             </div>
 
             <div class="form-actions text-end mt-3">
-              <button class="btn btn-secondary me-2" data-bs-toggle="tab" data-bs-target="#general_info" type="button">Previous</button>
-              <button class="btn btn-success" data-bs-toggle="tab" data-bs-target="#tab3" type="button">Next</button>
-            </div>
+  <button class="btn btn-secondary me-2" data-bs-toggle="tab" type="button">Previous</button>
+  <button id="enrollment_details_save_btn" class="btn btn-success" data-bs-toggle="tab" type="button">Next</button>
+</div>
+
           </form>
         </div>
           <!-- ========================== -->
@@ -780,8 +783,57 @@
         }
     });
 
+// =========================================================================
+      $('#admission_status_prev').on('change', function () {
 
+            let selected = $(this).val();
+            let showValue = "1";
 
+            if (selected === showValue) {
+              $('#prev_class_studied_appeared_exam').show();
+              // $('#previous_class_studied_result_examination').show();
+              // $('#percentage_of_overall_marks_section').show();
+              $('#no_of_days_attended_section').show();
+              $('#previous_class_studied').show();
+              $('#previous_section_section').show();
+              $('#previous_roll_no_section').show();
+              $('#previous_stream_section').show();
+            } else {
+              $('#previous_class_studied_result_examination').hide();
+              // $('#prev_class_studied_appeared_exam').hide();
+              // $('#percentage_of_overall_marks_section').hide();
+              $('#no_of_days_attended_section').hide();
+              $('#previous_class_studied').hide();
+              $('#previous_section_section').hide();
+              $('#previous_roll_no_section').hide();
+              $('#previous_stream_section').hide();
+              // clear selection
+              $('#prev_class_appeared_exam').val('');
+              // $('#previous_class_result_examination').val(''); 
+              // $('#percentage_of_overall_marks').val('');
+              $('#no_of_days_attended').val('');  
+              $('#previous_class').val('');  
+              $('#class_section').val('');  
+              $('#previous_student_roll_no').val('');  
+              $('#student_stream').val('');  
+            }
+        });
+
+ $('#prev_class_appeared_exam').on('change', function () {
+        let value = $(this).val();
+
+        if (value === "1") {
+            $('#previous_class_studied_result_examination').show();
+            $('#percentage_of_overall_marks_section').show();
+        } else {
+            $('#previous_class_studied_result_examination').hide();
+            $('#percentage_of_overall_marks_section').hide();
+
+            // Clear fields
+            $('#previous_class_result_examination').val('');
+            $('#percentage_of_overall_marks').val('');
+        }
+    });
     // ================================
   $(function() {
 
@@ -797,7 +849,7 @@
     $('#basic_info_save_btn').off('click').on('click', function () {
       var $btn = $(this);
       var $basicForm = $('#basic_info_of_student');
-      var $enrollForm = $('#enrollment_details_form'); // must exist (see blade change)
+      var $enrollForm = $('#student_enrollment_details'); // must exist (see blade change)
 
       clearInlineErrors();
 
@@ -845,7 +897,8 @@
       console.log("------ END MERGED FORM DATA ------");
 
       $.ajax({
-        url: "{{ route('student.store') }}",
+        url: "{{ route('student.store_student_entry_basic_details') }}",
+
         type: "POST",
         data: formData,
         processData: false,
@@ -858,7 +911,7 @@
         timeout: 20000,
 
         beforeSend: function() {
-          console.log('Sending merged AJAX to {{ route("student.store") }}');
+        console.log('Sending merged AJAX to {{ route("student.store_student_entry_basic_details") }}');
         },
 
         success: function (res, textStatus, jqXHR) {
@@ -949,7 +1002,107 @@
         }
       });
     }
+// ==================================
+ /// Enrollment save handler — send ONLY enrollment form fields
+$('#enrollment_details_save_btn').off('click').on('click', function () {
+  var $btn = $(this);
+  var $enrollForm = $('#student_enrollment_details');
 
+  clearInlineErrors();
+
+  $btn.prop('disabled', true).text('Saving...');
+
+  // Build FormData only from enrollment form
+  var formData = new FormData($enrollForm[0]);
+
+  // Ensure a single CSRF token (optional, but avoids duplicate _token entries)
+  formData.delete('_token');
+  formData.append('_token', getCsrfToken());
+
+  // Debug logging (optional)
+  console.log("------ ENROLLMENT FORM DATA ------");
+  for (let pair of formData.entries()) {
+    console.log(pair[0] + ':', pair[1]);
+  }
+  console.log("------ END ENROLLMENT FORM DATA ------");
+
+  $.ajax({
+    url: "{{ route('student.store_enrollment_details') }}",
+    type: "POST",
+    data: formData,
+    processData: false,
+    contentType: false,
+    dataType: 'json',
+    headers: {
+      'X-CSRF-TOKEN': getCsrfToken(),
+      'Accept': 'application/json'
+    },
+    timeout: 20000,
+
+    beforeSend: function () {
+      console.log('Sending enrollment AJAX to {{ route("student.store_enrollment_details") }}');
+    },
+
+    success: function (res) {
+      if (res && res.success) {
+        if (window.toastr) toastr.success(res.message || 'Enrollment saved.');
+        else alert(res.message || 'Enrollment saved.');
+
+        // If you want to switch tabs programmatically after save, do it here:
+        // $('#someNextTabButton').tab('show');
+      } else {
+        console.warn('Unexpected body', res);
+        alert(res.message || 'Saved but unexpected response.');
+      }
+
+      $btn.prop('disabled', false).text('Next');
+    },
+
+    error: function (jqXHR) {
+      clearInlineErrors();
+
+      if (jqXHR.status === 422) {
+        var resp = jqXHR.responseJSON || {};
+        var errors = resp.errors || {};
+
+        $.each(errors, function (field, messages) {
+          var selector = '[name="' + field + '"]';
+          var $el = $(selector);
+          if (!$el.length) {
+            var alt = field.replace(/\.(\w+)/g, '[$1]');
+            $el = $('[name="' + alt + '"]');
+          }
+          if ($el.length) {
+            $el.addClass('is-invalid');
+            var $group = $el.closest('.input-group');
+            var messageHtml = '<div class="invalid-feedback d-block js-dynamic">' + (messages[0] || '') + '</div>';
+            if ($group.length) $group.after(messageHtml); else $el.after(messageHtml);
+          } else {
+            console.warn('Field not found for error:', field, messages);
+          }
+        });
+
+        var $first = $('.is-invalid').first();
+        if ($first.length) {
+          $('html, body').animate({ scrollTop: $first.offset().top - 90 }, 400);
+          $first.focus();
+        }
+      } else if (jqXHR.status === 419) {
+        alert('Session expired (419). Please reload the page and try again.');
+      } else {
+        alert('Something went wrong. See console & network tab for details.');
+      }
+
+      $btn.prop('disabled', false).text('Next');
+    },
+
+    complete: function () {
+      console.log('Enrollment AJAX complete');
+    }
+  });
+});
+
+// ================================
   });
 </script>
 
