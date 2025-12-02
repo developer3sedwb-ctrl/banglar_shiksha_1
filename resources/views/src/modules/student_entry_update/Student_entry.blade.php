@@ -21,17 +21,31 @@
     $bs_stu_disability_type_master = DB::table('bs_stu_disability_type_master')->pluck('name', 'id')->toArray();  
     $bs_child_mainstreamed_master = DB::table('bs_child_mainstreamed_master')->pluck('name', 'id')->toArray();  
 
+   //============Start =====Enrollmnent==================== 
 
+    $bs_previous_schooling_type_master = DB::table('bs_previous_schooling_type_master')->pluck('name', 'id')->toArray();  
+    $bs_stu_appeared_master = DB::table('bs_stu_appeared_master')->pluck('name', 'id')->toArray(); 
+    $bs_class_master = DB::table('bs_class_master')->pluck('name', 'id')->toArray(); 
+
+    $bs_class_section_master = DB::table('bs_class_section_master')->pluck('name', 'id')->toArray(); 
+
+    $bs_stream_master = DB::table('bs_stream_master')->pluck('name', 'id')->toArray(); 
+    $bs_school_medium = DB::table('bs_school_medium')->pluck('id', 'id')->toArray();
+    $bs_school_classwise_section = DB::table('bs_school_classwise_section')->pluck('id', 'id')->toArray();  
+
+    $bs_admission_type_master = DB::table('bs_admission_type_master')->pluck('name', 'id')->toArray(); 
+
+    //========END=========Enrollmnent==================== 
 
     $genders = $gender_master;
     $mother_tongue = $mother_tongue_master;
-    
+
     $social_category = $social_category_master;
     $religion = $religion_master;
 
     $nationality = $nationality_master;
     $blood_group = $blood_group_master;
-    
+
     $guardian_relationship = $guardian_relationship_master;
     $income = $income_master;
 
@@ -39,6 +53,20 @@
     $stu_disability_type_master = $bs_stu_disability_type_master;
 
     $child_mainstreamed_master = $bs_child_mainstreamed_master;
+    $class_master = $bs_class_master;
+
+    $school_classwise_section = $bs_school_classwise_section;
+
+ //======Start===========Enrollmnent==================== 
+
+
+    $previous_schooling_type_master = $bs_previous_schooling_type_master;
+    $stu_appeared_master = $bs_stu_appeared_master;
+    $class_section_master = $bs_class_section_master;
+    $stream_master = $bs_stream_master;
+    $school_medium = $bs_school_medium;
+
+    $admission_type_master = $bs_admission_type_master;
 @endphp
 
 <div class="container-fluid full-width-content">
@@ -442,40 +470,156 @@
               <div class="col-md-6">
                 <!-- Admission Number in School -->
                 <div class="mb-3">
-                  <label class="form-label small">Admission Number in School</label>
+                  <label class="form-label small">Admission Number in School<span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-hash"></i></span>
-                    <input name="admission_number" type="text" class="form-control" placeholder="Admission number in school">
+                    <input name="admission_number" 
+                      type="text" 
+                      class="form-control" 
+                      placeholder="Admission number in school"
+                      maxlength="10"
+                      pattern="\d*"
+                      inputmode="numeric"
+                    >
                   </div>
                 </div>
 
-                <!-- Status of Admission in Previous Academic Year / Year of Rejoining -->
+                <!-- Status of Admission in Previous Academic Year -->
                 <div class="mb-3">
-                  <label class="form-label small">Status of student in Previous Academic Year of Schooling *</label>
+                  <label class="form-label small">Status of student in Previous Academic Year of Schooling<span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-history"></i></span>
                     <select name="admission_status_prev" class="form-select">
-                      <option value="">-Please Select-</option>
-                      <option value="Continuing">Continuing</option>
-                      <option value="Re-joined">Re-joined</option>
-                      <option value="New Admission">New Admission</option>
+                          <option value="">-Please Select-</option>
+                          @foreach($previous_schooling_type_master ?? [] as $val => $label)
+                          <option value="{{ $val }}">{{ $label }}</option>
+                          @endforeach
                     </select>
                   </div>
                 </div>
+
+
+
+                <div class="mb-3">
+                  <label class="form-label small">In the Previous class studied – whether appeared for examinations<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                        <select name="prev_class_appeared_exam" id="prev_class_appeared_exam"  class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($dropdowns['prev_class_appeared_exam'] as $val => $label)
+                            <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                      </select>
+                  </div>
+                </div>
+
+
+                <div class="mb-3">
+                  <label class="form-label small">In the previous class studied – Result of the examination<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                      <select name="previous_class_result_examination" id="previous_class_result_examination" class="form-select">
+                          <option value="">-Please Select-</option>
+                          @foreach($stu_appeared_master ?? [] as $val => $label)
+                          <option value="{{ $val }}">{{ $label }}</option>
+                          @endforeach
+                    </select>
+                  </div>
+                </div>
+
+
+                <div class="mb-3">
+                  <label class="form-label small">In the previous class studied - % of overall marks obtained in the examination<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                      <input name="percentage_of_overall_marks" 
+                      type="text" 
+                      class="form-control" 
+                      placeholder="% of overall marks obtained"
+                      maxlength="3"
+                      pattern="\d*"
+                      inputmode="numeric"
+                    >
+                  </div>
+                </div>
+
+                  <div class="mb-3">
+                  <label class="form-label small">No. of days child attended school (in the previous academic year)<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                   <input name="admission_number" 
+                      type="text" 
+                      class="form-control" 
+                      placeholder="No of days child attended school"
+                      maxlength="3"
+                      pattern="\d*"
+                      inputmode="numeric"
+                    >
+                  </div>
+                </div>
+                  <div class="mb-3">
+                  <label class="form-label small">Grade/Class Studied in the Previous/Last Academic Year (Previous Class)*<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                    <select name="previous_class" id="previous_class" class="form-select">
+                          <option value="">-Please Select-</option>
+                          @foreach($class_master ?? [] as $val => $label)
+                          <option value="{{ $val }}">{{ $label }}</option>
+                          @endforeach
+                    </select>
+                  </div>
+                </div>
+                  <div class="mb-3">
+                  <label class="form-label small">Previous Section<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                    <select name="class_section" id="class_section" class="form-select">
+                          <option value="">-Please Select-</option>
+                          @foreach($class_section_master ?? [] as $val => $label)
+                          <option value="{{ $val }}">{{ $label }}</option>
+                          @endforeach
+                    </select>
+                  </div>
+                </div>
+                  <div class="mb-3">
+                  <label class="form-label small">Previous Stream<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                    <select name="student_stream" id="student_stream" class="form-select">
+                          <option value="">-Please Select-</option>
+                          @foreach($stream_master ?? [] as $val => $label)
+                          <option value="{{ $val }}">{{ $label }}</option>
+                          @endforeach
+                    </select>
+                  </div>
+                </div>
+                  <div class="mb-3">
+                  <label class="form-label small">Previous Roll No.<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                     <input name="previous_student_roll_no" 
+                      type="text" 
+                      class="form-control" 
+                      placeholder="Enter Previous Roll Number"
+                      maxlength="10"
+                      pattern="\d*"
+                      inputmode="numeric"
+                    >
+                  </div>
+                </div>
+
+                <!-- ================================================== -->
 
                 <!-- Present Class -->
                 <div class="mb-3">
                   <label class="form-label small">Present Class</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book-open"></i></span>
-                    <select name="present_class" class="form-select">
-                      <option value="">-Please Select-</option>
-                      <option value="Nursery">Nursery</option>
-                      <option value="KG">KG</option>
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                      <!-- add more as needed -->
+                    <select name="present_class" id="present_class" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($class_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
                     </select>
                   </div>
                 </div>
@@ -485,7 +629,12 @@
                   <label class="form-label small">Academic Year</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-calendar-alt"></i></span>
-                    <input name="academic_year" type="text" class="form-control" placeholder="e.g. 2024-2025">
+                  <select name="accademic_year" id="accademic_year"  class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($dropdowns['accademic_year'] as $val => $label)
+                            <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                      </select>
                   </div>
                 </div>
 
@@ -494,20 +643,25 @@
                   <label class="form-label small">Present Section</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-layout"></i></span>
-                    <input name="present_section" type="text" class="form-control" placeholder="Section (if any)">
+                      <select name="present_section" id="present_section" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($school_classwise_section ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                     </select>
                   </div>
                 </div>
 
                 <!-- Present Medium -->
                 <div class="mb-3">
-                  <label class="form-label small">Present Medium</label>
+                  <label class="form-label small">Medium</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-chat"></i></span>
-                    <select name="present_medium" class="form-select">
-                      <option value="">-Please Select-</option>
-                      <option value="English">English</option>
-                      <option value="Hindi">Hindi</option>
-                      <option value="Regional">Regional</option>
+                         <select name="school_medium" id="school_medium" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($school_medium ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
                     </select>
                   </div>
                 </div>
@@ -539,11 +693,11 @@
                   <label class="form-label small">Admission Type</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-transfer-alt"></i></span>
-                    <select name="admission_type" class="form-select">
-                      <option value="">-Please Select-</option>
-                      <option value="Regular">Regular</option>
-                      <option value="Transfer">Transfer</option>
-                      <option value="Other">Other</option>
+                         <select name="admission_type" id="admission_type" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($admission_type_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
                     </select>
                   </div>
                 </div>
