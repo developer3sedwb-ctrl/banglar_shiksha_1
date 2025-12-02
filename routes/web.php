@@ -71,8 +71,20 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
         ->name('student.entry');
 
         
-Route::post('/student/store', [StudentInfoController::class, 'store'])
-     ->name('student.store');
+
+     
+    Route::post('/student/store_student_entry_basic_details', 
+        [StudentInfoController::class, 'StoreStudentEntryStoreBasicDetails']
+    )->name('student.store_student_entry_basic_details');
+
+Route::post(
+    '/student/store_enrollment_details',
+    [StudentInfoController::class, 'storeEnrollmentDetails']
+)->name('student.store_enrollment_details');
+
+//      Route::post('/student/basic/store', [StudentInfoController::class, 'storeBasic'])->name('student.basic.store');
+// Route::post('/student/enrollment/store', [StudentInfoController::class, 'storeEnrollment'])->name('student.enrollment.store');
+
      
     Route::view('/student-edit', 'src.modules.student_entry_update.Student_edit')
         ->name('student.edit');
