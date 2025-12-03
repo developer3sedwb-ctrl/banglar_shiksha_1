@@ -16,6 +16,16 @@ return new class extends Migration
             // FK: School
             $table->unsignedBigInteger('school_id_fk');
             $table->foreign('school_id_fk')->references('id')->on('bs_school_master');
+            $table->smallInteger('district_code_fk');
+            $table->foreign('district_code_fk')->references('id')->on('bs_district_master');
+            $table->smallInteger('subdivision_code_fk')->nullable();
+            $table->foreign('subdivision_code_fk')->references('id')->on('bs_subdivision_master');
+            $table->smallInteger('block_munc_code_fk')->nullable();
+            $table->foreign('block_munc_code_fk')->references('id')->on('bs_block_munc_corp_master');
+            $table->smallInteger('circle_code_fk')->nullable();
+            $table->foreign('circle_code_fk')->references('id')->on('bs_circle_master');
+            $table->integer('gs_ward_code_fk')->nullable();
+            $table->foreign('gs_ward_code_fk')->references('id')->on('bs_gs_ward_master');
             // FK: Student (if used)
             /* -----------------------------
             VOCATIONAL FIELDS (Exact as per ep_student_vocational_details)

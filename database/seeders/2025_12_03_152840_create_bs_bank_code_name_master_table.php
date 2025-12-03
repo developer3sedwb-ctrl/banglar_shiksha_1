@@ -11,16 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bs_guardian_relationship_master', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', 100);
+        Schema::create('bs_bank_code_name_master', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->smallInteger('sector_code_fk')->nullable()->comment('FK to bs_vocational_trade_sector_master.id');
+            $table->string('name', 50);
+            $table->char('bank_code', 6);
+            $table->string('bank_ifsc', 20);
+            $table->string('digit_in_account_no', 50);
             $table->smallInteger('status')->default(1)->comment('1 = active');
             // Audit fields
             $table->timestamps();
             
             $table->softDeletes();
             // Indexes
-            $table->index(['status', 'name']);        
+            $table->index(['status', 'bank_ifsc'], 'idx_status_bank_ifsc');          
         });
     }
 
@@ -29,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bs_guardian_relationship_master');
+        Schema::dropIfExists('bs_bank_code_name_master');
     }
 };

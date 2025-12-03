@@ -9,7 +9,9 @@ use App\Models\{
     CircleMaster,
     ClusterMaster,
     WardMaster,
-    SchoolMaster
+    SchoolMaster,
+    VocationalTradeSectorMaster,
+    VocationalJobRoleMaster
 };
 use Illuminate\Http\Request;
 
@@ -83,4 +85,20 @@ class CommonController extends Controller
         $schoolList = SchoolMaster::get();
         return response()->json(['data' => $schoolList]);
     }
+    public function getVocationalTradeSector(){
+        $result = VocationalTradeSectorMaster::where('status', 1)->get();
+        return response()->json(['data' => $result]);
+    }
+    public function getJobRoleByVocationalTradeSector(Request $request)
+    {
+        $roles = VocationalJobRoleMaster::where('status', 1)
+                    ->where('sector_code_fk', $request->sector_id)
+                    ->get();
+
+        return response()->json([
+            'status' => true,
+            'data'   => $roles
+        ]);
+    }
+
 }

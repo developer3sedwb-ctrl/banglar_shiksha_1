@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bs_guardian_relationship_master', function (Blueprint $table) {
+        Schema::create('bs_vocational_trade_sector_master', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
+            $table->string('name', 50);
             $table->smallInteger('status')->default(1)->comment('1 = active');
             // Audit fields
             $table->timestamps();
             
             $table->softDeletes();
             // Indexes
-            $table->index(['status', 'name']);        
+            $table->index(['status', 'name']);  
         });
     }
 
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bs_guardian_relationship_master');
+        Schema::dropIfExists('bs_vocational_trade_sector_master');
     }
 };

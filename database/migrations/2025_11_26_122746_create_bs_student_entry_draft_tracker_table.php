@@ -18,6 +18,7 @@ return new class extends Migration
                 ->references('id')
                 ->on('bs_school_master');
             $table->smallInteger('step_number');
+            $table->smallInteger('status')->default(1);
             $table->timestamps();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
