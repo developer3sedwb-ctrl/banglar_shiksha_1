@@ -75,25 +75,8 @@ return new class extends Migration
             $table->smallInteger('disadvantaged_group_y_n')->nullable();
             $table->smallInteger('free_exercise_book_y_n')->nullable();
             $table->smallInteger('special_training_facility_y_n')->nullable();
-
-            $table->timestamp('active_date_from')->nullable();
-            $table->timestamp('active_date_to')->nullable();
-
-            $table->string('entry_ip', 15)->nullable();
-            $table->timestamp('entry_time')->nullable();
-            $table->bigInteger('enter_by')->nullable();
-            $table->smallInteger('enter_by_stake_cd')->nullable();
-
-            $table->string('update_ip', 15)->nullable();
-            $table->timestamp('update_time')->nullable();
-            $table->bigInteger('update_by')->nullable();
-            $table->smallInteger('update_by_stake_cd')->nullable();
-
-            $table->char('delete_status', 1)->nullable();
-
             $table->integer('central_scholarship_amount')->nullable();
             $table->integer('state_scholarship_amount')->nullable();
-
             $table->smallInteger('received_cwsn_braille_book_y_n')->nullable();
             $table->smallInteger('received_cwsn_braille_kit_y_n')->nullable();
             $table->smallInteger('received_cwsn_low_vision_kit_y_n')->nullable();
@@ -114,6 +97,9 @@ return new class extends Migration
 
             $table->smallInteger('digital_device_inc_internet_yn')->nullable();
             $table->smallInteger('digital_device_inc_internet_fk')->nullable();
+            $table->string('entry_ip', 15)->nullable();
+            $table->string('update_ip', 15)->nullable();
+            $table->smallInteger('status')->default(1);
             $table->timestamps();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');

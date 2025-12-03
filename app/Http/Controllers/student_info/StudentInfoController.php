@@ -42,7 +42,7 @@ class StudentInfoController extends Controller
 
             $student->bpl_aay_beneficiary_y_n =  $request->antyodaya_anna_yojana;
             $student->bpl_no =  $request->bpl_number;
-            
+
 
             $student->disadvantaged_group_y_n = $request->disadvantaged_group;
 
@@ -98,7 +98,7 @@ class StudentInfoController extends Controller
 
     public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
     {
-        
+
         DB::beginTransaction();
         // dd($request->all());
         try {
@@ -106,7 +106,7 @@ class StudentInfoController extends Controller
 
         // ---- Admission basic ----
         $enroll->admission_no            = $request->admission_number;
-     
+
 
         // ---- Previous Year Data ----
         $enroll->status_pre_year         = $request->admission_status_prev;
@@ -127,7 +127,7 @@ class StudentInfoController extends Controller
         $enroll->medium_code_fk           = $request->school_medium;
         $enroll->cur_roll_number          = $request->present_roll_no;
         $enroll->admission_date          = $request->admission_date_present;
-      
+
         $enroll->admission_type_code_fk   = $request->admission_type;
 
         // ---- Required foreign keys ----

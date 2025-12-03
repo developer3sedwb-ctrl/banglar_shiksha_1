@@ -27,7 +27,7 @@ return new class extends Migration
                 ->on('bs_gender_master');
 
             // dob (NOT FK)
-            $table->smallInteger('dob');
+            $table->date('dob');
 
             $table->string('fathername',500);
             $table->string('mothername',500);
@@ -67,7 +67,7 @@ return new class extends Migration
                 ->on('bs_nationality_master');
 
             $table->smallInteger('out_of_sch_child_y_n');
-
+            $table->smallInteger('child_mainstreamed')->nullable();
             // FK: blood group
             $table->smallInteger('blood_group_code_fk')->nullable();
             $table->foreign('blood_group_code_fk')
@@ -106,8 +106,8 @@ return new class extends Migration
 
             $table->softDeletes();
             $table->unique(['school_id_fk', 'deleted_at'], 'unique_school_student_general_info');
-            $table->unique(['studentname', 'dob', 'fathername', 'mothername', 'deleted_at'], 'unique_student_identity');
-            $table->index(['studentname', 'dob', 'fathername', 'mothername', 'deleted_at'], 'idx_student_identity');
+            $table->unique(['studentname', 'dob', 'fathername', 'mothername', 'deleted_at'], 'unique_student_identity_temp');
+            $table->index(['studentname', 'dob', 'fathername', 'mothername', 'deleted_at'], 'idx_student_identity_temp');
         });
     }
     /**

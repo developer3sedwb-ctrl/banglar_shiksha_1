@@ -11,15 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bs_school_medium_master', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('name', 50)->unique()->comment('Medium name');
+        Schema::create('bs_name_and_code_of_central_scholarships_master', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 200);
             $table->smallInteger('status')->default(1)->comment('1 = active');
             // Audit fields
             $table->timestamps();
+            
             $table->softDeletes();
             // Indexes
-            $table->index(['status', 'name']);
+            $table->index(['status', 'name']);   
         });
     }
 
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bs_medium_master');
+        Schema::dropIfExists('bs_name_and_code_of_central_scholarships_master');
     }
 };

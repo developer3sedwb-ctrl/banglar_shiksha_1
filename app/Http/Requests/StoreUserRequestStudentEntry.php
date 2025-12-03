@@ -88,11 +88,11 @@ class StoreUserRequestStudentEntry extends FormRequest
             'school_medium', 'admission_type',
             ];
 
-            foreach ($intFields as $field) {
-                if ($this->filled($field)) {
-                    $this->merge([$field => (int) $this->{$field}]);
-                }
+        foreach ($intFields as $field) {
+            if ($this->filled($field)) {
+                $this->merge([$field => (int) $this->{$field}]);
             }
         }
+    }
 
 }

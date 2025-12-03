@@ -6,10 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class StudentInfo extends Model
 {
- protected $table = 'bs_student_general_info_temp';
+    protected $table = 'bs_student_general_info_temp';
     protected $primaryKey = 'id';
     public $timestamps = true; // created_at/updated_at
-
     // Use guarded or fillable — fillable example below
     protected $fillable = [
         'studentname',
