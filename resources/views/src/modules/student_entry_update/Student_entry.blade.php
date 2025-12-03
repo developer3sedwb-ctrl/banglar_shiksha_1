@@ -797,7 +797,7 @@
               $('#previous_roll_no_section').show();
               $('#previous_stream_section').show();
             } else {
-              $('#previous_class_studied_result_examination').hide();
+              $('#prev_class_studied_appeared_exam').hide();
               $('#no_of_days_attended_section').hide();
               $('#previous_class_studied').hide();
               $('#previous_section_section').hide();

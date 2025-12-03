@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreUserRequestStudentEntry;
 use App\Http\Requests\StoreEnrollmentRequest;
+use Illuminate\Support\Facades\Schema;
+
 
 class StudentInfoController extends Controller
 {
@@ -101,13 +103,17 @@ class StudentInfoController extends Controller
         
         DB::beginTransaction();
         // dd($request->all());
+        // Log::info('Enrollment request data:', $request->all());
+        // if (Schema::hasColumn('bs_student_enrollment_details_temp', 'cur_class_code_fk')) {
+        //  Log::info('Column exists: cur_class_code_fk');
+        // } else {
+        //     Log::warning('Column MISSING: cur_class_code_fk — check your migration or column name.');
+        // }
+
         try {
             $enroll = new StudentEnrollmentInfo();
-
         // ---- Admission basic ----
         $enroll->admission_no            = $request->admission_number;
-     
-
         // ---- Previous Year Data ----
         $enroll->status_pre_year         = $request->admission_status_prev;
         $enroll->prev_class_appeared_exam = $request->prev_class_appeared_exam;
