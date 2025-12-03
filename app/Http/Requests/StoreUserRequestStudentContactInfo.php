@@ -24,7 +24,8 @@ class StoreUserRequestStudentContactInfo extends FormRequest
             'student_district'       => 'required|integer|exists:bs_district_master,id',
             'student_panchayat'      => 'required|string|max:100',
             'student_police_station' => 'required|string|max:100',
-            'student_mobile'         => 'nullable|digits_between:7,15',
+         'student_mobile' => 'nullable|digits:10',
+
             'student_state'          => 'required|integer|exists:bs_state_master,id',
             'student_locality'       => 'required|string|max:300',
             'student_block'          => 'required|integer|exists:bs_block_munc_corp_master,id',
@@ -46,7 +47,8 @@ class StoreUserRequestStudentContactInfo extends FormRequest
             'guardian_post_office'   => 'nullable|string|max:300',
             'guardian_police_station'=> 'nullable|string|max:100',
             'guardian_pincode'       => 'nullable|digits:6',
-            'guardian_mobile'        => 'nullable|digits_between:7,15',
+            'guardian_mobile' => 'nullable|digits:10',
+
             'guardian_email'         => 'nullable|email|max:100',
 
             // ---------- System Fields ----------

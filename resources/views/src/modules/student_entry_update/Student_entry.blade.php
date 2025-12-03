@@ -3,7 +3,8 @@
 @section('title', 'Add Student')
 
 @section('content')
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 @php
     $dropdowns = config('student');
 
@@ -42,6 +43,7 @@
     $bs_country_master = DB::table('bs_country_master')->pluck('name', 'id')->toArray(); 
     $state_master = DB::table('bs_state_master')->pluck('name', 'id')->toArray(); 
     $district_master = DB::table('bs_district_master')->pluck('name', 'id')->toArray(); 
+    $block_munc_corp_master = DB::table('bs_block_munc_corp_master')->pluck('name', 'id')->toArray(); 
     
 //================================================
 
@@ -794,10 +796,18 @@
                   <input name="student_locality" type="text" class="form-control" placeholder="Habitation / Locality">
                 </div>
 
-                <div class="mb-3">
-                  <label class="form-label small">Block/Municipal</label>
-                  <input name="student_block" type="text" class="form-control" placeholder="Block / Municipality">
-                </div>
+                <div class="mb-3" id="student_block_section">
+                  <label class="form-label small">Block / Municipality</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                  <select name="student_block" id= "student_block" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($block_munc_corp_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                  </div>
+                </div> 
 
                 <div class="mb-3">
                   <label class="form-label small">Post Office</label>
@@ -885,10 +895,18 @@
                   <input name="guardian_locality" type="text" class="form-control" placeholder="Habitation / Locality">
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3" id="guardian_block_section">
                   <label class="form-label small">Block / Municipality</label>
-                  <input name="guardian_block" type="text" class="form-control" placeholder="Block / Municipality">
-                </div>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                  <select name="guardian_block" id= "guardian_block" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($block_munc_corp_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                  </div>
+                </div> 
 
                 <div class="mb-3">
                   <label class="form-label small">Post Office</label>
@@ -928,6 +946,13 @@
 @section('scripts')
 @push('scripts')
 <script>
+
+
+$(document).ready(function() {
+    $('.select2').select2({
+        width: '100%' // Tells JS to fill the container we defined in CSS
+    });
+});
 
     document.addEventListener("DOMContentLoaded", function () {
         let aadhaar_child = document.getElementById("aadhaar_child");
