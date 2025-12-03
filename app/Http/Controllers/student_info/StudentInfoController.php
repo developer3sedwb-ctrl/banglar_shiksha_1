@@ -120,33 +120,6 @@ class StudentInfoController extends Controller
 
 
     //Section Aziza start date:01-12-2025
-    public function getStudentEntry__()
-    {
-        try {
-            // Load master data
-            $stateScholarships = DB::table('bs_name_and_code_of_state_scholarships_master')
-                                ->orderBy('id')
-                                ->get();
-            $centralScholarships = DB::table('bs_name_and_code_of_central_scholarships_master')
-                                    ->orderBy('id')
-                                    ->get();
-            $data['stateScholarships'] = $stateScholarships;
-            $data['centralScholarships'] = $centralScholarships;
-
-            // Return view with data
-            return view('src.modules.student_entry_update.student_entry_ap', compact('data'));
-        } 
-        catch (\Exception $e) {
-
-            Log::error('Error in StudentInfoController@getStudentEntry: '.$e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Server error while fetching student data',
-                'error'   => $e->getMessage(),
-            ], 500);
-        }
-    }
     public function getStudentEntry()
     {
         try {
@@ -528,11 +501,6 @@ class StudentInfoController extends Controller
             ], 500);
         }
     }
-
-
-
-
-
     //Section Aziza end date:01-12-2025
 
 

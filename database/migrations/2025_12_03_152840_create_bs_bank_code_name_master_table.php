@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('bs_bank_code_name_master', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->smallInteger('sector_code_fk')->nullable()->comment('FK to bs_vocational_trade_sector_master.id');
             $table->string('name', 50);
             $table->char('bank_code', 6);
             $table->string('bank_ifsc', 20);
