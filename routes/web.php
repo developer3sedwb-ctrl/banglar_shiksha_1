@@ -216,6 +216,9 @@ Route::post(
         Route::get('/getdisecode/{ward_id}', [CommonController::class, 'getDisecode'])->name('api.get.disecode');
 
         Route::get('/school/block/{block_id}', [CommonController::class, 'getSchoolByBlock'])->name('api.get.schoolByBlock');
+        
+        Route::get('/get-vocational-trade-sector', [CommonController::class, 'getVocationalTradeSector'])->name('get.vocational.trade.sector');
+        Route::post('/get-vocational-job-role-by-trade-sector', [CommonController::class, 'getJobRoleByVocationalTradeSector'])->name('get.jobrole.by_vocational_trade.sector');
     });
 
 
@@ -236,8 +239,11 @@ Route::post(
     Route::prefix('hoi')->group(function () {
 
         Route::get('/student-entry-ap', [StudentInfoController::class, 'getStudentEntry'])->name('hoi.get_student_entry_form');
-        Route::post('/save-studen-facility-and-other-details', [StudentInfoController::class, 'storeStudentFacilityAndOtherDetails'])->name('hoi.student.facility');
-    });
+        Route::post('/save-student-facility-and-other-details', [StudentInfoController::class, 'storeStudentFacilityAndOtherDetails'])->name('hoi.student.facility');
+        Route::post('/save-student-vocational-details',[StudentInfoController::class, 'saveVocationalDetails'])->name('save.vocational.details');
+        Route::delete('/student-entry/reset', [StudentInfoController::class, 'resetEntry'])->name('student.entry.reset');
+
+        });
 
     // Route::get('/test-error', function () {
     //     // wrong SQL to trigger QueryException

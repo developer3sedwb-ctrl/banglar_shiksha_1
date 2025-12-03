@@ -13,26 +13,15 @@ return new class extends Migration
     {
         Schema::create('bs_student_bank_details_temp', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('school_id_fk');
+            $table->foreign('school_id_fk')->references('id')->on('bs_school_master');
             // Guardian address same as student
-            $table->tinyInteger('address_equal')->default(0); // 1 - Yes, 0 - No
-            // Guardian contact fields (visible in the UI)
-            $table->smallInteger('guardian_country_code_fk');         // Select Country
-            $table->foreign('guardian_country_code_fk')->references('id')->on('bs_country_master');
-            $table->smallInteger('guardian_state_code_fk');           // Select State
-            $table->foreign('guardian_state_code_fk')->references('id')->on('bs_state_master');
-            $table->string('guardian_contact_address', 300);          // Address
-            $table->string('guardian_contact_habitation', 300);       // Habitation/Locality
-
-            $table->smallInteger('guardian_contact_district');        // District
-            $table->smallInteger('guardian_contact_block');           // Block/Munc/Corp
-            $table->string('guardian_contact_panchayat', 100);        // Panchayat
-
-            $table->string('guardian_post_office', 300);              // Post Office
-            $table->string('guardian_police_station', 100);           // Police Station
-
-            $table->char('guardian_pin_code', 6);                     // Pin Code
-            $table->integer('guardian_mobile_no')->nullable();                   // Mobile Number
-            $table->string('guardian_email', 100)->nullable();
+            // $table->integer('stu_bank');
+            // $table->foreign('stu_bank')->references('id')->on('bs_bank_master');
+            // $table->integer('stu_bank_branch');
+            // $table->foreign('stu_bank_branch')->references('id')->on('bs_bank_branch_master');
+            $table->string('bank_ifsc', 20);
+            $table->string('stu_bank_acc_no', 50);
             $table->smallInteger('status')->default(1);
             $table->string('entry_ip', 15)->nullable();
             $table->string('update_ip', 15)->nullable();                    

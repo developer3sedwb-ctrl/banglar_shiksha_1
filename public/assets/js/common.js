@@ -67,49 +67,57 @@ function validateRequiredFields(formSelector) {
 
     return true;
 }
-function saveDataByAjax(formSelector, url) {
+
+async function sendRequest(url, method = "POST", formSelector = null, extraData = {}) {
     try {
-        let formData = $(formSelector).serialize();
-        $.ajax({
-            url: url,
-            type: "POST",
-            dataType: "json",
-            headers: {
-                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-            },
-            data: formData,
-            success: function (response) {
-                console.log(response);
-                if (response.status) {
-                    alert(response.message);
-                } else {
-                    alert(response.message);
-                }
-            },
-            error: function (xhr, status, error) {
-                // Default error message
-                let errorMessage = "An error occurred.";
+        let headers = {
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+            "Accept": "application/json"
+        };
 
-                // Laravel validation error
-                if (xhr.status === 422) {
-                    let messages = [];
+        let bodyData = null;
 
-                    // Extract all validation error messages
-                    $.each(xhr.responseJSON.errors, function (key, value) {
-                        messages.push(value[0]);
-                    });
+        // If a form is passed, convert to FormData
+        if (formSelector) {
+            let form = document.querySelector(formSelector);
+            bodyData = new FormData(form);
+        }
 
-                    errorMessage = messages.join("\n");
-                } else if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                }
+        // Add extra data if provided
+        if (extraData && Object.keys(extraData).length > 0) {
+            if (!bodyData) bodyData = new FormData();
+            for (const key in extraData) {
+                bodyData.append(key, extraData[key]);
+            }
+        }
 
-                alert(errorMessage);
-                console.error("AJAX Validation Error:", xhr.responseJSON);
-            },
+        // Fetch Call
+        let response = await fetch(url, {
+            method: method,
+            headers: headers,
+            body: (method !== "GET" ? bodyData : null)
         });
-    } catch (err) {
-        console.error("JavaScript Error:", err);
-        alert("Something went wrong! Check console.");
+
+        let result = await response.json();
+
+        // Handle Validation (422)
+        if (response.status === 422) {
+            let messages = [];
+            Object.values(result.errors).forEach(err => messages.push(err[0]));
+            throw new Error(messages.join("\n"));
+        }
+
+        // Handle Other Errors
+        if (!response.ok) {
+            throw new Error(result.message || "Something went wrong.");
+        }
+
+        return result;
+
+    } catch (error) {
+        alert(error.message);
+        console.error("Fetch Error:", error);
+        return null;
     }
 }
+

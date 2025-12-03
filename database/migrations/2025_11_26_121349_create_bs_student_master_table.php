@@ -108,6 +108,9 @@ return new class extends Migration
                 medium_code_fk SMALLINT,
                 admission_type_code_fk SMALLINT,
 
+                bank_ifsc VARCHAR(20),
+                stu_bank_acc_no VARCHAR(50),
+
                 status SMALLINT DEFAULT 1,
                 entry_ip VARCHAR(15),
                 update_ip VARCHAR(15),
