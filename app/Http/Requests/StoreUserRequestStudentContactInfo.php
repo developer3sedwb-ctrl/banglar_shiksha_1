@@ -47,8 +47,7 @@ class StoreUserRequestStudentContactInfo extends FormRequest
             'guardian_post_office'   => 'nullable|string|max:300',
             'guardian_police_station'=> 'nullable|string|max:100',
             'guardian_pincode'       => 'nullable|digits:6',
-            'guardian_mobile' => 'nullable|digits:10',
-
+            'guardian_mobile'        => 'nullable|digits:10',
             'guardian_email'         => 'nullable|email|max:100',
 
             // ---------- System Fields ----------
