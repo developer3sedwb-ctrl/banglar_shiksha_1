@@ -3,13 +3,14 @@ namespace App\Http\Controllers\student_info;
 
 use App\Http\Controllers\Controller;
 use App\Models\student_info\StudentInfo;
+use App\Models\student_info\StudentEnrollmentInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreUserRequestStudentEntry;
-
+use App\Http\Requests\StoreEnrollmentRequest;
 
 class StudentInfoController extends Controller
 {
@@ -95,10 +96,72 @@ class StudentInfoController extends Controller
     }
 
 
-public function storeEnrollmentDetails(Request $request)
-{
-    // Validate + Save Enrollment Details
-}
+    public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
+    {
+        
+        DB::beginTransaction();
+        // dd($request->all());
+        try {
+            $enroll = new StudentEnrollmentInfo();
+
+        // ---- Admission basic ----
+        $enroll->admission_no            = $request->admission_number;
+     
+
+        // ---- Previous Year Data ----
+        $enroll->status_pre_year         = $request->admission_status_prev;
+        $enroll->prev_class_appeared_exam = $request->prev_class_appeared_exam;
+        $enroll->prev_class_exam_result   = $request->previous_class_result_examination;
+        $enroll->prev_class_marks_percent = $request->percentage_of_overall_marks;
+        $enroll->attendention_pre_year    = $request->no_of_days_attended;
+
+        $enroll->pre_class_code_fk        = $request->previous_class;
+        $enroll->pre_section_code_fk      = $request->class_section;
+        $enroll->pre_stream_code_fk       = $request->student_stream;
+        $enroll->pre_roll_number          = $request->previous_student_roll_no;
+
+        // ---- Present Class ----
+        $enroll->cur_class_code_fk        = $request->present_class;
+        $enroll->academic_year            = $request->accademic_year;
+        $enroll->cur_section_code_fk      = $request->present_section;
+        $enroll->medium_code_fk           = $request->school_medium;
+        $enroll->cur_roll_number          = $request->present_roll_no;
+        $enroll->admission_date          = $request->admission_date_present;
+      
+        $enroll->admission_type_code_fk   = $request->admission_type;
+
+        // ---- Required foreign keys ----
+        // $enroll->school_id_fk             = session('current_school_id') ?? 1;
+        // $enroll->created_by               = Auth::id();
+        // $enroll->updated_by               = Auth::id();
+         $enroll->created_by = auth()->id() ?? 1;
+         $enroll->save();
+
+            DB::commit();
+
+            return response()->json([
+                'success'   => true,
+                'message'   => 'Student saved successfully',
+                'student_id'=> $enroll->id,
+            ], 201);
+
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            Log::error('Error saving student', [
+                'error'   => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'request' => $request->all(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error while saving student',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
 
 
 
