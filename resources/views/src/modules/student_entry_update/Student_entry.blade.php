@@ -754,15 +754,19 @@
                   <input name="student_address" type="text" class="form-control" placeholder="Enter Address">
                 </div>
 
+               
                 <div class="mb-3" id="student_district_section">
                   <label class="form-label small">District</label>
-                  <select name="student_district" id= "student_district" class="form-select">
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                  <select name="student_district" id= "student_district"  class="select2 form-select2">
                         <option value="">-Please Select-</option>
                         @foreach($district_master ?? [] as $val => $label)
                         <option value="{{ $val }}">{{ $label }}</option>
                         @endforeach
                     </select>
-                </div>
+                  </div>
+                </div> 
 
                 <div class="mb-3">
                   <label class="form-label small">Panchayat</label>
@@ -782,14 +786,18 @@
 
               <div class="col-md-6">
                 <div class="mb-3" id="student_state_section">
-                  <label class="form-label small">Select State</label>
-                  <select name="student_state" id= "student_state" class="form-select">
+                  <label class="form-label small">State</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                  <select name="student_state" id= "student_state"  class="select2 form-select2">
                         <option value="">-Please Select-</option>
                         @foreach($state_master ?? [] as $val => $label)
                         <option value="{{ $val }}">{{ $label }}</option>
                         @endforeach
                     </select>
-                </div>
+                  </div>
+                </div> 
+
 
                 <div class="mb-3">
                   <label class="form-label small">Habitation / Locality</label>
@@ -800,7 +808,7 @@
                   <label class="form-label small">Block / Municipality</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
-                  <select name="student_block" id= "student_block" class="form-select">
+                  <select name="student_block" id= "student_block"  class="select2 form-select2">
                         <option value="">-Please Select-</option>
                         @foreach($block_munc_corp_master ?? [] as $val => $label)
                         <option value="{{ $val }}">{{ $label }}</option>
@@ -853,15 +861,21 @@
                   <input name="guardian_address" type="text" class="form-control" placeholder="Guardian address">
                 </div>
 
+              
+
+
                 <div class="mb-3" id="guardian_district_section">
                   <label class="form-label small">District</label>
-                  <select name="guardian_district" id= "guardian_district" class="form-select">
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                  <select name="guardian_district" id= "guardian_district"  class="select2 form-select2">
                         <option value="">-Please Select-</option>
                         @foreach($district_master ?? [] as $val => $label)
                         <option value="{{ $val }}">{{ $label }}</option>
                         @endforeach
                     </select>
-                </div>
+                  </div>
+                </div> 
 
                 <div class="mb-3">
                   <label class="form-label small">Panchayat</label>
@@ -881,14 +895,17 @@
 
               <div class="col-md-6">
                 <div class="mb-3" id="guardian_state_section">
-                  <label class="form-label small">Select State</label>
-                  <select name="guardian_state" id= "guardian_state" class="form-select">
+                  <label class="form-label small">State</label>
+                    <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                      <select name="guardian_state" id= "guardian_state"  class="select2  form-select2">
                         <option value="">-Please Select-</option>
                         @foreach($state_master ?? [] as $val => $label)
                         <option value="{{ $val }}">{{ $label }}</option>
                         @endforeach
-                    </select>
-                </div>
+                      </select>
+                    </div>
+                </div> 
 
                 <div class="mb-3">
                   <label class="form-label small">Habitation / Locality</label>
@@ -899,7 +916,7 @@
                   <label class="form-label small">Block / Municipality</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
-                  <select name="guardian_block" id= "guardian_block" class="form-select">
+                  <select name="guardian_block" id= "guardian_block" class="select2 form-select2">
                         <option value="">-Please Select-</option>
                         @foreach($block_munc_corp_master ?? [] as $val => $label)
                         <option value="{{ $val }}">{{ $label }}</option>
@@ -907,6 +924,9 @@
                     </select>
                   </div>
                 </div> 
+
+
+               
 
                 <div class="mb-3">
                   <label class="form-label small">Post Office</label>
