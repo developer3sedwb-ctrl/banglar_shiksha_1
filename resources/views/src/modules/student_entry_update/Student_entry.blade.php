@@ -34,9 +34,18 @@
     $bs_school_classwise_section = DB::table('bs_school_classwise_section')->pluck('id', 'id')->toArray();  
 
     $bs_admission_type_master = DB::table('bs_admission_type_master')->pluck('name', 'id')->toArray(); 
+      //========END=========Enrollmnent==================== 
 
-    //========END=========Enrollmnent==================== 
+        //========Start=========Contact ==================== 
 
+
+    $bs_country_master = DB::table('bs_country_master')->pluck('name', 'id')->toArray(); 
+    $state_master = DB::table('bs_state_master')->pluck('name', 'id')->toArray(); 
+    $district_master = DB::table('bs_district_master')->pluck('name', 'id')->toArray(); 
+    
+//================================================
+
+  
     $genders = $gender_master;
     $mother_tongue = $mother_tongue_master;
 
@@ -96,6 +105,9 @@
 
          <li class="nav-item" role="presentation">
           <button class="nav-link" id="enrollment_details-tab" data-bs-toggle="tab" data-bs-target="#enrollment_details" type="button" role="tab">Enrollment Details</button>
+        </li>
+          <li class="nav-item" role="presentation">
+          <button class="nav-link" id="contact_info_tab-tab" data-bs-toggle="tab" data-bs-target="#contact_info_tab" type="button" role="tab">Contact Info</button>
         </li>
       </ul>
     </div>
@@ -709,13 +721,200 @@
             </div>
 
             <div class="form-actions text-end mt-3">
-  <button class="btn btn-secondary me-2" data-bs-toggle="tab" type="button">Previous</button>
-  <button id="enrollment_details_save_btn" class="btn btn-success" data-bs-toggle="tab" type="button">Next</button>
-</div>
+              <button class="btn btn-secondary me-2" data-bs-toggle="tab" type="button">Previous</button>
+              <button id="enrollment_details_save_btn" class="btn btn-success" data-bs-toggle="tab" type="button">Next</button>
+            </div>
 
           </form>
         </div>
           <!-- ========================== -->
+        <div class="tab-pane fade" id="contact_info_tab" role="tabpanel"    aria-labelledby="contact_info_tab-tab">
+            <form id="contact_info_of_student_and_guardian" method="POST" action="{{ route('student.store_student_entry_contact_details') }}" novalidate>
+            @csrf
+            
+            <h6 class=" card-header bg-heading-primary text-white py-2">
+              CONTACT INFORMATION FOR STUDENT
+            </h6> 
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3" id="student_country_section">
+                  <label class="form-label small">Select Country</label>
+                  <select name="student_country" id= "student_country" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($bs_country_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Address</label>
+                  <input name="student_address" type="text" class="form-control" placeholder="Enter Address">
+                </div>
+
+                <div class="mb-3" id="student_district_section">
+                  <label class="form-label small">District</label>
+                  <select name="student_district" id= "student_district" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($district_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Panchayat</label>
+                  <input name="student_panchayat" type="text" class="form-control" placeholder="Enter Panchayat / Ward">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Police Station</label>
+                  <input name="student_police_station" type="text" class="form-control" placeholder="Police station">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Mobile Number (Student / Parent / Guardian)</label>
+                  <input name="student_mobile" type="text" class="form-control" placeholder="Mobile number">
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3" id="student_state_section">
+                  <label class="form-label small">Select State</label>
+                  <select name="student_state" id= "student_state" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($state_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Habitation / Locality</label>
+                  <input name="student_locality" type="text" class="form-control" placeholder="Habitation / Locality">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Block/Municipal</label>
+                  <input name="student_block" type="text" class="form-control" placeholder="Block / Municipality">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Post Office</label>
+                  <input name="student_post_office" type="text" class="form-control" placeholder="Post office">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Pin Code</label>
+                  <input name="student_pincode" type="text" class="form-control" placeholder="Pin Code">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Contact email id (Student/Parent/Guardian)</label>
+                  <input name="student_email" type="email" class="form-control" placeholder="Email">
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-3">
+
+            <h6 class=" card-header bg-heading-primary text-white py-2">
+              CONTACT INFORMATION FOR GUARDIAN
+            </h6> 
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" id="same-as-student" />
+              <label class="form-check-label small" for="same-as-student">Same as Student Address</label>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3" id="guardian_country_section">
+                  <label class="form-label small">Select Country</label>
+                  <select name="guardian_country" id= "guardian_country" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($bs_country_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Address</label>
+                  <input name="guardian_address" type="text" class="form-control" placeholder="Guardian address">
+                </div>
+
+                <div class="mb-3" id="guardian_district_section">
+                  <label class="form-label small">District</label>
+                  <select name="guardian_district" id= "guardian_district" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($district_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Panchayat</label>
+                  <input name="guardian_panchayat" type="text" class="form-control" placeholder="Panchayat / Ward">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Police Station</label>
+                  <input name="guardian_police_station" type="text" class="form-control" placeholder="Police station">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Mobile Number (Guardian)</label>
+                  <input name="guardian_mobile" type="text" class="form-control" placeholder="Mobile number">
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3" id="guardian_state_section">
+                  <label class="form-label small">Select State</label>
+                  <select name="guardian_state" id= "guardian_state" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($state_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Habitation / Locality</label>
+                  <input name="guardian_locality" type="text" class="form-control" placeholder="Habitation / Locality">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Block / Municipality</label>
+                  <input name="guardian_block" type="text" class="form-control" placeholder="Block / Municipality">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Post Office</label>
+                  <input name="guardian_post_office" type="text" class="form-control" placeholder="Post office">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Pin Code</label>
+                  <input name="guardian_pincode" type="text" class="form-control" placeholder="Pin Code">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Contact email id (Guardian)</label>
+                  <input name="guardian_email" type="email" class="form-control" placeholder="Email">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions text-end mt-3">
+              <button class="btn btn-secondary me-2" data-bs-toggle="tab" type="button">Previous</button>
+               <button id="contact_info_save_btn" class="btn btn-success" type="button">Next</button>
+            </div>
+          </form>
+        </div>
+
+      <!-- ============================ -->
       </div>
     </div>
   </div>
@@ -1093,7 +1292,105 @@
     });
 
     // ================================
+   // Student Contact Details Save 
+   (function($) {
+    function clearInlineErrors() {
+      $('.is-invalid').removeClass('is-invalid');
+      $('.invalid-feedback.js-dynamic').remove();
+    }
+    function getCsrfToken() {
+      return $('meta[name="csrf-token"]').attr('content') || '';
+    }
 
+    $('#contact_info_save_btn').off('click').on('click', function () {
+      var $btn = $(this);
+      var $form = $('#contact_info_of_student_and_guardian');
+
+      clearInlineErrors();
+      $btn.prop('disabled', true).text('Saving...');
+
+      var formData = new FormData($form[0]);
+
+      // ensure single _token
+      formData.delete('_token');
+      formData.append('_token', getCsrfToken());
+
+      console.log("------ CONTACT FORM DATA ------");
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ':', pair[1]);
+      }
+      console.log("------ END CONTACT FORM DATA ------");
+
+      $.ajax({
+        url: "{{ route('student.store_student_entry_contact_details') }}", // fixed
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        headers: {
+          'X-CSRF-TOKEN': getCsrfToken(),
+          'Accept': 'application/json'
+        },
+        timeout: 20000,
+        beforeSend: function () {
+          console.log('Sending contact AJAX to {{ route("student.store_student_entry_contact_details") }}');
+        },
+        success: function (res) {
+          if (res && res.success) {
+            if (window.toastr) toastr.success(res.message || 'Contact info saved.');
+            else alert(res.message || 'Contact info saved.');
+            // maybe move to next tab or reset
+          } else {
+            console.warn('Unexpected body', res);
+            alert(res.message || 'Saved but unexpected response.');
+          }
+          $btn.prop('disabled', false).text('Next');
+        },
+        error: function (jqXHR) {
+          clearInlineErrors();
+
+          if (jqXHR.status === 422) {
+            var resp = jqXHR.responseJSON || {};
+            var errors = resp.errors || {};
+            $.each(errors, function (field, messages) {
+              var selector = '[name="' + field + '"]';
+              var $el = $(selector);
+              if (!$el.length) {
+                var alt = field.replace(/\.(\w+)/g, '[$1]');
+                $el = $('[name="' + alt + '"]');
+              }
+              if ($el.length) {
+                $el.addClass('is-invalid');
+                var $group = $el.closest('.input-group');
+                var messageHtml = '<div class="invalid-feedback d-block js-dynamic">' + (messages[0] || '') + '</div>';
+                if ($group.length) $group.after(messageHtml); else $el.after(messageHtml);
+              } else {
+                console.warn('Field not found for error:', field, messages);
+              }
+            });
+
+            var $first = $('.is-invalid').first();
+            if ($first.length) {
+              $('html, body').animate({ scrollTop: $first.offset().top - 90 }, 400);
+              $first.focus();
+            }
+          } else if (jqXHR.status === 419) {
+            alert('Session expired (419). Please reload the page and try again.');
+          } else {
+            alert('Something went wrong. See console & network tab for details.');
+          }
+
+          $btn.prop('disabled', false).text('Next');
+        },
+        complete: function () {
+          console.log('Contact AJAX complete');
+        }
+      });
+    });
+  })(jQuery);
+
+    // ----------------------------------------
       // Keep your clickable date-group behavior unchanged
       const dobGroup = document.getElementById('dobGroup');
       const dobField = document.getElementById('dobField');

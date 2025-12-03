@@ -82,6 +82,14 @@ Route::post(
     [StudentInfoController::class, 'storeEnrollmentDetails']
 )->name('student.store_enrollment_details');
 
+
+
+Route::post(
+    '/student/store_student_entry_contact_details',
+    [StudentInfoController::class, 'storeStudentContactDetails']
+)->name('student.store_student_entry_contact_details');
+
+
 //      Route::post('/student/basic/store', [StudentInfoController::class, 'storeBasic'])->name('student.basic.store');
 // Route::post('/student/enrollment/store', [StudentInfoController::class, 'storeEnrollment'])->name('student.enrollment.store');
 
