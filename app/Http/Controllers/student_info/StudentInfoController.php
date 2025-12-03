@@ -7,6 +7,7 @@ use App\Models\student_info\StudentEnrollmentInfo;
 use App\Models\student_info\StudentFacilityAndOtherDetails;
 use App\Models\student_info\StudentVocationalDetails;
 use App\Models\student_info\StudentEntryDraftTracker;
+use App\Models\student_info\StudentContactInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -17,6 +18,8 @@ use App\Http\Requests\StoreEnrollmentRequest;
 use App\Http\Requests\StoreUserRequestStudentFacilityAndOtherDetails;
 use App\Http\Requests\StoreUserRequestStudentVocationalDetails;
 use Exception;
+use App\Http\Requests\StoreUserRequestStudentContactInfo;
+use Illuminate\Support\Facades\Schema;
 
 
 class StudentInfoController extends Controller
@@ -108,9 +111,15 @@ class StudentInfoController extends Controller
 
         DB::beginTransaction();
         // dd($request->all());
+        // Log::info('Enrollment request data:', $request->all());
+        // if (Schema::hasColumn('bs_student_enrollment_details_temp', 'cur_class_code_fk')) {
+        //  Log::info('Column exists: cur_class_code_fk');
+        // } else {
+        //     Log::warning('Column MISSING: cur_class_code_fk — check your migration or column name.');
+        // }
+
         try {
             $enroll = new StudentEnrollmentInfo();
-
         // ---- Admission basic ----
         $enroll->admission_no            = $request->admission_number;
 
@@ -556,6 +565,79 @@ class StudentInfoController extends Controller
 
 
     //Section Aziza end date:01-12-2025
+public function storeStudentContactDetails(StoreUserRequestStudentContactInfo $request)
+{
+    DB::beginTransaction();
+
+    try {
+        $model = new StudentContactInfo();
+
+        // ---- Student contact fields (map incoming names -> DB columns) ----
+        $model->stu_country_code_fk      = $request->student_country;
+        $model->stu_contact_address      = $request->student_address;
+        $model->stu_contact_district     = $request->student_district;
+        $model->stu_contact_panchayat    = $request->student_panchayat;
+        $model->stu_police_station       = $request->student_police_station;
+        $model->stu_mobile_no            = $request->student_mobile;
+        $model->stu_state_code_fk        = $request->student_state;
+        $model->stu_contact_habitation   = $request->student_locality;
+        $model->stu_contact_block        = $request->student_block;
+        $model->stu_post_office          = $request->student_post_office;
+        $model->stu_pin_code             = $request->student_pincode;
+        $model->stu_email                = $request->student_email;
+
+        // address_equal may come from request or default — only set if present
+        if ($request->filled('address_equal')) {
+            $model->address_equal = $request->address_equal;
+        }
+
+        // ---- Guardian contact fields ----
+        $model->guardian_country_code_fk = $request->guardian_country;
+        $model->guardian_contact_address = $request->guardian_address;
+        $model->guardian_contact_district= $request->guardian_district;
+        $model->guardian_contact_panchayat = $request->guardian_panchayat;
+        $model->guardian_police_station  = $request->guardian_police_station;
+        $model->guardian_mobile_no       = $request->guardian_mobile;
+        $model->guardian_state_code_fk   = $request->guardian_state;
+        $model->guardian_contact_habitation = $request->guardian_locality;
+        $model->guardian_contact_block   = $request->guardian_block;
+        $model->guardian_post_office     = $request->guardian_post_office;
+        $model->guardian_pin_code        = $request->guardian_pincode;
+        $model->guardian_email           = $request->guardian_email;
+
+        // ---- System fields ----
+        $model->status    = $request->get('status', 1);
+        $model->entry_ip  = $request->ip();
+        $model->created_by = auth()->id() ?? 1;
+
+        $model->save();
+
+        DB::commit();
+
+        return response()->json([
+            'success'    => true,
+            'message'    => 'Student contact info saved successfully',
+            'student_id' => $model->id,
+            'data'       => $model,
+        ], 201);
+
+    } catch (\Throwable $e) {
+
+        DB::rollBack();
+
+        Log::error('Error saving student contact info', [
+            'error'   => $e->getMessage(),
+            'trace'   => $e->getTraceAsString(),
+            'request' => $request->all(),
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Server error while saving student contact info',
+            'error'   => $e->getMessage(),
+        ], 500);
+    }
+}
 
 
 }
