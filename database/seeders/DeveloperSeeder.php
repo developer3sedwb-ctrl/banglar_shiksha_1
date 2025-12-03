@@ -5,6 +5,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 class DeveloperSeeder extends Seeder
@@ -21,11 +22,22 @@ class DeveloperSeeder extends Seeder
 
         // Developer credentials
         $developers = [
+             [
+                'email' => 'superadmin@wb.gov.in',
+                'name' => 'Super Admin',
+                'sso_id' => 1,
+                'password' => 'Dev@12345',
+                'dise_code' => '98765432101',
+                'department' => 'IT Department',
+                'designation' => 'System Administrator',
+                'status' => true,
+            ],
             [
                 'email' => 'developer1.sed.wb@gmail.com',
                 'name' => 'Developer One',
                 'sso_id' => 1001,
                 'password' => 'Dev@12345',
+                'dise_code' => '12345678901',
                 'department' => 'Software Development',
                 'designation' => 'Senior Developer',
                 'status' => true,
@@ -35,6 +47,7 @@ class DeveloperSeeder extends Seeder
                 'name' => 'Developer Two',
                 'sso_id' => 1002,
                 'password' => 'Dev@12345',
+                'dise_code' => '12345678902',
                 'department' => 'Software Development',
                 'designation' => 'Backend Developer',
                 'status' => true,
@@ -44,6 +57,7 @@ class DeveloperSeeder extends Seeder
                 'name' => 'Developer Three',
                 'sso_id' => 1003,
                 'password' => 'Dev@12345',
+                'dise_code' => '12345678903',
                 'department' => 'Software Development',
                 'designation' => 'Frontend Developer',
                 'status' => true,
@@ -53,6 +67,7 @@ class DeveloperSeeder extends Seeder
                 'name' => 'Developer Four',
                 'sso_id' => 1004,
                 'password' => 'Dev@12345',
+                'dise_code' => '12345678904',
                 'department' => 'Software Development',
                 'designation' => 'Full Stack Developer',
                 'status' => true,
@@ -71,7 +86,7 @@ class DeveloperSeeder extends Seeder
                 $existingUser->update([
                     'name' => $developer['name'],
                     'sso_id' => $developer['sso_id'],
-                    'password' => bcrypt($developer['password']),
+                    'password' => Hash::make($developer['password']),
                     'department' => $developer['department'],
                     'designation' => $developer['designation'],
                     'status' => $developer['status'],

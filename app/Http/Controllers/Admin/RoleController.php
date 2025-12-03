@@ -4,11 +4,12 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
@@ -23,57 +24,157 @@ class RoleController extends Controller
 
     public function index(Request $request): View
     {
-        $roles = Role::withCount(['users', 'permissions'])->latest()->paginate(20);
-        return view('admin.roles.index', compact('roles'));
+        $search = $request->get('search');
+        $stakeholder = $request->get('stakeholder');
+        $users_count = $request->get('users_count');
+        $permissions_count = $request->get('permissions_count');
+
+        $roles = Role::withCount(['users', 'permissions'])
+            ->with('permissions') // Eager load permissions for display
+            ->when($search, function ($query) use ($search) {
+                return $query->where('name', 'like', "%{$search}%");
+            })
+            ->when($stakeholder, function ($query) use ($stakeholder) {
+                return $query->where('stakeholder', $stakeholder);
+            })
+            ->when($users_count, function ($query) use ($users_count) {
+                if ($users_count === '0') {
+                    return $query->having('users_count', '=', 0);
+                } elseif ($users_count === '1-10') {
+                    return $query->having('users_count', '>', 0)->having('users_count', '<=', 10);
+                } elseif ($users_count === '10+') {
+                    return $query->having('users_count', '>', 10);
+                }
+            })
+            ->when($permissions_count, function ($query) use ($permissions_count) {
+                if ($permissions_count === '0') {
+                    return $query->having('permissions_count', '=', 0);
+                } elseif ($permissions_count === '1-10') {
+                    return $query->having('permissions_count', '>', 0)->having('permissions_count', '<=', 10);
+                } elseif ($permissions_count === '10+') {
+                    return $query->having('permissions_count', '>', 10);
+                }
+            })
+            ->orderBy('stakeholder')
+            ->orderBy('name')
+            ->paginate(20); // Reduced from 50 for better UX
+
+        // Calculate stats
+        $totalRoles = Role::count();
+        $rolesWithUsers = Role::has('users')->count();
+        $rolesWithPermissions = Role::has('permissions')->count();
+        $protectedRoles = Role::whereIn('name', ['Super Admin', 'State Admin'])->count();
+
+        $stakeholderTypes = Role::whereNotNull('stakeholder')
+            ->distinct('stakeholder')
+            ->pluck('stakeholder')
+            ->filter()
+            ->values()
+            ->all();
+
+        return view('admin.roles.index', compact(
+            'roles',
+            'search',
+            'stakeholder',
+            'stakeholderTypes',
+            'totalRoles',
+            'rolesWithUsers',
+            'rolesWithPermissions',
+            'protectedRoles',
+            'users_count',
+            'permissions_count'
+        ));
     }
 
     public function create(): View
     {
-        // dd(Permission::all());
-        $permissions = Permission::all()->groupBy(function ($permission) {
-            // Group by first word of permission name
-            return explode(' ', $permission->name)[1];
-        });
+        $permissions = Permission::orderBy('group_name')
+            ->orderBy('name')
+            ->get()
+            ->groupBy('group_name');
 
-        return view('admin.roles.create', compact('permissions'));
+        $stakeholderTypes = Role::all()->pluck('stakeholder')->unique()->filter()->values()->all();
+
+
+        return view('admin.roles.create', compact('permissions', 'stakeholderTypes'));
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        // Determine stakeholder value
+        $stakeholder = $request->stakeholder;
+        if ($stakeholder === 'custom') {
+            $stakeholder = $request->custom_stakeholder;
+        }
+
+        $validated = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name',
-            'permissions' => 'required|array',
-            'permissions.*' => 'exists:permissions,id',
+            'stakeholder' => 'nullable|string|max:100',
+            'custom_stakeholder' => 'nullable|string|max:100',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'integer|exists:permissions,id',
         ]);
 
-        DB::transaction(function () use ($request) {
-            $role = Role::create(['name' => $request->name, 'guard_name' => 'web']);
+        // Additional validation for custom stakeholder
+        if ($request->stakeholder === 'custom') {
+            $request->validate([
+                'custom_stakeholder' => 'required|string|max:100',
+            ]);
+        }
 
-            // Get permission names from IDs
-            $permissionNames = Permission::whereIn('id', $request->permissions)
-                ->pluck('name')
-                ->toArray();
+        try {
+            // Start transaction
+            DB::beginTransaction();
+            $role = Role::create([
+                'name' => $validated['name'],
+                'description' => $validated['description'] ?? null,
+                'stakeholder' => $stakeholder,
+                'guard_name' => 'web',
+            ]);
 
-            $role->syncPermissions($permissionNames);
-        });
+            // Only sync permissions if they exist and are valid
+            if ($request->has('permissions') && is_array($request->permissions)) {
+                // Filter out any non-numeric values and validate permissions exist
+                $permissionIds = array_filter($request->permissions, 'is_numeric');
 
-        return redirect()->route('admin.roles.index')
-            ->with('success', 'Role created successfully.');
+                // Get only existing permission IDs from database
+                $existingPermissionIds = Permission::whereIn('id', $permissionIds)
+                    ->pluck('id')
+                    ->toArray();
+
+                if (!empty($existingPermissionIds)) {
+                    $role->syncPermissions($existingPermissionIds);
+                }
+            }
+
+            // Commit transaction
+            DB::commit();
+            return redirect()->route('admin.roles.index')
+                ->with('success', 'Role "' . $role->name . '" created successfully.');
+        } catch (\Exception $e) {
+            // Rollback transaction on any other error
+            DB::rollBack();
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'An error occurred while creating the role: ' . $e->getMessage()]);
+        }
     }
 
     public function show(Role $role): View
     {
         $role->load(['permissions', 'users']);
 
-        // Group permissions by module/group
-        $permissionsByGroup = $role->permissions->groupBy(function ($permission) {
-            // Extract module name from permission name
-            // Assuming permission names are like "module action" or "module submodule action"
-            $parts = explode(' ', $permission->name);
-            return $parts[1] ?? 'general'; // Use the second part as group name
+        // Group permissions by group_name
+        $permissionsByGroup = $role->permissions->groupBy('group_name')->map(function ($group) {
+            return $group->sortBy('name');
         })->sortKeys();
 
-        // Get users count and permissions count
+        // Handle null group_name
+        if ($permissionsByGroup->has(null)) {
+            $ungrouped = $permissionsByGroup->pull(null);
+            $permissionsByGroup->put('Ungrouped', $ungrouped);
+        }
+
         $role->users_count = $role->users->count();
         $role->permissions_count = $role->permissions->count();
 
@@ -82,50 +183,103 @@ class RoleController extends Controller
 
     public function edit(Role $role): View
     {
-        $permissions = Permission::all()->groupBy(function ($permission) {
-            // Group by first word of permission name
-            return explode(' ', $permission->name)[1];
-        });
+        $permissions = Permission::orderBy('group_name')
+            ->orderBy('name')
+            ->get()
+            ->groupBy('group_name');
 
         $rolePermissions = $role->permissions->pluck('id')->toArray();
 
-        return view('admin.roles.edit', compact('role', 'permissions', 'rolePermissions'));
+        $stakeholderTypes = Role::whereNotNull('stakeholder')
+            ->distinct('stakeholder')
+            ->pluck('stakeholder')
+            ->filter()
+            ->values()
+            ->all();
+
+        return view('admin.roles.edit', compact(
+            'role',
+            'permissions',
+            'rolePermissions',
+            'stakeholderTypes'
+        ));
     }
 
     public function update(Request $request, Role $role): RedirectResponse
     {
-        $request->validate([
+        // Determine stakeholder value
+        $stakeholder = $request->stakeholder;
+        if ($stakeholder === 'custom') {
+            $stakeholder = $request->custom_stakeholder;
+        }
+
+        $validated = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
-            'permissions' => 'required|array',
-            'permissions.*' => 'exists:permissions,id',
+            'description' => 'nullable|string|max:500',
+            'stakeholder' => 'nullable|string|max:100',
+            'custom_stakeholder' => 'nullable|string|max:100',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'integer|exists:permissions,id',
         ]);
 
-        DB::transaction(function () use ($request, $role) {
-            $role->update(['name' => $request->name]);
+        // Additional validation for custom stakeholder
+        if ($request->stakeholder === 'custom') {
+            $request->validate([
+                'custom_stakeholder' => 'required|string|max:100',
+            ]);
+        }
 
-            // Get permission names from IDs
-            $permissionNames = Permission::whereIn('id', $request->permissions)
-                ->pluck('name')
-                ->toArray();
+        // Start transaction
+        DB::beginTransaction();
 
-            $role->syncPermissions($permissionNames);
-        });
+        try {
+            // Update role
+            $role->update([
+                'name' => $validated['name'],
+                'description' => $validated['description'] ?? null,
+                'stakeholder' => $stakeholder,
+            ]);
 
-        return redirect()->route('admin.roles.index')
-            ->with('success', 'Role updated successfully.');
+            // Sync permissions if provided
+            if ($request->has('permissions') && is_array($request->permissions)) {
+                // Filter out any non-numeric values
+                $permissionIds = array_filter($request->permissions, 'is_numeric');
+
+                // Get only existing permission IDs from database
+                $existingPermissionIds = Permission::whereIn('id', $permissionIds)
+                    ->pluck('id')
+                    ->toArray();
+
+                if (!empty($existingPermissionIds)) {
+                    $role->syncPermissions($existingPermissionIds);
+                } else {
+                    $role->syncPermissions([]);
+                }
+            } else {
+                $role->syncPermissions([]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('admin.roles.index')
+                ->with('success', 'Role "' . $role->name . '" updated successfully.')
+                ->with('toast_success', 'Role updated');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Role update failed: ' . $e->getMessage());
+
+            return back()
+                ->withInput()
+                ->with('error', 'Failed to update role. Please try again.');
+        }
     }
 
     public function destroy(Role $role): RedirectResponse
     {
-        // Prevent deletion of essential roles
-        $protectedRoles = ['State Admin', 'Super Admin'];
-        if (in_array($role->name, $protectedRoles)) {
-            return redirect()->back()->with('error', 'This role cannot be deleted.');
-        }
-
-        // Check if role has users
+        // Check if role is assigned to any user
         if ($role->users()->count() > 0) {
-            return redirect()->back()->with('error', 'Cannot delete role assigned to users.');
+            return redirect()->back()->with('error', 'Cannot delete role that is assigned to users.');
         }
 
         $role->delete();

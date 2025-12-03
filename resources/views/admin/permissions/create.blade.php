@@ -29,6 +29,38 @@
                                 </small>
                             </div>
                         </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="group_name" class="form-label">Group Name</label>
+                                <input type="text"
+                                    class="form-control @error('group_name') is-invalid @enderror"
+                                    id="group_name"
+                                    name="group_name"
+                                    value="{{ old('group_name') }}"
+                                    list="groupSuggestions"
+                                    placeholder="e.g., User Management, Settings">
+                                @error('group_name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+
+                                <!-- Datalist for common groups -->
+                                <datalist id="groupSuggestions">
+                                    @foreach($commonGroups as $group)
+                                        <option value="{{ $group }}">
+                                    @endforeach
+                                    @foreach($groups as $group)
+                                        @if(!in_array($group, $commonGroups))
+                                            <option value="{{ $group }}">
+                                        @endif
+                                    @endforeach
+                                </datalist>
+
+                                <small class="form-text text-muted">
+                                    Optional: Group permissions for better organization (e.g., User Management, Reports)
+                                </small>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer text-end">

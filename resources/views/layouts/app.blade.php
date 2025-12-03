@@ -38,11 +38,12 @@
 <body>
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
-
-                {{-- Sidebar --}}
+            <!-- Toast Notifications (top-right corner) -->
+            <x-toast-notification position="top-end" />
+            {{-- Sidebar --}}
             @include('layouts.partials.sidebar')
 
-                <div class="layout-page">
+            <div class="layout-page">
 
                 {{-- Navbar --}}
                 @include('layouts.partials.navbar')
@@ -50,6 +51,8 @@
 
                 <div class="content-wrapper">
                     <div class="flex-grow-1 container-p-y">
+                        <!-- Error Display Component -->
+                        <x-error-display />
                         @yield('content')
                     </div>
 

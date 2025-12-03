@@ -2,30 +2,19 @@
 
 @section('title', 'Edit Permission')
 @section('page-title', 'Edit Permission')
-@section('page-subtitle', 'Update permission details')
+@section('page-subtitle', 'Update permission information')
 
 @section('content')
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Edit Permission Information</h3>
+                <h3 class="card-title">Edit Permission</h3>
             </div>
-            <form method="POST" action="{{ route('admin.permissions.update', $permission->id) }}">
+            <form method="POST" action="{{ route('admin.permissions.update', $permission) }}">
                 @csrf
                 @method('PUT')
                 <div class="card-body">
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <strong>Whoops!</strong> There were some problems with your input.<br><br>
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -36,24 +25,34 @@
                                 @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                                <small class="form-text text-muted">
-                                    Use lowercase with underscores (e.g., view_users, create_reports) or spaces (e.g., view users)
-                                </small>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Created</label>
-                                <p class="form-control-plaintext">{{ $permission->created_at->format('M j, Y g:i A') }}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Last Updated</label>
-                                <p class="form-control-plaintext">{{ $permission->updated_at->format('M j, Y g:i A') }}</p>
+                                <label for="group_name" class="form-label">Group Name</label>
+                                <input type="text"
+                                    class="form-control @error('group_name') is-invalid @enderror"
+                                    id="group_name"
+                                    name="group_name"
+                                    value="{{ old('group_name', $permission->group_name) }}"
+                                    list="groupSuggestions"
+                                    placeholder="e.g., User Management, Settings">
+                                @error('group_name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+
+                                <!-- Datalist for common groups -->
+                                <datalist id="groupSuggestions">
+                                    @foreach($commonGroups as $group)
+                                        <option value="{{ $group }}">
+                                    @endforeach
+                                    @foreach($groups as $group)
+                                        @if(!in_array($group, $commonGroups))
+                                            <option value="{{ $group }}">
+                                        @endif
+                                    @endforeach
+                                </datalist>
                             </div>
                         </div>
                     </div>
