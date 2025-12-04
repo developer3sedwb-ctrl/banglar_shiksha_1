@@ -566,8 +566,7 @@ $guardian_qualification = $guardian_qualification_master;
 
               {{-- FREE TRANSPORT FACILITY --}}
               <div class="col-md-6">
-                <label for="free_transport_facility" class="form-label small fw-bold">Free Transport Facility<span
-<span class="text-danger"> *</span></label>
+                <label for="free_transport_facility" class="form-label small fw-bold">Free Transport Facility<span class="text-danger"> *</span></label>
                 <select id="free_transport_facility" name="free_transport_facility" class="form-select" required>
                   <option value="">-Please Select-</option>
                   <option value="1" {{ ($val['free_transport_facility'] ?? '' )==1 ? 'selected' : '' }}>YES</option>
@@ -577,8 +576,7 @@ $guardian_qualification = $guardian_qualification_master;
 
               {{-- FREE HOST FACILITY --}}
               <div class="col-md-6">
-                <label for="free_host_facility" class="form-label small fw-bold">Free Host Facility<span
-<span class="text-danger"> *</span></label>
+                <label for="free_host_facility" class="form-label small fw-bold">Free Host Facility<span class="text-danger"> *</span></label>
                 <select id="free_host_facility" name="free_host_facility" class="form-select" required>
                   <option value="">-Please Select-</option>
                   <option value="1" {{ ($val['free_host_facility'] ?? '' )==1 ? 'selected' : '' }}>YES</option>
@@ -632,8 +630,7 @@ $guardian_qualification = $guardian_qualification_master;
 
               {{-- FREE EXERCISE BOOK --}}
               <div class="col-md-6">
-                <label for="free_exercise_book" class="form-label small fw-bold">Free Exercise Book<span
-<span class="text-danger"> *</span></label>
+                <label for="free_exercise_book" class="form-label small fw-bold">Free Exercise Book<span class="text-danger"> *</span></label>
                 <select id="free_exercise_book" name="free_exercise_book" class="form-select" required>
                   <option value="">-Please Select-</option>
                   <option value="1" {{ ($val['free_exercise_book'] ?? '' )==1 ? 'selected' : '' }}>YES</option>
@@ -643,8 +640,7 @@ $guardian_qualification = $guardian_qualification_master;
 
               {{-- COMPLETE FREE BOOKS --}}
               <div class="col-md-6">
-                <label for="complete_free_books" class="form-label small fw-bold">Complete Set of Free Books<span
-<span class="text-danger"> *</span></label>
+                <label for="complete_free_books" class="form-label small fw-bold">Complete Set of Free Books<span class="text-danger"> *</span></label>
                 <select id="complete_free_books" name="complete_free_books" class="form-select" required>
                   <option value="">-Please Select-</option>
                   <option value="1" {{ ($val['complete_free_books'] ?? '' )==1 ? 'selected' : '' }}>YES</option>
@@ -1650,30 +1646,27 @@ $guardian_qualification = $guardian_qualification_master;
     });
   }
 });
-
 // {{--Vocational DETAILS OF THE STUDENT Aziza End --}}
 </script>
 {{--RESUME AND NEW ENTRY BY AZIZA  --}}
 <script>
-// Start New Entry Button
-document.getElementById("startNewEntryBtn")?.addEventListener("click", function() {
+  // Start New Entry Button
+  document.getElementById("startNewEntryBtn")?.addEventListener("click", function() {
 
-    if (!confirm("Are you sure? This will delete the previous entry permanently.")) {
-        return;
-    }
+      if (!confirm("Are you sure? This will delete the previous entry permanently.")) {
+          return;
+      }
 
-    let url = "{{ route('student.entry.reset') }}";
+      let url = "{{ route('student.entry.reset') }}";
 
-    sendRequest(url, "POST", null, { _method: "DELETE" })
-        .then(data => {
-            if (data) {
-                alert(data.message);
-                location.reload();
-            }
-        });
-});
-
-
+      sendRequest(url, "POST", null, { _method: "DELETE" })
+          .then(data => {
+              if (data) {
+                  alert(data.message);
+                  location.reload();
+              }
+          });
+  });
 </script>
 {{--RESUME AND NEW ENTRY BY AZIZA  --}}
 
