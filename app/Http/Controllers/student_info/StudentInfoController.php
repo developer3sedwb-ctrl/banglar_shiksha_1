@@ -39,7 +39,7 @@ class StudentInfoController extends Controller
             'updated_by'   => $userId,
         ];
 
-          ['school_id_fk' => $inputMeta['school_id_fk']];
+        //   ['school_id_fk' => $inputMeta['school_id_fk']];
 
         $studentAttrs = [
             'studentname'                          => $request->student_name,
@@ -146,7 +146,7 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
             'created_by'   => $userId,
             'updated_by'   => $userId,
         ];
-        ['school_id_fk' => $inputMeta['school_id_fk']];
+        // ['school_id_fk' => $inputMeta['school_id_fk']];
         $enrollAttrs = [
         
             'admission_no'              => $request->admission_number,
@@ -257,7 +257,7 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
             ->first();
 
         // Default step = 1 if no record found
-        $data['current_step'] = $draft ? $draft->step_number : 1;
+        $data['current_step'] = $draft ? $draft->step_number : 0;
             $data['stateScholarships'] = DB::table('bs_name_and_code_of_state_scholarships_master')
                                             ->where('status', 1)
                                             ->orderBy('id')
@@ -598,7 +598,6 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
                 'status' => 0,
                 'deleted_at' => now()
             ];
-
             // Soft delete + deactivate Facility records
             StudentFacilityAndOtherDetails::where('school_id_fk', $schoolId)
                 ->update($updateData);
@@ -606,10 +605,10 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
             // Soft delete + deactivate Vocational records
             StudentVocationalDetails::where('school_id_fk', $schoolId)
                 ->update($updateData);
-            // StudentInfo::where('school_id_fk', $schoolId)
-            //     ->update($updateData);
-            // StudentEnrollmentInfo::where('school_id_fk', $schoolId)
-            //     ->update($updateData);
+            StudentInfo::where('school_id_fk', $schoolId)
+                ->update($updateData);
+            StudentEnrollmentInfo::where('school_id_fk', $schoolId)
+                ->update($updateData);
 
             // Soft delete + deactivate Draft Tracker
             StudentEntryDraftTracker::where('school_id_fk', $schoolId)

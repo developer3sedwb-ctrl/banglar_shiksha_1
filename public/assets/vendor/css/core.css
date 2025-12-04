@@ -2145,7 +2145,7 @@ progress {
   margin-bottom: 0.5rem;
   font-size: 0.75rem;
   font-weight: 500;
-  color: #566a7f;
+  color: black;
 }
 
 .col-form-label {
@@ -7120,7 +7120,7 @@ button:focus {
 }
 
 .nav-tabs .nav-item .nav-link {
-  color: #566a7f;
+  color: black;
   border: 0;
   border-radius: 0;
 }

@@ -99,11 +99,12 @@ return new class extends Migration
                 ->references('id')
                 ->on('bs_guardian_qualification_master');
 
+            $table->smallInteger('status')->default(1);
+            $table->string('entry_ip', 15)->nullable();
+            $table->string('update_ip', 15)->nullable();
             $table->timestamps();
-
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
-
             $table->softDeletes();
             $table->unique(['school_id_fk', 'deleted_at'], 'unique_school_student_general_info');
             $table->unique(['studentname', 'dob', 'fathername', 'mothername', 'deleted_at'], 'unique_student_identity_temp');
