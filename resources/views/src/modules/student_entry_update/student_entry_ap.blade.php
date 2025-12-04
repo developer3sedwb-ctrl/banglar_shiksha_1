@@ -54,7 +54,7 @@ $guardian_qualification = $guardian_qualification_master;
 
   <!-- CARD WITH TABS -->
   <div class="card card-full">
-          <div class="row">
+      <div class="row">
         @if(isset($data['current_step']) && $data['current_step'] > 1)
         <div class="alert alert-danger d-flex justify-content-between align-items-center">
             <span>
@@ -102,6 +102,7 @@ $guardian_qualification = $guardian_qualification_master;
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="tab6-tab" data-bs-toggle="tab" data-bs-target="#tab6" type="button"
             role="tab">Bank Details</button>
+        </li>
       </ul>
     </div>
 

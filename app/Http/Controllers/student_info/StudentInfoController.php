@@ -317,7 +317,7 @@ class StudentInfoController extends Controller
             // ---------------------------------------------
             // 3. Return view with FULL data
             // ---------------------------------------------
-            return view('src.modules.student_entry_update.student_entry_ap', compact('data'));
+            return view('src.modules.student_entry_update.student_entry', compact('data'));
 
         }
         catch (\Exception $e) {

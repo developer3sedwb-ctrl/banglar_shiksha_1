@@ -99,6 +99,27 @@
 
   <!-- CARD WITH TABS -->
   <div class="card card-full">
+          <div class="row">
+        @if(isset($data['current_step']) && $data['current_step'] > 1)
+        <div class="alert alert-danger d-flex justify-content-between align-items-center">
+            <span>
+                <strong>Resume Entry?</strong> You have an unfinished student entry at Step {{ $data['current_step'] }}.
+            </span>
+
+            <div>
+                <!-- Resume Button -->
+                <button id="resumeEntryBtn" class="btn btn-success btn-sm">
+                    Resume from Step {{ $data['current_step'] }}
+                </button>
+
+                <!-- Start New Button -->
+                <button id="startNewEntryBtn" class="btn btn-danger btn-sm">
+                    Start New Entry
+                </button>
+            </div>
+        </div>
+        @endif
+      </div>
     <div class="card-header d-flex align-items-center justify-content-between border-bottom">
       <ul class="nav nav-tabs mb-0" id="studentTab" role="tablist">
         <li class="nav-item" role="presentation">
@@ -112,12 +133,16 @@
           <button class="nav-link" id="contact_info_tab-tab" data-bs-toggle="tab" data-bs-target="#contact_info_tab" type="button" role="tab">Contact Info</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab3-tab" data-bs-toggle="tab" data-bs-target="#tab3" type="button"
+          <button class="nav-link" id="facility-other-dtls-tab" data-bs-toggle="tab" data-bs-target="#facility_other_dtls_tab" type="button"
             role="tab">Facilities & Other Detais</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab4-tab" data-bs-toggle="tab" data-bs-target="#tab4" type="button"
+          <button class="nav-link" id="vocational-tab" data-bs-toggle="tab" data-bs-target="#vocational_tab" type="button"
             role="tab">Vocational Details</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="bank_dtls-tab" data-bs-toggle="tab" data-bs-target="#bank_dtls_tab" type="button"
+            role="tab">Bank Details</button>
         </li>
       </ul>
     </div>
@@ -738,7 +763,7 @@
           </form>
         </div>
                 <!-- TAB 3: FACILITY AND OTHER DETAILS START BY AZIZA-->
-        <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
+        <div class="tab-pane fade" id="facility_other_dtls_tab" role="tabpanel" aria-labelledby="tab3-tab">
 
           @php
           $val = $data['facility'] ?? [];
@@ -1201,7 +1226,7 @@
         </div>
         <!-- TAB 3: FACILITY AND OTHER DETAILS END BY AZIZA-->
         <!-- TAB 4: VOCATIONAL DETAILS START BY AZIZA-->
-        <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
+        <div class="tab-pane fade" id="vocational_tab" role="tabpanel" aria-labelledby="tab4-tab">
           <form id="stu_vocational_dtls_form">
             @csrf
 
@@ -1770,7 +1795,7 @@
             'X-CSRF-TOKEN': getCsrfToken(),
             'Accept': 'application/json'
           },
-          timeout: 20000,
+          // timeout: 20000,
 
           beforeSend: function() {
           console.log('Sending merged AJAX to {{ route("student.store_student_entry_basic_details") }}');
@@ -1888,7 +1913,7 @@
           'X-CSRF-TOKEN': getCsrfToken(),
           'Accept': 'application/json'
         },
-        timeout: 20000,
+        // timeout: 20000,
 
         beforeSend: function () {
           console.log('Sending enrollment AJAX to {{ route("student.store_enrollment_details") }}');
@@ -1994,7 +2019,7 @@
           'X-CSRF-TOKEN': getCsrfToken(),
           'Accept': 'application/json'
         },
-        timeout: 20000,
+        // timeout: 20000,
         beforeSend: function () {
           console.log('Sending contact AJAX to {{ route("student.store_student_entry_contact_details") }}');
         },
@@ -2266,13 +2291,16 @@
   });
 
   $("#save_facility_and_other_dtls").on("click", function () {
+    let $btn = $(this);
+    $btn.prop('disabled', true).text('Saving...');
     let url = "{{ route('hoi.student.facility') }}";
     if (validateRequiredFields("#student_facility_other_dtls_form")) {
       sendRequest(url, "POST", "#student_facility_other_dtls_form")
         .then(res => {
             if (res && res.status) {
                 alert(res.message);
-                document.querySelector('[data-bs-target="#tab4"]').click();
+                document.querySelector('[data-bs-target="#vocational_tab"]').click();
+                $btn.prop('disabled', false).text('Next');
             }
         })
         .catch(err => {
@@ -2360,14 +2388,16 @@
     }
   });
   $("#save_vocational_btn").on("click", function (e) {
+    let $btn = $(this);
+    $btn.prop('disabled', true).text('Saving...');
     let url = "{{ route('save.vocational.details') }}"; // Add route in web.php
     if (validateRequiredFields("#stu_vocational_dtls_form")) {
     sendRequest(url, "POST", "#stu_vocational_dtls_form")
         .then(res => {
             if (res && res.status) {
                 alert(res.message);
-                document.querySelector('[data-bs-target="#tab5"]').click();
-
+                document.querySelector('[data-bs-target="#bank_dtls_tab"]').click();
+                $btn.prop('disabled', false).text('Next');
             }
         })
         .catch(err => {
