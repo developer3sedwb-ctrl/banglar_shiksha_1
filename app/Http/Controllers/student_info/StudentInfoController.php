@@ -257,7 +257,7 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
             ->first();
 
         // Default step = 1 if no record found
-        $data['current_step'] = $draft ? $draft->step_number : 0;
+        $data['current_step'] = $draft ? $draft->step_number : 1;
             $data['stateScholarships'] = DB::table('bs_name_and_code_of_state_scholarships_master')
                                             ->where('status', 1)
                                             ->orderBy('id')
@@ -606,6 +606,10 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
             // Soft delete + deactivate Vocational records
             StudentVocationalDetails::where('school_id_fk', $schoolId)
                 ->update($updateData);
+            // StudentInfo::where('school_id_fk', $schoolId)
+            //     ->update($updateData);
+            // StudentEnrollmentInfo::where('school_id_fk', $schoolId)
+            //     ->update($updateData);
 
             // Soft delete + deactivate Draft Tracker
             StudentEntryDraftTracker::where('school_id_fk', $schoolId)

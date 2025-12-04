@@ -99,8 +99,8 @@
 
   <!-- CARD WITH TABS -->
   <div class="card card-full">
-          <div class="row">
-        @if(isset($data['current_step']) && $data['current_step'] > 1)
+      <div class="row">
+        @if(isset($data['current_step']) && $data['current_step'] >= 1)
         <div class="alert-danger d-flex justify-content-between align-items-center">
             <span>
                 <strong>Resume Entry?</strong> You have an unfinished student entry at Step {{ $data['current_step'] }}.
@@ -2032,6 +2032,8 @@
           if (res && res.success) {
             if (window.toastr) toastr.success(res.message || 'Contact info saved.');
             else alert(res.message || 'Contact info saved.');
+            document.querySelector('[data-bs-target="#bank_dtls_tab"]').click();
+
             // maybe move to next tab or reset
           } else {
             console.warn('Unexpected body', res);
@@ -2414,7 +2416,7 @@
           .then(res => {
               if (res && res.status) {
                   alert(res.message);
-                  document.querySelector('[data-bs-target="#bank_dtls_tab"]').click();
+                  document.querySelector('[data-bs-target="#contact_info_tab"]').click();
                   $btn.prop('disabled', false).text('Save & Next');
               }
           })
@@ -2431,6 +2433,32 @@
 {{--RESUME AND NEW ENTRY BY AZIZA  --}}
 <script>
   // Start New Entry Button
+  $("#resumeEntryBtn").on("click", function () {
+
+    let step = {{ $data['current_step'] ?? 1 }};
+    let tabSelector = "#general_info";
+
+    switch (step) {
+        case 1: tabSelector = "#general_info"; break;
+        case 2: tabSelector = "#enrollment_details"; break;
+        case 3: tabSelector = "#facility_other_dtls_tab"; break;
+        case 4: tabSelector = "#vocational_tab"; break;
+        case 5: tabSelector = "#contact_info_tab"; break;
+        case 6: tabSelector = "#bank_dtls_tab"; break;
+    }
+
+    // Remember resume mode to stop auto-tab switching
+    window.resumeMode = true;
+
+    // Activate tab using jQuery
+    $(`button[data-bs-target='${tabSelector}']`).tab("show");
+
+    // Scroll into view
+    setTimeout(() => {
+        $(tabSelector).get(0).scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 300);
+});
+
   document.getElementById("startNewEntryBtn")?.addEventListener("click", function() {
 
       if (!confirm("Are you sure? This will delete the previous entry permanently.")) {
