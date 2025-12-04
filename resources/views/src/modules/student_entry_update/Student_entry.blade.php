@@ -1401,10 +1401,16 @@
                   <label class="form-label small">Police Station</label>
                   <input name="student_police_station" type="text" class="form-control" placeholder="Police station">
                 </div>
-
                 <div class="mb-3">
                   <label class="form-label small">Mobile Number (Student / Parent / Guardian)</label>
-                  <input name="student_mobile" type="text" class="form-control" placeholder="Mobile number">
+                 <input name="student_mobile"
+                  type="text"
+                  maxlength="10"
+                  inputmode="numeric"
+                  class="form-control"
+                  placeholder="Mobile number"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                  required>
                 </div>
               </div>
 
@@ -1448,7 +1454,14 @@
 
                 <div class="mb-3">
                   <label class="form-label small">Pin Code</label>
-                  <input name="student_pincode" type="text" class="form-control" placeholder="Pin Code">
+                  <input name="student_pincode"
+                  type="text"
+                  maxlength="6"
+                  inputmode="numeric"
+                  class="form-control"
+                  placeholder="Pin Code"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                  required>
                 </div>
 
                 <div class="mb-3">
@@ -1513,7 +1526,14 @@
 
                 <div class="mb-3">
                   <label class="form-label small">Mobile Number (Guardian)</label>
-                  <input name="guardian_mobile" type="text" class="form-control" placeholder="Mobile number">
+                  <input name="guardian_mobile"
+                  type="text"
+                  maxlength="10"
+                  inputmode="numeric"
+                  class="form-control"
+                  placeholder="Mobile number"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                  required>
                 </div>
               </div>
 
@@ -1548,10 +1568,7 @@
                     </select>
                   </div>
                 </div> 
-
-
-               
-
+                
                 <div class="mb-3">
                   <label class="form-label small">Post Office</label>
                   <input name="guardian_post_office" type="text" class="form-control" placeholder="Post office">
@@ -1559,7 +1576,14 @@
 
                 <div class="mb-3">
                   <label class="form-label small">Pin Code</label>
-                  <input name="guardian_pincode" type="text" class="form-control" placeholder="Pin Code">
+                  <input name="guardian_pincode"
+                  type="text"
+                  maxlength="6"
+                  inputmode="numeric"
+                  class="form-control"
+                  placeholder="Pin Code"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                  required>
                 </div>
 
                 <div class="mb-3">
@@ -1725,36 +1749,7 @@
         // Start with FormData from basic info form
         var formData = new FormData($basicForm[0]);
 
-        // If enrollment form exists, append its fields to the same FormData
-        if ($enrollForm.length) {
-          // Use native elements to include file inputs correctly and match browser behavior.
-          // We'll append each input/select/textarea that has a name and is not disabled.
-          $enrollForm.find('input, select, textarea').each(function() {
-            var el = this;
-            var $el = $(el);
-            var name = $el.attr('name');
-
-            if (!name || $el.prop('disabled')) return;
-
-            // For checkboxes/radios: only append if checked
-            if (el.type === 'checkbox' || el.type === 'radio') {
-              if (!el.checked) return;
-            }
-
-            // For file inputs: append all files
-            if (el.type === 'file') {
-              var files = el.files;
-              for (var i = 0; i < files.length; i++) {
-                // Append multiple files using same field name (as browser does)
-                formData.append(name, files[i]);
-              }
-            } else {
-              // Normal inputs/selects/textareas: append value.
-              // Note: if name already exists, FormData.append will create a second entry.
-              formData.append(name, $el.val());
-            }
-          });
-        }
+      
 
         // Debug: list entries (optional, safe to remove in production)
         console.log("------ MERGED FORM DATA ------");
