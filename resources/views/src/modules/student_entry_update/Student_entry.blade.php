@@ -777,10 +777,16 @@
                   <label class="form-label small">Police Station</label>
                   <input name="student_police_station" type="text" class="form-control" placeholder="Police station">
                 </div>
-
                 <div class="mb-3">
                   <label class="form-label small">Mobile Number (Student / Parent / Guardian)</label>
-                  <input name="student_mobile" type="text" class="form-control" placeholder="Mobile number">
+                 <input name="student_mobile"
+                  type="text"
+                  maxlength="10"
+                  inputmode="numeric"
+                  class="form-control"
+                  placeholder="Mobile number"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                  required>
                 </div>
               </div>
 
@@ -824,7 +830,14 @@
 
                 <div class="mb-3">
                   <label class="form-label small">Pin Code</label>
-                  <input name="student_pincode" type="text" class="form-control" placeholder="Pin Code">
+                  <input name="student_pincode"
+                  type="text"
+                  maxlength="6"
+                  inputmode="numeric"
+                  class="form-control"
+                  placeholder="Pin Code"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                  required>
                 </div>
 
                 <div class="mb-3">
@@ -889,7 +902,14 @@
 
                 <div class="mb-3">
                   <label class="form-label small">Mobile Number (Guardian)</label>
-                  <input name="guardian_mobile" type="text" class="form-control" placeholder="Mobile number">
+                  <input name="guardian_mobile"
+                  type="text"
+                  maxlength="10"
+                  inputmode="numeric"
+                  class="form-control"
+                  placeholder="Mobile number"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                  required>
                 </div>
               </div>
 
@@ -924,10 +944,7 @@
                     </select>
                   </div>
                 </div> 
-
-
-               
-
+                
                 <div class="mb-3">
                   <label class="form-label small">Post Office</label>
                   <input name="guardian_post_office" type="text" class="form-control" placeholder="Post office">
@@ -935,7 +952,14 @@
 
                 <div class="mb-3">
                   <label class="form-label small">Pin Code</label>
-                  <input name="guardian_pincode" type="text" class="form-control" placeholder="Pin Code">
+                  <input name="guardian_pincode"
+                  type="text"
+                  maxlength="6"
+                  inputmode="numeric"
+                  class="form-control"
+                  placeholder="Pin Code"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                  required>
                 </div>
 
                 <div class="mb-3">
