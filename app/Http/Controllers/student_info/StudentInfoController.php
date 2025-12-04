@@ -106,6 +106,25 @@ class StudentInfoController extends Controller
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //Section Aziza start date:01-12-2025
     public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
     {
 
@@ -298,7 +317,7 @@ class StudentInfoController extends Controller
             // ---------------------------------------------
             // 3. Return view with FULL data
             // ---------------------------------------------
-            return view('src.modules.student_entry_update.student_entry_ap', compact('data'));
+            return view('src.modules.student_entry_update.student_entry', compact('data'));
 
         }
         catch (\Exception $e) {
@@ -559,11 +578,6 @@ class StudentInfoController extends Controller
             ], 500);
         }
     }
-
-
-
-
-
     //Section Aziza end date:01-12-2025
 public function storeStudentContactDetails(StoreUserRequestStudentContactInfo $request)
 {

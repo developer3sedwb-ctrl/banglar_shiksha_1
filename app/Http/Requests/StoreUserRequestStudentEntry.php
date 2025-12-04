@@ -47,31 +47,31 @@ class StoreUserRequestStudentEntry extends FormRequest
 
 
 
-             // ---- Enrollment fields (added) ----
-            // Admission number in school (optional but validated if present)
-            'admission_number'                => 'nullable|string|max:10',
+            //  // ---- Enrollment fields (added) ----
+            // // Admission number in school (optional but validated if present)
+            // 'admission_number'                => 'nullable|string|max:10',
 
-            // Previous academic year status (required to determine previous-class related fields)
-            'admission_status_prev'           => 'required|integer|exists:bs_previous_schooling_type_master,id',
+            // // Previous academic year status (required to determine previous-class related fields)
+            // 'admission_status_prev'           => 'required|integer|exists:bs_previous_schooling_type_master,id',
 
-            // If previous status indicates there was a previous class (UI used "1" to show those fields)
-            'prev_class_appeared_exam'        => 'required_if:admission_status_prev,1|nullable',
-            'previous_class_result_examination' => 'required_if:prev_class_appeared_exam,1|nullable|integer|exists:bs_stu_appeared_master,id',
-            'percentage_of_overall_marks'     => 'required_if:prev_class_appeared_exam,1|nullable|numeric|min:0|max:100',
-            'no_of_days_attended'             => 'required_if:admission_status_prev,1|nullable|integer|min:0|max:365',
-            'previous_class'                  => 'required_if:admission_status_prev,1|nullable|integer|exists:bs_class_master,id',
-            'class_section'                   => 'required_if:admission_status_prev,1|nullable|integer|exists:bs_class_section_master,id',
-            'student_stream'                  => 'required_if:admission_status_prev,1|nullable|integer|exists:bs_stream_master,id',
-            'previous_student_roll_no'        => 'required_if:admission_status_prev,1|nullable|string|max:10',
+            // // If previous status indicates there was a previous class (UI used "1" to show those fields)
+            // 'prev_class_appeared_exam'        => 'required_if:admission_status_prev,1|nullable',
+            // 'previous_class_result_examination' => 'required_if:prev_class_appeared_exam,1|nullable|integer|exists:bs_stu_appeared_master,id',
+            // 'percentage_of_overall_marks'     => 'required_if:prev_class_appeared_exam,1|nullable|numeric|min:0|max:100',
+            // 'no_of_days_attended'             => 'required_if:admission_status_prev,1|nullable|integer|min:0|max:365',
+            // 'previous_class'                  => 'required_if:admission_status_prev,1|nullable|integer|exists:bs_class_master,id',
+            // 'class_section'                   => 'required_if:admission_status_prev,1|nullable|integer|exists:bs_class_section_master,id',
+            // 'student_stream'                  => 'required_if:admission_status_prev,1|nullable|integer|exists:bs_stream_master,id',
+            // 'previous_student_roll_no'        => 'required_if:admission_status_prev,1|nullable|string|max:10',
 
-            // Present/current enrollment
-            'present_class'                   => 'required|integer|exists:bs_class_master,id',
-            'accademic_year'                  => 'required|integer', // validate values via controller if needed
-            'present_section'                 => 'required|integer|exists:bs_school_classwise_section,id',
-            'school_medium'                   => 'required|integer|exists:bs_school_medium,id',
-            'admission_date_present'          => 'nullable|date',
-            'present_roll_no'                 => 'nullable|integer|min:0',
-            'admission_type'                  => 'nullable|integer|exists:bs_admission_type_master,id',
+            // // Present/current enrollment
+            // 'present_class'                   => 'required|integer|exists:bs_class_master,id',
+            // 'accademic_year'                  => 'required|integer', // validate values via controller if needed
+            // 'present_section'                 => 'required|integer|exists:bs_school_classwise_section,id',
+            // 'school_medium'                   => 'required|integer|exists:bs_school_medium,id',
+            // 'admission_date_present'          => 'nullable|date',
+            // 'present_roll_no'                 => 'nullable|integer|min:0',
+            // 'admission_type'                  => 'nullable|integer|exists:bs_admission_type_master,id',
         ];
     }
 

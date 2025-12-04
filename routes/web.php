@@ -71,9 +71,7 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
 
     // marge route
 
-    // routes/web.php
-    Route::view('/student-entry', 'src.modules.student_entry_update.Student_entry')
-        ->name('student.entry');
+
 
     Route::post('/student/store', [StudentInfoController::class, 'store'])
         ->name('student.store');
@@ -252,8 +250,8 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
         Route::get('/school-class-gender-wise-enrollment', [SiController::class, 'schoolClassGenderWiseEnrollmentReport'])->name('si.school_class_gender_wise_enrollment_report');
     });
     Route::prefix('hoi')->group(function () {
-
-        Route::get('/student-entry-ap', [StudentInfoController::class, 'getStudentEntry'])->name('hoi.get_student_entry_form');
+    // routes/web.php
+        Route::get('/student-entry', [StudentInfoController::class, 'getStudentEntry'])->name('student.entry');
         Route::post('/save-student-facility-and-other-details', [StudentInfoController::class, 'storeStudentFacilityAndOtherDetails'])->name('hoi.student.facility');
         Route::post('/save-student-vocational-details', [StudentInfoController::class, 'saveVocationalDetails'])->name('save.vocational.details');
         Route::delete('/student-entry/reset', [StudentInfoController::class, 'resetEntry'])->name('student.entry.reset');

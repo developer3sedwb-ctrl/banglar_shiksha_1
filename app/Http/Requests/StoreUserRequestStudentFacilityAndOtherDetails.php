@@ -61,7 +61,7 @@ public function rules(): array
 
     // State scholarship = YES
     if ($this->input('state_scholarship') == 1) {
-        $rules['state_scholarship_name']   = 'required|numeric|min:1|max:15';
+        $rules['state_scholarship_name']   = 'required|numeric|min:1';
         $rules['state_scholarship_amount'] = 'required|numeric|min:1';
     }
 
