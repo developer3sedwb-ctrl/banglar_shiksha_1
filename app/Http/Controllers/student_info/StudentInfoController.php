@@ -146,7 +146,7 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
             'created_by'   => $userId,
             'updated_by'   => $userId,
         ];
-        ['school_id_fk' => $inputMeta['school_id_fk']];
+        // ['school_id_fk' => $inputMeta['school_id_fk']];
         $enrollAttrs = [
         
             'admission_no'              => $request->admission_number,
@@ -628,68 +628,94 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
     }
 
     // =====================================================================================
-        //Section Aziza end date:01-12-2025
-        public function storeStudentContactDetails(StoreUserRequestStudentContactInfo $request)
-        {
+
+        
+
+
+
+    public function storeStudentContactDetails(StoreUserRequestStudentContactInfo $request)
+    {
         DB::beginTransaction();
-
+// dd(request()->all());
         try {
-            $model = new StudentContactInfo();
+            $userId = auth()->id() ?? 1;
 
-            // ---- Student contact fields (map incoming names -> DB columns) ----
-            $model->stu_country_code_fk      = $request->student_country;
-            $model->stu_contact_address      = $request->student_address;
-            $model->stu_contact_district     = $request->student_district;
-            $model->stu_contact_panchayat    = $request->student_panchayat;
-            $model->stu_police_station       = $request->student_police_station;
-            $model->stu_mobile_no            = $request->student_mobile;
-            $model->stu_state_code_fk        = $request->student_state;
-            $model->stu_contact_habitation   = $request->student_locality;
-            $model->stu_contact_block        = $request->student_block;
-            $model->stu_post_office          = $request->student_post_office;
-            $model->stu_pin_code             = $request->student_pincode;
-            $model->stu_email                = $request->student_email;
+            $inputMeta = [
+                'school_id_fk' => 1,
+                'created_by'   => $userId,
+                'updated_by'   => $userId,
+            ];
 
-            // address_equal may come from request or default — only set if present
-            if ($request->filled('address_equal')) {
-                $model->address_equal = $request->address_equal;
+            $data = [
+                // ---- Student contact fields ----
+                'stu_country_code_fk'     => $request->student_country,
+                'stu_contact_address'     => $request->student_address,
+                'stu_contact_district'    => $request->student_district,
+                'stu_contact_panchayat'   => $request->student_panchayat,
+                'stu_police_station'      => $request->student_police_station,
+                'stu_mobile_no'           => $request->student_mobile,
+                'stu_state_code_fk'       => $request->student_state,
+                'stu_contact_habitation'  => $request->student_locality,
+                'stu_contact_block'       => $request->student_block,
+                'stu_post_office'         => $request->student_post_office,
+                'stu_pin_code'            => $request->student_pincode,
+                'stu_email'               => $request->student_email,
+
+                // ---- Guardian contact fields ----
+                'guardian_country_code_fk'    => $request->guardian_country,
+                'guardian_contact_address'    => $request->guardian_address,
+                'guardian_contact_district'   => $request->guardian_district,
+                'guardian_contact_panchayat'  => $request->guardian_panchayat,
+                'guardian_police_station'     => $request->guardian_police_station,
+                'guardian_mobile_no'          => $request->guardian_mobile,
+                'guardian_state_code_fk'      => $request->guardian_state,
+                'guardian_contact_habitation' => $request->guardian_locality,
+                'guardian_contact_block'      => $request->guardian_block,
+                'guardian_post_office'        => $request->guardian_post_office,
+                'guardian_pin_code'           => $request->guardian_pincode,
+                'guardian_email'              => $request->guardian_email,
+
+
+                // meta
+                'school_id_fk'              => $inputMeta['school_id_fk'],
+                // 'entry_ip'                  => $inputMeta['entry_ip'],
+                // 'update_ip'                 => $inputMeta['update_ip'],
+                'created_by'                => $inputMeta['created_by'],
+                'updated_by'                => $inputMeta['updated_by'],
+
+            ];
+// 
+            // $studentInfoData = array_merge($data, $inputMeta);
+
+            $contact_info_of_student = StudentContactInfo::updateOrCreate(
+                ['school_id_fk' => $inputMeta['school_id_fk']],
+                $data
+            );
+
+            if ($contact_info_of_student) {
+                StudentEntryDraftTracker::updateOrCreate(
+                    [
+                        'school_id_fk' => $inputMeta['school_id_fk'],
+                        'step_number'  => 5,
+                    ],
+                    [
+                        'created_by' => $inputMeta['created_by'],
+                        'updated_by' => $inputMeta['updated_by'],
+                    ]
+                );
             }
-
-            // ---- Guardian contact fields ----
-            $model->guardian_country_code_fk = $request->guardian_country;
-            $model->guardian_contact_address = $request->guardian_address;
-            $model->guardian_contact_district= $request->guardian_district;
-            $model->guardian_contact_panchayat = $request->guardian_panchayat;
-            $model->guardian_police_station  = $request->guardian_police_station;
-            $model->guardian_mobile_no       = $request->guardian_mobile;
-            $model->guardian_state_code_fk   = $request->guardian_state;
-            $model->guardian_contact_habitation = $request->guardian_locality;
-            $model->guardian_contact_block   = $request->guardian_block;
-            $model->guardian_post_office     = $request->guardian_post_office;
-            $model->guardian_pin_code        = $request->guardian_pincode;
-            $model->guardian_email           = $request->guardian_email;
-
-            // ---- System fields ----
-            $model->status    = $request->get('status', 1);
-            $model->entry_ip  = $request->ip();
-            $model->created_by = auth()->id() ?? 1;
-
-            $model->save();
 
             DB::commit();
 
             return response()->json([
                 'success'    => true,
-                'message'    => 'Student contact info saved successfully',
-                'student_id' => $model->id,
-                'data'       => $model,
+                'message'    => 'Student saved successfully',
+                'contact_id' => $contact_info_of_student->id ?? null,
             ], 201);
-
         } catch (\Throwable $e) {
-
             DB::rollBack();
 
-            Log::error('Error saving student contact info', [
+            Log::error('Error saving student', [
                 'error'   => $e->getMessage(),
                 'trace'   => $e->getTraceAsString(),
                 'request' => $request->all(),
@@ -697,11 +723,11 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
 
             return response()->json([
                 'success' => false,
-                'message' => 'Server error while saving student contact info',
+                'message' => 'Server error while saving student',
                 'error'   => $e->getMessage(),
             ], 500);
         }
-        }
+    }
 
 
 }

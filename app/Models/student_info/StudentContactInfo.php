@@ -11,6 +11,7 @@ class StudentContactInfo extends Model
     public $timestamps = true;
 
     protected $fillable = [
+        'school_id_fk',
         'stu_country_code_fk',
         'stu_contact_address',
         'stu_contact_district',
@@ -49,6 +50,7 @@ class StudentContactInfo extends Model
     ];
 
     protected $casts = [
+        'school_id_fk'              => 'integer',
         'stu_country_code_fk'       => 'integer',
         'stu_contact_district'      => 'integer',
         'stu_state_code_fk'         => 'integer',
