@@ -39,6 +39,7 @@ class StudentInfoController extends Controller
             'updated_by'   => $userId,
         ];
 
+          ['school_id_fk' => $inputMeta['school_id_fk']];
 
         $studentAttrs = [
             'studentname'                          => $request->student_name,
@@ -145,11 +146,10 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
             'created_by'   => $userId,
             'updated_by'   => $userId,
         ];
-
+        ['school_id_fk' => $inputMeta['school_id_fk']];
         $enrollAttrs = [
         
-            // enrollment fields (admission_no intentionally omitted)
-        'admission_no'                  => $request->admission_number,
+            'admission_no'              => $request->admission_number,
             'status_pre_year'           => $request->admission_status_prev,
             'prev_class_appeared_exam'  => $request->prev_class_appeared_exam,
             'prev_class_exam_result'    => $request->previous_class_result_examination,
@@ -188,7 +188,7 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
         if ($enroll) {
             StudentEntryDraftTracker::updateOrCreate(
                 [
-                    'school_id_fk' => $inputMeta['school_id_fk'],    // match school
+                    'school_id_fk' => $inputMeta['school_id_fk'],
                     'step_number'  => 2
                 ],
                 [
