@@ -1103,36 +1103,7 @@ $(document).ready(function() {
         // Start with FormData from basic info form
         var formData = new FormData($basicForm[0]);
 
-        // If enrollment form exists, append its fields to the same FormData
-        if ($enrollForm.length) {
-          // Use native elements to include file inputs correctly and match browser behavior.
-          // We'll append each input/select/textarea that has a name and is not disabled.
-          $enrollForm.find('input, select, textarea').each(function() {
-            var el = this;
-            var $el = $(el);
-            var name = $el.attr('name');
-
-            if (!name || $el.prop('disabled')) return;
-
-            // For checkboxes/radios: only append if checked
-            if (el.type === 'checkbox' || el.type === 'radio') {
-              if (!el.checked) return;
-            }
-
-            // For file inputs: append all files
-            if (el.type === 'file') {
-              var files = el.files;
-              for (var i = 0; i < files.length; i++) {
-                // Append multiple files using same field name (as browser does)
-                formData.append(name, files[i]);
-              }
-            } else {
-              // Normal inputs/selects/textareas: append value.
-              // Note: if name already exists, FormData.append will create a second entry.
-              formData.append(name, $el.val());
-            }
-          });
-        }
+      
 
         // Debug: list entries (optional, safe to remove in production)
         console.log("------ MERGED FORM DATA ------");
