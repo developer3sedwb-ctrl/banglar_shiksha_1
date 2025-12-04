@@ -2097,7 +2097,7 @@
     }
   });
 </script>
-{{-- FACILITIES AND OTHER DETAILS OF THE STUDENT Aziza Start --}}
+
 <script>
   // ------------------------------
   // CENTRAL SCHOLARSHIP
@@ -2427,10 +2427,8 @@
     }
 });
 // {{--Vocational DETAILS OF THE STUDENT Aziza End --}}
-</script>
-{{--RESUME AND NEW ENTRY BY AZIZA  --}}
-<script>
-  // Start New Entry Button
+
+
   document.getElementById("startNewEntryBtn")?.addEventListener("click", function() {
 
       if (!confirm("Are you sure? This will delete the previous entry permanently.")) {
@@ -2448,6 +2446,6 @@
           });
   });
 </script>
-{{--RESUME AND NEW ENTRY BY AZIZA  --}}
+
 @endpush
 @endsection

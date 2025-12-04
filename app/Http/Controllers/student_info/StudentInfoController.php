@@ -636,7 +636,7 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
     public function storeStudentContactDetails(StoreUserRequestStudentContactInfo $request)
     {
         DB::beginTransaction();
-// dd(request()->all());
+        // dd(request()->all());
         try {
             $userId = auth()->id() ?? 1;
 
@@ -676,7 +676,7 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
                 'guardian_email'              => $request->guardian_email,
 
 
-                // meta
+                // System fields
                 'school_id_fk'              => $inputMeta['school_id_fk'],
                 // 'entry_ip'                  => $inputMeta['entry_ip'],
                 // 'update_ip'                 => $inputMeta['update_ip'],
@@ -684,9 +684,7 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
                 'updated_by'                => $inputMeta['updated_by'],
 
             ];
-// 
-            // $studentInfoData = array_merge($data, $inputMeta);
-
+    
             $contact_info_of_student = StudentContactInfo::updateOrCreate(
                 ['school_id_fk' => $inputMeta['school_id_fk']],
                 $data
