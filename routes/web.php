@@ -14,6 +14,7 @@ use App\Http\Controllers\student_info\StudentInfoController;
 // use App\Http\Controllers\AccessControl\RoleController;
 use App\Http\Controllers\{
     SchoolManagementController,
+    StudentManagementController,
     TeacherManagementController,
     SiController,
 };
@@ -179,6 +180,10 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
     // Route::get('/submodules/{module}', [ModuleController::class, 'submodules'])->name('submodules');
     // Route::get('/submodules/{module}/edit', [ModuleController::class, 'submoduleEdit'])->name('submodules.edit');
     // Route::get('/submodules/{module}/create', [ModuleController::class, 'submoduleCreate'])->name('submodules.create');
+
+
+    Route::get('/student-list/deactive', [StudentManagementController::class, 'studentDeactiveList'])->name('student.deactivelist');
+    Route::post('/student-list/deactive', [StudentManagementController::class, 'studentDeactiveSearchList'])->name('student.deactiveSearchList');
 
     Route::get('/add-school', [SchoolManagementController::class, 'schoolAddFrm'])->name('school.addfrm');
     Route::get('/school-add', [SchoolManagementController::class, 'schoolAddFrm'])->name('school.addform');

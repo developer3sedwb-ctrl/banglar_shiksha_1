@@ -229,8 +229,8 @@
                     @endcan
 
                     @can('edit school')
-                        <li class="menu-item {{ request()->routeIs('school.update') ? 'active' : '' }}">
-                            <a href="{{ route('school.update') }}" class="menu-link">
+                        <li class="menu-item {{ request()->routeIs('school.search') ? 'active' : '' }}">
+                            <a href="{{ route('school.search') }}" class="menu-link">
                                 <div>School Update</div>
                             </a>
                         </li>

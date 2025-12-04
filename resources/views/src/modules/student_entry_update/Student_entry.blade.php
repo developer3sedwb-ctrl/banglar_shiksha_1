@@ -11,43 +11,43 @@
     $gender_master = DB::table('bs_gender_master')->pluck('name', 'id')->toArray();
     $mother_tongue_master = DB::table('bs_mother_tongue_master')->pluck('name', 'id')->toArray();
     $social_category_master = DB::table('bs_social_category_master')->pluck('name', 'id')->toArray();
-            
+
     $religion_master = DB::table('bs_religion_master')->pluck('name', 'id')->toArray();
     $nationality_master = DB::table('bs_nationality_master')->pluck('name', 'id')->toArray();
-    $blood_group_master = DB::table('bs_blood_group_master')->pluck('name', 'id')->toArray();  
+    $blood_group_master = DB::table('bs_blood_group_master')->pluck('name', 'id')->toArray();
 
     $guardian_relationship_master = DB::table('bs_guardian_relationship_master')->pluck('name', 'id')->toArray();
     $income_master = DB::table('bs_income_master')->pluck('name', 'id')->toArray();
-    $guardian_qualification_master = DB::table('bs_guardian_qualification_master')->pluck('name', 'id')->toArray();  
-    $bs_stu_disability_type_master = DB::table('bs_stu_disability_type_master')->pluck('name', 'id')->toArray();  
-    $bs_child_mainstreamed_master = DB::table('bs_child_mainstreamed_master')->pluck('name', 'id')->toArray();  
+    $guardian_qualification_master = DB::table('bs_guardian_qualification_master')->pluck('name', 'id')->toArray();
+    $bs_stu_disability_type_master = DB::table('bs_stu_disability_type_master')->pluck('name', 'id')->toArray();
+    $bs_child_mainstreamed_master = DB::table('bs_child_mainstreamed_master')->pluck('name', 'id')->toArray();
 
-   //============Start =====Enrollmnent==================== 
+   //============Start =====Enrollmnent====================
 
-    $bs_previous_schooling_type_master = DB::table('bs_previous_schooling_type_master')->pluck('name', 'id')->toArray();  
-    $bs_stu_appeared_master = DB::table('bs_stu_appeared_master')->pluck('name', 'id')->toArray(); 
-    $bs_class_master = DB::table('bs_class_master')->pluck('name', 'id')->toArray(); 
+    $bs_previous_schooling_type_master = DB::table('bs_previous_schooling_type_master')->pluck('name', 'id')->toArray();
+    $bs_stu_appeared_master = DB::table('bs_stu_appeared_master')->pluck('name', 'id')->toArray();
+    $bs_class_master = DB::table('bs_class_master')->pluck('name', 'id')->toArray();
 
-    $bs_class_section_master = DB::table('bs_class_section_master')->pluck('name', 'id')->toArray(); 
+    $bs_class_section_master = DB::table('bs_class_section_master')->pluck('name', 'id')->toArray();
 
-    $bs_stream_master = DB::table('bs_stream_master')->pluck('name', 'id')->toArray(); 
+    $bs_stream_master = DB::table('bs_stream_master')->pluck('name', 'id')->toArray();
     $bs_school_medium = DB::table('bs_school_medium')->pluck('id', 'id')->toArray();
-    $bs_school_classwise_section = DB::table('bs_school_classwise_section')->pluck('id', 'id')->toArray();  
+    $bs_school_classwise_section = DB::table('bs_school_classwise_section')->pluck('id', 'id')->toArray();
 
-    $bs_admission_type_master = DB::table('bs_admission_type_master')->pluck('name', 'id')->toArray(); 
-      //========END=========Enrollmnent==================== 
+    $bs_admission_type_master = DB::table('bs_admission_type_master')->pluck('name', 'id')->toArray();
+      //========END=========Enrollmnent====================
 
-        //========Start=========Contact ==================== 
+        //========Start=========Contact ====================
 
 
-    $bs_country_master = DB::table('bs_country_master')->pluck('name', 'id')->toArray(); 
-    $state_master = DB::table('bs_state_master')->pluck('name', 'id')->toArray(); 
-    $district_master = DB::table('bs_district_master')->pluck('name', 'id')->toArray(); 
-    $block_munc_corp_master = DB::table('bs_block_munc_corp_master')->pluck('name', 'id')->toArray(); 
-    
+    $bs_country_master = DB::table('bs_country_master')->pluck('name', 'id')->toArray();
+    $state_master = DB::table('bs_state_master')->pluck('name', 'id')->toArray();
+    $district_master = DB::table('bs_district_master')->pluck('name', 'id')->toArray();
+    $block_munc_corp_master = DB::table('bs_block_munc_corp_master')->pluck('name', 'id')->toArray();
+
 //================================================
 
-  
+
     $genders = $gender_master;
     $mother_tongue = $mother_tongue_master;
 
@@ -68,7 +68,7 @@
 
     $school_classwise_section = $bs_school_classwise_section;
 
- //======Start===========Enrollmnent==================== 
+ //======Start===========Enrollmnent====================
 
 
     $previous_schooling_type_master = $bs_previous_schooling_type_master;
@@ -218,7 +218,7 @@
                       <label class="form-label small">Aadhaar No of Child</label>
                       <div class="input-group">
                           <span class="input-group-text"><i class="bx bx-id-card"></i></span>
-                          <input 
+                          <input
                               id="aadhaar_child"
                               name="aadhaar_child"
                               type="text"
@@ -257,7 +257,7 @@
                     <select name="social_category" class="form-select" required>
                         <option value="">-Please Select-</option>
                         @foreach($social_category ?? [] as $val => $label)
-                        
+
                             <option value="{{ $val }}">{{ $label }}</option>
                         @endforeach
                     </select>
@@ -290,7 +290,7 @@
                     </div>
                   </div>
 
-                  
+
                   <div class="mb-3" id="aay_section" style="display:none;">
                       <label class="form-label small">Whether Antyodaya Anna Yojana (AAY) beneficiary?<span class="text-danger">*</span></label>
                       <div class="input-group">
@@ -384,7 +384,7 @@
                       <select name="out_of_school" id="out_of_school" class="form-select">
                         <option value="">-Please Select-</option>
                         @foreach($dropdowns['yes_no'] as $val => $label)
-                        
+
                             <option value="{{ $val }}">{{ $label }}</option>
                         @endforeach
                       </select>
@@ -397,9 +397,9 @@
                       <span class="input-group-text"><i class="bx bx-school"></i></span>
                       <select name="mainstreamed" id="mainstreamed" class="form-select">
                         <option value="">-Please Select-</option>
-                        
+
                           @foreach($child_mainstreamed_master ?? [] as $val => $label)
-                        
+
                             <option value="{{ $val }}">{{ $label }}</option>
                         @endforeach
                       </select>
@@ -496,6 +496,273 @@
                           @endforeach
                       </select>
                     </div>
+                  <label class="form-label small">Father's Name <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-user"></i></span>
+                    <input name="father_name" type="text" class="form-control" placeholder="Father's name" required>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Mother's Name <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-user"></i></span>
+                    <input name="mother_name" type="text" class="form-control" placeholder="Mother's name" required>
+                  </div>
+                </div>
+
+
+                <div class="mb-3">
+                  <label class="form-label small">Guardian's  Name <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-user"></i></span>
+                    <input name="mother_name" type="text" class="form-control" placeholder="Mother's name" required>
+                  </div>
+                </div>
+
+
+
+
+                <div class="mb-3">
+                  <label class="form-label small">Aadhaar No of Child</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-id-card"></i></span>
+                    <input name="aadhaar_child" type="text" class="form-control" placeholder="Aadhaar no of child">
+                  </div>
+                </div>
+
+
+                <div class="mb-3">
+                  <label class="form-label small">Name of Student as Per Aadhaar</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-id-card"></i></span>
+                    <input name="aadhaar_child" type="text" class="form-control" placeholder="Name of student as per Aadhaar">
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Mother Tongue of the Child</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-message-alt-detail"></i></span>
+                    <input name="mother_tongue" type="text" class="form-control" placeholder="Mother tongue">
+                  </div>
+                </div>
+
+
+                <div class="mb-3">
+                  <label class="form-label small">Social Category<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-book"></i></span>
+                    <select name="religion" class="form-select" required>
+                      <option value="">-Please Select-</option>
+                      <option value="">General</option>
+                      <option value="">ST</option>
+                      <option value="">SC</option>
+                      <option value="">OBC-A</option>
+                      <option value="">OBC-B</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Religion <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-book"></i></span>
+                    <select name="religion" class="form-select" required>
+                      <option value="">-Please Select-</option>
+                      <option value="Hindu">Hindu</option>
+                      <option value="Muslim">Muslim</option>
+                      <option value="Christian">Christian</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Whether BPL Beneficiary?</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-check"></i></span>
+                    <select name="bpl_beneficiary" class="form-select">
+                      <option value="">-Please Select-</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Whether EWS / Economically Weaker?</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-wallet"></i></span>
+                    <select name="ews" class="form-select">
+                      <option value="">-Please Select-</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                </div>
+
+
+                <div class="mb-3">
+                  <label class="form-label small">5. Multi Select Dropdown</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                    <select class="selectpicker form-select" multiple aria-label="Default select example" data-live-search="true">
+                    <option value="1">One</option>
+                    <option value="2">Two</option>
+                    <option value="3">Three</option>
+                    <option value="4">Four</option>
+                  </select>
+                  </div>
+                </div>
+
+
+                <div class="mb-3">
+                  <label class="form-label small">6. Multi Select Dropdown</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                    <select class="select2 form-select2">
+                        <option value="1">Option 1333</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                        <option value="4">Option 4</option>
+                        <option value="5">Option 5</option>
+                        <option value="6">Option 6</option>
+                        <option value="7">Option 7</option>
+                        <option value="8">Option 8</option>
+               		 </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label small">Whether CWSN (Child with Special Needs)?</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-heart"></i></span>
+                    <select name="cwsn" class="form-select">
+                      <option value="">-Please Select-</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Nationality</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-flag"></i></span>
+                    <input name="nationality" type="text" class="form-control" placeholder="Nationality">
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Is the Child enrolled as Out of School Child?</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-school"></i></span>
+                    <select name="out_of_school" class="form-select">
+                      <option value="">-Please Select-</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                </div>
+
+
+                <div class="mb-3">
+                  <label class="form-label small">Blood Group</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-droplet"></i></span>
+                    <select name="blood_group" class="form-select">
+                      <option value="">-Please Select-</option>
+                      <option value="A+">A+</option>
+                      <option value="A-">A-</option>
+                      <option value="B+">B+</option>
+                      <option value="B-">B-</option>
+                      <option value="AB+">AB+</option>
+                      <option value="AB-">AB-</option>
+                      <option value="O+">O+</option>
+                      <option value="O-">O-</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small">Birth Registration Number</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                    <input name="birth_reg_no" type="text" class="form-control" placeholder="Birth registration number">
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Identification Mark</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-id"></i></span>
+                    <input name="identification_mark" type="text" class="form-control" placeholder="Identify mark (if any)">
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Health ID</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-link-alt"></i></span>
+                    <input name="" type="text" class="form-control" placeholder="Health ID">
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Relationship with Guardian</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-link-alt"></i></span>
+                    <input name="relationship_with_guardian" type="text" class="form-control" placeholder="Relationship with guardian">
+                  </div>
+                </div>
+
+
+                <div class="mb-3">
+                  <label class="form-label small">Anual Family income</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-school"></i></span>
+                    <select name="out_of_school" class="form-select">
+                      <option value="">-Please Select-</option>
+                      <option value="">0 - 50,000</option>
+                      <option value="">50,00- 1,20,000</option>
+                      <option value="">1,20,000 - 2,50,000</option>
+                      <option value="">1,20,000 - 2,50,000</option>
+                      <option value="">2,50,000 - 5,00,000</option>
+                      <option value="">Above 5,00,000</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Student Height(in cms)</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-link-alt"></i></span>
+                    <input name="relationship_with_guardian" type="text" class="form-control" placeholder="Student Height">
+                  </div>
+                </div>
+
+
+                <div class="mb-3">
+                  <label class="form-label small">Student Weight(in Kg's)</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-link-alt"></i></span>
+                    <input name="relationship_with_guardian" type="text" class="form-control" placeholder="Student Weight">
+                  </div>
+                </div>
+
+               <div class="mb-3">
+                  <label class="form-label small">Guardian's Qualification?</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-school"></i></span>
+                    <select name="out_of_school" class="form-select">
+                      <option value="">-Please Select-</option>
+                      <option value="">Graduate</option>
+                      <option value="">Bellow Graduate</option>
+                      <option value="">Post Graduate</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -514,7 +781,7 @@
 
             <h6 class=" card-header bg-heading-primary text-white py-2">
             ENROLLMENT DETAILS OF STUDENT IN PRESENT SCHOOL FOR CURRENT YEAR
-            </h6> 
+            </h6>
             <div class="row">
               <div class="col-md-6">
                 <!-- Admission Number in School -->
@@ -522,9 +789,9 @@
                   <label class="form-label small">Admission Number in School<span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-hash"></i></span>
-                    <input name="admission_number" 
-                      type="text" 
-                      class="form-control" 
+                    <input name="admission_number"
+                      type="text"
+                      class="form-control"
                       placeholder="Admission number in school"
                       maxlength="10"
                       pattern="\d*"
@@ -582,8 +849,8 @@
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-history"></i></span>
                       <input name="percentage_of_overall_marks" id="percentage_of_overall_marks"
-                      type="text" 
-                      class="form-control" 
+                      type="text"
+                      class="form-control"
                       placeholder="% of overall marks obtained"
                       maxlength="3"
                       pattern="\d*"
@@ -596,9 +863,9 @@
                   <label class="form-label small">No. of days child attended school (in the previous academic year)<span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-history"></i></span>
-                   <input name="no_of_days_attended" id="no_of_days_attended" 
-                      type="text" 
-                      class="form-control" 
+                   <input name="no_of_days_attended" id="no_of_days_attended"
+                      type="text"
+                      class="form-control"
                       placeholder="No of days child attended school"
                       maxlength="3"
                       pattern="\d*"
@@ -647,8 +914,8 @@
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-history"></i></span>
                      <input name="previous_student_roll_no" id="previous_student_roll_no"
-                      type="text" 
-                      class="form-control" 
+                      type="text"
+                      class="form-control"
                       placeholder="Enter Previous Roll Number"
                       maxlength="10"
                       pattern="\d*"
@@ -1382,10 +1649,10 @@
         <div class="tab-pane fade" id="contact_info_tab" role="tabpanel"    aria-labelledby="contact_info_tab-tab">
             <form id="contact_info_of_student_and_guardian" method="POST" action="{{ route('student.store_student_entry_contact_details') }}" novalidate>
             @csrf
-            
+
             <h6 class=" card-header bg-heading-primary text-white py-2">
               CONTACT INFORMATION FOR STUDENT
-            </h6> 
+            </h6>
             <div class="row">
               <div class="col-md-6">
                 <div class="mb-3" id="student_country_section">
@@ -1403,7 +1670,7 @@
                   <input name="student_address" type="text" class="form-control" placeholder="Enter Address">
                 </div>
 
-               
+
                 <div class="mb-3" id="student_district_section">
                   <label class="form-label small">District</label>
                   <div class="input-group">
@@ -1415,7 +1682,7 @@
                         @endforeach
                     </select>
                   </div>
-                </div> 
+                </div>
 
                 <div class="mb-3">
                   <label class="form-label small">Panchayat</label>
@@ -1451,7 +1718,7 @@
                         @endforeach
                     </select>
                   </div>
-                </div> 
+                </div>
 
 
                 <div class="mb-3">
@@ -1470,7 +1737,7 @@
                         @endforeach
                     </select>
                   </div>
-                </div> 
+                </div>
 
                 <div class="mb-3">
                   <label class="form-label small">Post Office</label>
@@ -1500,7 +1767,7 @@
 
             <h6 class=" card-header bg-heading-primary text-white py-2">
               CONTACT INFORMATION FOR GUARDIAN
-            </h6> 
+            </h6>
             <div class="form-check mb-2">
               <input class="form-check-input" type="checkbox" id="same-as-student" />
               <label class="form-check-label small" for="same-as-student">Same as Student Address</label>
@@ -1523,7 +1790,7 @@
                   <input name="guardian_address" type="text" class="form-control" placeholder="Guardian address">
                 </div>
 
-              
+
 
 
                 <div class="mb-3" id="guardian_district_section">
@@ -1537,7 +1804,7 @@
                         @endforeach
                     </select>
                   </div>
-                </div> 
+                </div>
 
                 <div class="mb-3">
                   <label class="form-label small">Panchayat</label>
@@ -1574,7 +1841,7 @@
                         @endforeach
                       </select>
                     </div>
-                </div> 
+                </div>
 
                 <div class="mb-3">
                   <label class="form-label small">Habitation / Locality</label>
@@ -1592,8 +1859,8 @@
                         @endforeach
                     </select>
                   </div>
-                </div> 
-                
+                </div>
+
                 <div class="mb-3">
                   <label class="form-label small">Post Office</label>
                   <input name="guardian_post_office" type="text" class="form-control" placeholder="Post office">
@@ -1657,7 +1924,7 @@
       document.getElementById('bpl_beneficiary').addEventListener('change', function () {
       let aay = document.getElementById('aay_section');
       let bplNumber = document.getElementById('bpl_numberID');
-      
+
       if (this.value == '1' || this.value.toLowerCase() === 'yes') {
           aay.style.display = 'block';
           bplNumber.style.display = 'block';
@@ -1720,11 +1987,11 @@
               $('#previous_stream_section').hide();
               // clear selection
               $('#prev_class_appeared_exam').val('');
-              $('#no_of_days_attended').val('');  
-              $('#previous_class').val('');  
-              $('#class_section').val('');  
-              $('#previous_student_roll_no').val('');  
-              $('#student_stream').val('');  
+              $('#no_of_days_attended').val('');
+              $('#previous_class').val('');
+              $('#class_section').val('');
+              $('#previous_student_roll_no').val('');
+              $('#student_stream').val('');
             }
         });
 
@@ -1761,7 +2028,7 @@
 
 
       // ==================================
-      // Student Basic  Details Save 
+      // Student Basic  Details Save
       $('#basic_info_save_btn').off('click').on('click', function () {
         var $btn = $(this);
         var $basicForm = $('#basic_info_of_student');
@@ -1774,7 +2041,7 @@
         // Start with FormData from basic info form
         var formData = new FormData($basicForm[0]);
 
-      
+
 
         // Debug: list entries (optional, safe to remove in production)
         console.log("------ MERGED FORM DATA ------");
@@ -1879,7 +2146,7 @@
 
 
      // ==================================
-      // Student Enrollment Details Save 
+      // Student Enrollment Details Save
     $('#enrollment_details_save_btn').off('click').on('click', function () {
       var $btn = $(this);
       var $enrollForm = $('#student_enrollment_details');
@@ -1979,7 +2246,7 @@
     });
 
     // ================================
-   // Student Contact Details Save 
+   // Student Contact Details Save
    (function($) {
     function clearInlineErrors() {
       $('.is-invalid').removeClass('is-invalid');
@@ -2329,7 +2596,7 @@
             console.error("Error loading trade sectors:", err);
         });
 
-      
+
 
 
       $("#trade_sector").attr("required", true);

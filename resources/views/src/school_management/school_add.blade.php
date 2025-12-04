@@ -3,6 +3,9 @@
 @section('title', 'Add School')
 
 @section('content')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
 <div class="container-fluid full-width-content">
 
   <!-- PAGE HEADING -->
@@ -51,7 +54,7 @@
                 <label class="form-label small">District <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book"></i></span>
-                    <select name="district_id" id="district_id" class="form-select" required onchange="getBlocksByDistrict()">
+                    <select name="district_id" id="district_id" class="select2 form-select2" required onchange="getBlocksByDistrict()">
                         <option value="">-Please Select-</option>
                         @foreach($data['districts'] as $district)
                             <option value="{{ $district->id }}">{{ $district->name }}</option>
@@ -59,11 +62,22 @@
                     </select>
                 </div> 
             </div>
+
+            <div class="col-md-4 mb-2">
+                <label class="form-label small">Sub-Division <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-book"></i></span>
+                    <select name="sub_division" class="select2 form-select2" required>
+                    <option value="">-Please Select-</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="col-md-4 mb-2">
                 <label class="form-label small">Block / Municipality / Corporation <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book"></i></span>
-                    <select name="block_id" class="form-select" required onchange="getWardsByBlock()">
+                    <select name="block_id" id="block_id" class="select2 form-select2"  required onchange="getWardsByBlock()">
                     <option value="">-Please Select-</option>
                     </select>
                 </div>
@@ -73,7 +87,7 @@
                 <label class="form-label small">Circle <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book"></i></span>
-                    <select name="circle_id" class="form-select" required>
+                    <select name="circle_id" id="circle_id" class="select2 form-select2" required>
                     <option value="">-Please Select-</option>
                     </select>
                 </div>
@@ -83,7 +97,7 @@
                 <label class="form-label small">Cluster <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book"></i></span>
-                    <select name="cluster_id" class="form-select" required>
+                    <select name="cluster_id" id="cluster_id" class="select2 form-select2" required>
                     <option value="">-Please Select-</option>
                     </select>
                 </div>
@@ -93,7 +107,7 @@
                 <label class="form-label small">GS WARD <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book"></i></span>
-                    <select name="ward_id" class="form-select" required onchange="getDiseCode()">
+                    <select name="ward_id" id="ward_id" class="select2 form-select2" required onchange="getDiseCode()">
                     <option value="">-Please Select-</option>
                     </select>
                 </div>
@@ -117,7 +131,7 @@
                 <label class="form-label small">Management <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book"></i></span>
-                    <select name="school_management" class="form-select" required onchange="getSchoolCategoryTypes()">
+                    <select name="school_management" class="select2 form-select2" required onchange="getSchoolCategoryTypes()">
                     <option value="">-Please Select-</option>
                     @foreach($data['school_managements'] as $management)
                         <option value="{{ $management->id }}">{{ $management->name }}</option>
@@ -130,7 +144,7 @@
                 <label class="form-label small">School Catagory Type <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book"></i></span>
-                    <select name="sch_cat_type_code_fk" class="form-select" required>
+                    <select name="sch_cat_type_code_fk" class="select2 form-select2" required>
                     <option value="">-Please Select-</option>                    
                     </select>
                 </div>
@@ -176,7 +190,7 @@
                 <label class="form-label small">High class <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book"></i></span>
-                    <select name="high_class" class="form-select" required onchange="getLowClass()">
+                    <select name="high_class" class="select2 form-select2" required onchange="getLowClass()">
                     <option value="">-Please Select-</option>
                     @foreach($data['high_classes'] as $high_class)
                         <option value="{{ $high_class['value'] }}">{{ $high_class['title'] }}</option>
@@ -188,21 +202,13 @@
                 <label class="form-label small">Low class <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book"></i></span>
-                    <select name="low_class" class="form-select" required onchange="setClassSectionRows()">
+                    <select name="low_class" class="select2 form-select2" required onchange="setClassSectionRows()">
                     <option value="">-Please Select-</option>
                     </select>
                 </div>
             </div>
 
-            <div class="col-md-4 mb-2">
-                <label class="form-label small">Sub-Division <span class="text-danger">*</span></label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bx bx-book"></i></span>
-                    <select name="sub_division" class="form-select" required>
-                    <option value="">-Please Select-</option>
-                    </select>
-                </div>
-            </div>
+            
             <div class="col-md-4 mb-2">
                 <label class="form-label small">Student Lock/Unlock <span class="text-danger">*</span></label>
                 <div class="input-group">
@@ -233,7 +239,7 @@
                 <label class="form-label small">Medium <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book"></i></span>
-                    <select name="school_mediums[]" class="form-select" required multiple>
+                    <select name="school_mediums[]" class="select2 form-select2" required multiple>
                     <option value="">-Please Select-</option>
                     @foreach($data['mediums'] as $medium)
                         <option value="{{ $medium->id }}">{{ $medium->name }}</option>
@@ -366,11 +372,21 @@
         const selectedBlockId = blockSelect.value;
 
         wardSelect.innerHTML   = '';
+        const optionWard = document.createElement('option');
+        optionWard.value = "";
+        optionWard.textContent = "-Please Select-";
+        wardSelect.appendChild(optionWard);
 
         if (selectedBlockId) {
             fetch(`/api/wards/${selectedBlockId}`)
                 .then(response => response.json())
                 .then(data => {
+                    if(data.data.length < 1){
+                        const option = document.createElement('option');
+                        option.value = 0;
+                        option.textContent = 'Not Available';
+                        wardSelect.appendChild(option);
+                    }
                     data.data.forEach(ward => {
                         const option = document.createElement('option');
                         option.value = ward.id;
@@ -398,12 +414,19 @@
         clusterSelect.innerHTML = '';
         subdivisionSelect.innerHTML = '';
 
-        const option = document.createElement('option');
-        option.value = "";
-        option.textContent = "-Please Select-";
-        blockSelect.appendChild(option);
-        circleSelect.appendChild(option);
-        clusterSelect.appendChild(option);
+        const optionBlock = document.createElement('option');
+        optionBlock.value = "";
+        optionBlock.textContent = "-Please Select-";
+        const optionCircle = document.createElement('option');
+        optionCircle.value = "";
+        optionCircle.textContent = "-Please Select-";
+        const optionCluster = document.createElement('option');
+        optionCluster.value = "";
+        optionCluster.textContent = "-Please Select-";
+
+        blockSelect.appendChild(optionBlock);
+        circleSelect.appendChild(optionCircle);
+        clusterSelect.appendChild(optionCluster);
 
         if (selectedDistrictId) {
             fetch(`/api/blocks/${selectedDistrictId}`)
@@ -467,5 +490,49 @@
 
         }
     }
+
+    // Custom validation for form submission
+    function validateForm() {
+        let isValid = true;
+        const requiredFields = document.querySelectorAll('[required]');
+        
+        requiredFields.forEach(field => {
+            const value = field.value.trim();
+            
+            if (field.type === 'select-multiple') {
+                // For multiple selects, check if at least one option is selected
+                if (field.selectedOptions.length === 0) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            } else if (!value) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            alert('Please fill in all required fields');
+        }
+        return isValid;
+    }
+
+    $(document).ready(function() {
+        $('.select2').select2({
+            width: '100%' // Tells JS to fill the container we defined in CSS
+        });
+
+        // Validate form on submit
+        $('form').on('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    });
 </script>
 @endpush
