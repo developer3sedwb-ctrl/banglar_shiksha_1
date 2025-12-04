@@ -101,7 +101,7 @@
   <div class="card card-full">
           <div class="row">
         @if(isset($data['current_step']) && $data['current_step'] > 1)
-        <div class="alert alert-danger d-flex justify-content-between align-items-center">
+        <div class="alert-danger d-flex justify-content-between align-items-center">
             <span>
                 <strong>Resume Entry?</strong> You have an unfinished student entry at Step {{ $data['current_step'] }}.
             </span>
@@ -128,10 +128,7 @@
 
          <li class="nav-item" role="presentation">
           <button class="nav-link" id="enrollment_details-tab" data-bs-toggle="tab" data-bs-target="#enrollment_details" type="button" role="tab">Enrollment Details</button>
-        </li>
-          <li class="nav-item" role="presentation">
-          <button class="nav-link" id="contact_info_tab-tab" data-bs-toggle="tab" data-bs-target="#contact_info_tab" type="button" role="tab">Contact Info</button>
-        </li>
+
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="facility-other-dtls-tab" data-bs-toggle="tab" data-bs-target="#facility_other_dtls_tab" type="button"
             role="tab">Facilities & Other Detais</button>
@@ -139,6 +136,10 @@
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="vocational-tab" data-bs-toggle="tab" data-bs-target="#vocational_tab" type="button"
             role="tab">Vocational Details</button>
+        </li>
+        </li>
+          <li class="nav-item" role="presentation">
+          <button class="nav-link" id="contact_info_tab-tab" data-bs-toggle="tab" data-bs-target="#contact_info_tab" type="button" role="tab">Contact Info</button>
         </li>
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="bank_dtls-tab" data-bs-toggle="tab" data-bs-target="#bank_dtls_tab" type="button"
@@ -762,7 +763,7 @@
 
           </form>
         </div>
-                <!-- TAB 3: FACILITY AND OTHER DETAILS START BY AZIZA-->
+        <!-- TAB 3: FACILITY AND OTHER DETAILS START BY AZIZA-->
         <div class="tab-pane fade" id="facility_other_dtls_tab" role="tabpanel" aria-labelledby="tab3-tab">
 
           @php
@@ -1219,7 +1220,7 @@
               <button class="btn btn-secondary me-2" type="button" data-bs-toggle="tab"
                 data-bs-target="#tab2">Previous</button>
 
-              <button class="btn btn-success" type="button" id="save_facility_and_other_dtls">Next</button>
+              <button class="btn btn-success" type="button" id="save_facility_and_other_dtls">Save & Next</button>
             </div>
 
           </form>
@@ -1371,8 +1372,8 @@
 
             <!-- Navigation Buttons -->
             <div class="form-actions text-end mt-3">
-              <button class="btn btn-secondary me-2" data-bs-toggle="tab" data-bs-target="#tab3" type="button">Previous</button>
-              <button class="btn btn-success" data-bs-toggle="tab" id="save_vocational_btn" data-bs-target="#tab5" type="button">Next</button>
+              <button class="btn btn-secondary me-2" data-bs-toggle="tab" data-bs-target="#facility_other_dtls_tab" type="button">Previous</button>
+              <button class="btn btn-success" data-bs-toggle="tab" id="save_vocational_btn" type="button">Save & Next</button>
             </div>
 
           </form>
@@ -1644,6 +1645,10 @@
       $('.select2').select2({
           width: '100%' // Tells JS to fill the container we defined in CSS
       });
+    $("form").on("submit", function(e) {
+    e.preventDefault(); // Stop page refresh always
+});
+
   });
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -1925,7 +1930,7 @@
             else alert(res.message || 'Enrollment saved.');
 
             // If you want to switch tabs programmatically after save, do it here:
-            // $('#someNextTabButton').tab('show');
+          document.querySelector('[data-bs-target="#facility_other_dtls_tab"]').click();
           } else {
             console.warn('Unexpected body', res);
             alert(res.message || 'Saved but unexpected response.');
@@ -2291,21 +2296,30 @@
   });
 
   $("#save_facility_and_other_dtls").on("click", function () {
+    if (!validateRequiredFields("#student_facility_other_dtls_form")) {
+      return;
+    }
     let $btn = $(this);
     $btn.prop('disabled', true).text('Saving...');
     let url = "{{ route('hoi.student.facility') }}";
+
+
     if (validateRequiredFields("#student_facility_other_dtls_form")) {
       sendRequest(url, "POST", "#student_facility_other_dtls_form")
         .then(res => {
             if (res && res.status) {
                 alert(res.message);
                 document.querySelector('[data-bs-target="#vocational_tab"]').click();
-                $btn.prop('disabled', false).text('Next');
+                $btn.prop('disabled', false).text('Save & Next');
             }
         })
         .catch(err => {
             console.error("Error saving vocational details:", err);
-    });
+      });
+    }
+    else
+    {
+      $btn.prop('disabled', false).text('Save & Next');
     }
   });
 // {{-- FACILITIES AND OTHER DETAILS OF THE STUDENT Aziza End --}}
@@ -2388,22 +2402,29 @@
     }
   });
   $("#save_vocational_btn").on("click", function (e) {
+    if (!validateRequiredFields("#stu_vocational_dtls_form")) {
+      return;
+    }
     let $btn = $(this);
     $btn.prop('disabled', true).text('Saving...');
     let url = "{{ route('save.vocational.details') }}"; // Add route in web.php
+
     if (validateRequiredFields("#stu_vocational_dtls_form")) {
-    sendRequest(url, "POST", "#stu_vocational_dtls_form")
-        .then(res => {
-            if (res && res.status) {
-                alert(res.message);
-                document.querySelector('[data-bs-target="#bank_dtls_tab"]').click();
-                $btn.prop('disabled', false).text('Next');
-            }
-        })
-        .catch(err => {
-            console.error("Error saving vocational details:", err);
-    });
-  }
+      sendRequest(url, "POST", "#stu_vocational_dtls_form")
+          .then(res => {
+              if (res && res.status) {
+                  alert(res.message);
+                  document.querySelector('[data-bs-target="#bank_dtls_tab"]').click();
+                  $btn.prop('disabled', false).text('Save & Next');
+              }
+          })
+          .catch(err => {
+              console.error("Error saving vocational details:", err);
+      });
+    }
+    else {
+      $btn.prop('disabled', false).text('Save & Next');
+    }
 });
 // {{--Vocational DETAILS OF THE STUDENT Aziza End --}}
 </script>
