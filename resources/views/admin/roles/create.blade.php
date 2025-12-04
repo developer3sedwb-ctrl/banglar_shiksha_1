@@ -1,240 +1,291 @@
 @extends('layouts.app')
 
 @section('title', 'Create Role')
-@section('page-title', 'Create New Role')
+@section('page-title', 'Create Role')
 @section('page-subtitle', 'Add a new role with specific permissions')
 
 @push('css')
 <style>
-.permission-group-card {
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-}
+    .permission-card {
+        transition: all 0.2s ease;
+        border: 1px solid #dee2e6;
+    }
 
-.permission-group-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
-}
+    .permission-card:hover {
+        border-color: #0d6efd;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
 
-.group-checkbox {
-    margin-left: 10px;
-}
+    .group-header {
+        background-color: #f8f9fa;
+        cursor: pointer;
+        padding: 0.75rem 1rem;
+    }
 
-.form-check-label small {
-    font-size: 0.75rem;
-    color: #6b7280;
-}
+    .group-header:hover {
+        background-color: #e9ecef;
+    }
 
-.permission-checkbox:checked {
-    background-color: var(--bs-success);
-    border-color: var(--bs-success);
-}
+    .permission-item {
+        padding: 0.375rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        font-size: 0.875rem;
+    }
 
-.group-checkbox:checked {
-    background-color: var(--bs-success);
-    border-color: var(--bs-success);
-}
+    .permission-item:last-child {
+        border-bottom: none;
+    }
 
-/* Card states */
-.card-header.bg-success {
-    background-color: rgba(25, 135, 84, 0.15) !important;
-    border-left: 4px solid var(--bs-success);
-    color: var(--bs-success);
-}
+    .permission-item:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
 
-.card-header.bg-warning {
-    background-color: rgba(255, 193, 7, 0.15) !important;
-    border-left: 4px solid var(--bs-warning);
-    color: var(--bs-warning);
-}
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
 
-.card-header.bg-light {
-    border-left: 4px solid #e9ecef;
-}
+    .group-checkbox:checked {
+        background-color: #198754;
+        border-color: #198754;
+    }
 
-/* Card body states */
-.card-body.bg-success {
-    background-color: rgba(25, 135, 84, 0.05) !important;
-}
+    .card-selected {
+        border-color: #198754;
+        box-shadow: 0 0 0 1px rgba(25, 135, 84, 0.25);
+    }
 
-.card-body.bg-warning {
-    background-color: rgba(255, 193, 7, 0.05) !important;
-}
+    .card-partial {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 1px rgba(255, 193, 7, 0.25);
+    }
 
-/* Selected card styling */
-.card-success {
-    border-color: var(--bs-success) !important;
-    box-shadow: 0 0 0 1px var(--bs-success);
-}
+    .stats-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
 
-.card-warning {
-    border-color: var(--bs-warning) !important;
-    box-shadow: 0 0 0 1px var(--bs-warning);
-}
-
-/* Checkbox labels */
-.form-check-input:checked + .form-check-label {
-    font-weight: 600;
-}
-
-/* Group header styling */
-.group-header {
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.group-header:hover {
-    background-color: rgba(0, 0, 0, 0.02) !important;
-}
-
-/* Permission item styling */
-.permission-item {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
-}
-
-.permission-item:last-child {
-    border-bottom: none;
-}
-
-.permission-item:hover {
-    background-color: rgba(0, 0, 0, 0.02);
-    border-radius: 4px;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-}
-
-/* Stats badge */
-.group-stats {
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-/* Animation for state changes */
-.permission-group-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+    .breadcrumb-item.active {
+        color: #6c757d;
+    }
 </style>
 @endpush
 
 @section('content')
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Role Information</h3>
-            </div>
-            <form method="POST" action="{{ route('admin.roles.store') }}">
-                @csrf
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="name" class="form-label">Role Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                    id="name" name="name" value="{{ old('name') }}"
-                                    placeholder="Enter role name" required>
-                                @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control" id="description" name="description"
-                                    placeholder="Enter role description" rows="1">{{ old('description') }}</textarea>
-                            </div>
-                        </div>
+<div class="container-fluid">
+    <!-- Breadcrumb -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.roles.index') }}">Roles</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 fs-6 fw-bold">
+                            <i class='bx bx-plus me-2'></i>Create New Role
+                        </h5>
+                        <a href="{{ route('admin.roles.index') }}" class="btn btn-outline-secondary btn-sm">
+                            <i class='bx bx-arrow-back me-1'></i>Back
+                        </a>
                     </div>
+                </div>
 
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <div>
-                                    <h5 class="mb-1">Permissions</h5>
-                                    <p class="text-muted mb-0">Select the permissions for this role</p>
-                                </div>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-success btn-sm" id="selectAllBtn">
-                                        <i class="fas fa-check-double me-1"></i> Select All
-                                    </button>
-                                    <button type="button" class="btn btn-warning btn-sm" id="selectPartialBtn">
-                                        <i class="fas fa-minus me-1"></i> Select Common
-                                    </button>
-                                    <button type="button" class="btn btn-secondary btn-sm" id="deselectAllBtn">
-                                        <i class="fas fa-times me-1"></i> Deselect All
-                                    </button>
-                                </div>
-                            </div>
+                <form method="POST" action="{{ route('admin.roles.store') }}">
+                    @csrf
+                    <div class="card-body">
+                        <!-- Role Information -->
+                        <div class="row mb-4">
+                            <div class="col-lg-8">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold">Role Name <span class="text-danger">*</span></label>
+                                        <input type="text"
+                                               class="form-control form-control-sm @error('name') is-invalid @enderror"
+                                               id="name"
+                                               name="name"
+                                               value="{{ old('name') }}"
+                                               placeholder="e.g., Content Manager"
+                                               required>
+                                        @error('name')
+                                            <div class="invalid-feedback small">{{ $message }}</div>
+                                        @enderror
+                                        <small class="text-muted">Use a descriptive name for the role</small>
+                                    </div>
 
-                            @error('permissions')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror
-
-                            <!-- Permissions Summary -->
-                            <div class="alert alert-info d-flex justify-content-between align-items-center mb-4">
-                                <div>
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    <span id="permissionsCount">0</span> permissions selected
-                                </div>
-                                <div class="small">
-                                    <span id="groupsFullySelected">0</span> groups fully selected •
-                                    <span id="groupsPartiallySelected">0</span> groups partially selected
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                @foreach($permissions as $group => $groupPermissions)
-                                <div class="col-md-4 mb-4">
-                                    <div class="card permission-group-card h-100">
-                                        <div class="card-header group-header bg-light d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 class="card-title mb-0 text-capitalize">{{ $group }}</h6>
-                                                <small class="text-muted group-stats">
-                                                    {{ count($groupPermissions) }} permissions
-                                                </small>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input group-checkbox"
-                                                    type="checkbox"
-                                                    data-group="{{ $group }}"
-                                                    id="group_{{ $group }}">
-                                                <label class="form-check-label small" for="group_{{ $group }}">
-                                                    All
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            @foreach($groupPermissions as $permission)
-                                            <div class="permission-item">
-                                                <div class="form-check mb-0">
-                                                    <input class="form-check-input permission-checkbox"
-                                                        type="checkbox"
-                                                        name="permissions[]"
-                                                        value="{{ $permission->id }}"
-                                                        id="permission_{{ $permission->id }}"
-                                                        data-group="{{ $group }}">
-                                                    <label class="form-check-label small" for="permission_{{ $permission->id }}">
-                                                        {{ $permission->name }}
-                                                    </label>
-                                                </div>
-                                            </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold">Stakeholder</label>
+                                        <select class="form-select form-select-sm @error('stakeholder') is-invalid @enderror"
+                                                name="stakeholder"
+                                                id="stakeholder">
+                                            <option value="">Select Stakeholder</option>
+                                            @foreach($stakeholderTypes as $type)
+                                                <option value="{{ $type }}" {{ old('stakeholder') == $type ? 'selected' : '' }}>
+                                                    {{ $type }}
+                                                </option>
                                             @endforeach
+                                            <option value="custom" {{ old('stakeholder') == 'custom' ? 'selected' : '' }}>Custom...</option>
+                                        </select>
+                                        @error('stakeholder')
+                                            <div class="invalid-feedback small">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Custom Stakeholder Field (hidden by default) -->
+                                    <div class="col-md-6" id="customStakeholderField" style="display: none;">
+                                        <label class="form-label small fw-bold">Custom Stakeholder</label>
+                                        <input type="text"
+                                               class="form-control form-control-sm"
+                                               name="custom_stakeholder"
+                                               value="{{ old('custom_stakeholder') }}"
+                                               placeholder="Enter custom stakeholder name">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="card bg-light h-100">
+                                    <div class="card-body">
+                                        <h6 class="card-title small fw-bold mb-3">
+                                            <i class='bx bx-info-circle me-2'></i>Quick Tips
+                                        </h6>
+                                        <ul class="small text-muted mb-0 ps-3">
+                                            <li class="mb-2">Use clear, descriptive role names</li>
+                                            <li class="mb-2">Assign stakeholder for better organization</li>
+                                            <li class="mb-2">Select only necessary permissions</li>
+                                            <li>Review permissions before creating</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Permissions Section -->
+                        <div class="row">
+                            <div class="col-12">
+                                <!-- Permissions Header -->
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">
+                                            <i class='bx bx-key me-2'></i>Permissions
+                                        </h6>
+                                        <p class="text-muted small mb-0">
+                                            Select the permissions for this role. You can select individual permissions or entire groups.
+                                        </p>
+                                    </div>
+
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-outline-success" id="selectAllBtn">
+                                            <i class='bx bx-check-double me-1'></i>All
+                                        </button>
+                                        <button type="button" class="btn btn-outline-warning" id="selectCommonBtn">
+                                            <i class='bx bx-check me-1'></i>Common
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" id="deselectAllBtn">
+                                            <i class='bx bx-x me-1'></i>None
+                                        </button>
+                                    </div>
+                                </div>
+
+                                @error('permissions')
+                                    <div class="alert alert-danger small mb-3">{{ $message }}</div>
+                                @enderror
+
+                                <!-- Permissions Stats -->
+                                <div class="alert alert-light border small mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class='bx bx-stats me-1'></i>
+                                            <span id="permissionsCount">0</span> permissions selected
+                                            <span class="mx-2">•</span>
+                                            <span id="selectedGroups">0</span> groups selected
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-primary stats-badge" id="fullGroups">0</span>
+                                            <span class="small text-muted">fully selected</span>
+                                            <span class="mx-2">•</span>
+                                            <span class="badge bg-warning stats-badge" id="partialGroups">0</span>
+                                            <span class="small text-muted">partially selected</span>
                                         </div>
                                     </div>
                                 </div>
-                                @endforeach
+
+                                <!-- Permissions Grid -->
+                                <div class="row g-3">
+                                    @foreach ($permissions as $group => $groupPermissions)
+                                        <div class="col-md-4">
+                                            <div class="card permission-card h-100">
+                                                <div class="group-header d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h6 class="mb-0 small fw-bold text-capitalize">{{ $group }}</h6>
+                                                        <small class="text-muted">
+                                                            {{ count($groupPermissions) }} permissions
+                                                        </small>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input group-checkbox"
+                                                               type="checkbox"
+                                                               data-group="{{ $group }}"
+                                                               id="group_{{ $loop->index }}">
+                                                        <label class="form-check-label small"
+                                                               for="group_{{ $loop->index }}">
+                                                            All
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body p-3">
+                                                    @foreach ($groupPermissions as $permission)
+                                                        <div class="permission-item">
+                                                            <div class="form-check mb-0">
+                                                                <input class="form-check-input permission-checkbox"
+                                                                       type="checkbox"
+                                                                       name="permissions[]"
+                                                                       value="{{ $permission->id }}"
+                                                                       id="permission_{{ $permission->id }}"
+                                                                       data-group="{{ $group }}">
+                                                                <label class="form-check-label small"
+                                                                       for="permission_{{ $permission->id }}"
+                                                                       title="{{ $permission->name }}">
+                                                                    {{ Str::limit($permission->name, 30) }}
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-footer text-end">
-                    <a href="{{ route('admin.roles.index') }}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Create Role</button>
-                </div>
-            </form>
+
+                    <div class="card-footer bg-white py-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="small text-muted">
+                                <span id="totalSelected">0</span> permissions will be assigned
+                            </div>
+                            <div class="btn-group">
+                                <a href="{{ route('admin.roles.index') }}" class="btn btn-outline-secondary btn-sm">
+                                    <i class='bx bx-x me-1'></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class='bx bx-save me-1'></i>Create Role
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -242,221 +293,237 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Elements
-    const selectAllBtn = document.getElementById('selectAllBtn');
-    const deselectAllBtn = document.getElementById('deselectAllBtn');
-    const selectPartialBtn = document.getElementById('selectPartialBtn');
-    const permissionCheckboxes = document.querySelectorAll('.permission-checkbox');
-    const groupCheckboxes = document.querySelectorAll('.group-checkbox');
-    const permissionsCount = document.getElementById('permissionsCount');
-    const groupsFullySelected = document.getElementById('groupsFullySelected');
-    const groupsPartiallySelected = document.getElementById('groupsPartiallySelected');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elements
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        const deselectAllBtn = document.getElementById('deselectAllBtn');
+        const selectCommonBtn = document.getElementById('selectCommonBtn');
+        const permissionCheckboxes = document.querySelectorAll('.permission-checkbox');
+        const groupCheckboxes = document.querySelectorAll('.group-checkbox');
+        const permissionsCount = document.getElementById('permissionsCount');
+        const selectedGroups = document.getElementById('selectedGroups');
+        const fullGroups = document.getElementById('fullGroups');
+        const partialGroups = document.getElementById('partialGroups');
+        const totalSelected = document.getElementById('totalSelected');
+        const stakeholderSelect = document.getElementById('stakeholder');
+        const customStakeholderField = document.getElementById('customStakeholderField');
 
-    // Common permissions (you can customize this list)
-    const commonPermissions = [
-        'view users', 'view roles', 'view permissions',
-        'edit profile', 'update profile'
-    ];
+        // Common permissions (adjust as needed)
+        const commonPermissions = [
+            'view', 'list', 'read', 'show', 'profile', 'dashboard'
+        ];
 
-    // Update statistics
-    function updateStatistics() {
-        const totalPermissions = permissionCheckboxes.length;
-        const selectedPermissions = document.querySelectorAll('.permission-checkbox:checked').length;
-
-        let fullGroups = 0;
-        let partialGroups = 0;
-
-        groupCheckboxes.forEach(checkbox => {
-            const group = checkbox.getAttribute('data-group');
-            const groupPermissions = document.querySelectorAll(`.permission-checkbox[data-group="${group}"]`);
-            const checkedCount = Array.from(groupPermissions).filter(cb => cb.checked).length;
-
-            if (checkedCount === groupPermissions.length) {
-                fullGroups++;
-            } else if (checkedCount > 0) {
-                partialGroups++;
+        // Stakeholder field toggle
+        stakeholderSelect.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                customStakeholderField.style.display = 'block';
+            } else {
+                customStakeholderField.style.display = 'none';
             }
         });
 
-        permissionsCount.textContent = `${selectedPermissions} / ${totalPermissions}`;
-        groupsFullySelected.textContent = fullGroups;
-        groupsPartiallySelected.textContent = partialGroups;
-    }
+        // Initialize custom stakeholder field
+        if (stakeholderSelect.value === 'custom') {
+            customStakeholderField.style.display = 'block';
+        }
 
-    // Select All button
-    selectAllBtn.addEventListener('click', function() {
-        permissionCheckboxes.forEach(checkbox => {
-            checkbox.checked = true;
-        });
-        groupCheckboxes.forEach(checkbox => {
-            checkbox.checked = true;
-            checkbox.indeterminate = false;
-        });
-        updateGroupCheckboxStates();
-        updateCardVisualStates();
-        updateStatistics();
-    });
+        // Update statistics
+        function updateStats() {
+            const selectedPermissions = document.querySelectorAll('.permission-checkbox:checked').length;
+            const totalPermissions = permissionCheckboxes.length;
 
-    // Select Common Permissions button
-    selectPartialBtn.addEventListener('click', function() {
-        permissionCheckboxes.forEach(checkbox => {
-            const label = checkbox.nextElementSibling.textContent.toLowerCase();
-            checkbox.checked = commonPermissions.some(perm => label.includes(perm.toLowerCase()));
-        });
-        updateGroupCheckboxStates();
-        updateCardVisualStates();
-        updateStatistics();
-    });
+            let fullGroupCount = 0;
+            let partialGroupCount = 0;
+            let selectedGroupCount = 0;
 
-    // Deselect All button
-    deselectAllBtn.addEventListener('click', function() {
-        permissionCheckboxes.forEach(checkbox => {
-            checkbox.checked = false;
-        });
-        groupCheckboxes.forEach(checkbox => {
-            checkbox.checked = false;
-            checkbox.indeterminate = false;
-        });
-        updateGroupCheckboxStates();
-        updateCardVisualStates();
-        updateStatistics();
-    });
+            groupCheckboxes.forEach(checkbox => {
+                const group = checkbox.dataset.group;
+                const groupCheckboxes = document.querySelectorAll(`.permission-checkbox[data-group="${group}"]`);
+                const checkedCount = Array.from(groupCheckboxes).filter(cb => cb.checked).length;
 
-    // Group checkbox functionality
-    groupCheckboxes.forEach(groupCheckbox => {
-        groupCheckbox.addEventListener('change', function() {
-            const group = this.getAttribute('data-group');
-            const groupPermissions = document.querySelectorAll(`.permission-checkbox[data-group="${group}"]`);
-
-            groupPermissions.forEach(permissionCheckbox => {
-                permissionCheckbox.checked = this.checked;
+                if (checkedCount === groupCheckboxes.length) {
+                    fullGroupCount++;
+                    selectedGroupCount++;
+                } else if (checkedCount > 0) {
+                    partialGroupCount++;
+                    selectedGroupCount++;
+                }
             });
 
-            this.indeterminate = false;
-            updateCardVisualState(group);
-            updateStatistics();
+            permissionsCount.textContent = `${selectedPermissions} of ${totalPermissions}`;
+            selectedGroups.textContent = selectedGroupCount;
+            fullGroups.textContent = fullGroupCount;
+            partialGroups.textContent = partialGroupCount;
+            totalSelected.textContent = selectedPermissions;
+        }
+
+        // Select All button
+        selectAllBtn.addEventListener('click', function() {
+            permissionCheckboxes.forEach(cb => cb.checked = true);
+            groupCheckboxes.forEach(cb => {
+                cb.checked = true;
+                cb.indeterminate = false;
+            });
+            updateCardStates();
+            updateStats();
         });
-    });
 
-    // Individual permission checkbox functionality
-    permissionCheckboxes.forEach(permissionCheckbox => {
-        permissionCheckbox.addEventListener('change', function() {
-            const group = this.getAttribute('data-group');
-            updateGroupCheckboxState(group);
-            updateCardVisualState(group);
-            updateStatistics();
+        // Select Common button
+        selectCommonBtn.addEventListener('click', function() {
+            permissionCheckboxes.forEach(cb => {
+                const label = cb.nextElementSibling.textContent.toLowerCase();
+                cb.checked = commonPermissions.some(perm => label.includes(perm));
+            });
+            updateGroupCheckboxes();
+            updateCardStates();
+            updateStats();
         });
-    });
 
-    // Function to update group checkbox state based on individual permissions
-    function updateGroupCheckboxState(group) {
-        const groupPermissions = document.querySelectorAll(`.permission-checkbox[data-group="${group}"]`);
-        const groupCheckbox = document.querySelector(`.group-checkbox[data-group="${group}"]`);
-
-        const checkedCount = Array.from(groupPermissions).filter(cb => cb.checked).length;
-        const totalCount = groupPermissions.length;
-
-        if (checkedCount === 0) {
-            groupCheckbox.checked = false;
-            groupCheckbox.indeterminate = false;
-        } else if (checkedCount === totalCount) {
-            groupCheckbox.checked = true;
-            groupCheckbox.indeterminate = false;
-        } else {
-            groupCheckbox.checked = false;
-            groupCheckbox.indeterminate = true;
-        }
-    }
-
-    // Function to update all group checkbox states
-    function updateGroupCheckboxStates() {
-        const groups = Array.from(groupCheckboxes).map(cb => cb.getAttribute('data-group'));
-        groups.forEach(group => updateGroupCheckboxState(group));
-    }
-
-    // Function to update card visual state
-    function updateCardVisualState(group) {
-        const groupCard = document.querySelector(`.group-checkbox[data-group="${group}"]`).closest('.permission-group-card');
-        const cardHeader = groupCard.querySelector('.card-header');
-        const cardBody = groupCard.querySelector('.card-body');
-        const groupCheckbox = document.querySelector(`.group-checkbox[data-group="${group}"]`);
-
-        // Remove existing classes
-        cardHeader.classList.remove('bg-success', 'bg-warning', 'bg-light');
-        cardBody.classList.remove('bg-success', 'bg-warning');
-        groupCard.classList.remove('card-success', 'card-warning');
-
-        if (groupCheckbox.checked) {
-            // Fully selected - Success state
-            cardHeader.classList.add('bg-success');
-            cardBody.classList.add('bg-success');
-            groupCard.classList.add('card-success');
-        } else if (groupCheckbox.indeterminate) {
-            // Partially selected - Warning state
-            cardHeader.classList.add('bg-warning');
-            cardBody.classList.add('bg-warning');
-            groupCard.classList.add('card-warning');
-        } else {
-            // Not selected - Default state
-            cardHeader.classList.add('bg-light');
-        }
-    }
-
-    // Function to update all card visual states
-    function updateCardVisualStates() {
-        const groups = Array.from(groupCheckboxes).map(cb => cb.getAttribute('data-group'));
-        groups.forEach(group => updateCardVisualState(group));
-    }
-
-    // Group header click to select/deselect all
-    document.querySelectorAll('.group-header').forEach(header => {
-        header.addEventListener('click', function(e) {
-            // Don't trigger if checkbox was clicked
-            if (!e.target.matches('input[type="checkbox"]')) {
-                const groupCheckbox = this.querySelector('.group-checkbox');
-                groupCheckbox.checked = !groupCheckbox.checked;
-                groupCheckbox.dispatchEvent(new Event('change'));
-            }
+        // Deselect All button
+        deselectAllBtn.addEventListener('click', function() {
+            permissionCheckboxes.forEach(cb => cb.checked = false);
+            groupCheckboxes.forEach(cb => {
+                cb.checked = false;
+                cb.indeterminate = false;
+            });
+            updateCardStates();
+            updateStats();
         });
-    });
 
-    // Add keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        // Ctrl + A to select all
-        if (e.ctrlKey && e.key === 'a') {
-            e.preventDefault();
-            selectAllBtn.click();
-        }
+        // Group checkbox functionality
+        groupCheckboxes.forEach(groupCb => {
+            groupCb.addEventListener('change', function() {
+                const group = this.dataset.group;
+                const groupPermissions = document.querySelectorAll(`.permission-checkbox[data-group="${group}"]`);
 
-        // Ctrl + D to deselect all
-        if (e.ctrlKey && e.key === 'd') {
-            e.preventDefault();
-            deselectAllBtn.click();
-        }
+                groupPermissions.forEach(cb => {
+                    cb.checked = this.checked;
+                });
 
-        // Ctrl + C to select common
-        if (e.ctrlKey && e.key === 'c') {
-            e.preventDefault();
-            selectPartialBtn.click();
-        }
-    });
+                this.indeterminate = false;
+                updateCardState(group);
+                updateStats();
+            });
+        });
 
-    // Form submission validation
-    const form = document.querySelector('form');
-    form.addEventListener('submit', function(e) {
-        const checkedPermissions = document.querySelectorAll('.permission-checkbox:checked');
-        if (checkedPermissions.length === 0) {
-            if (!confirm('No permissions selected. Are you sure you want to create a role without any permissions?')) {
-                e.preventDefault();
+        // Individual permission checkbox functionality
+        permissionCheckboxes.forEach(permissionCb => {
+            permissionCb.addEventListener('change', function() {
+                const group = this.dataset.group;
+                updateGroupCheckbox(group);
+                updateCardState(group);
+                updateStats();
+            });
+        });
+
+        // Update group checkbox state
+        function updateGroupCheckbox(group) {
+            const groupPermissions = document.querySelectorAll(`.permission-checkbox[data-group="${group}"]`);
+            const groupCheckbox = document.querySelector(`.group-checkbox[data-group="${group}"]`);
+            const checkedCount = Array.from(groupPermissions).filter(cb => cb.checked).length;
+
+            if (checkedCount === 0) {
+                groupCheckbox.checked = false;
+                groupCheckbox.indeterminate = false;
+            } else if (checkedCount === groupPermissions.length) {
+                groupCheckbox.checked = true;
+                groupCheckbox.indeterminate = false;
+            } else {
+                groupCheckbox.checked = false;
+                groupCheckbox.indeterminate = true;
             }
         }
-    });
 
-    // Initialize on page load
-    updateGroupCheckboxStates();
-    updateCardVisualStates();
-    updateStatistics();
-});
+        // Update all group checkboxes
+        function updateGroupCheckboxes() {
+            const groups = new Set(Array.from(permissionCheckboxes).map(cb => cb.dataset.group));
+            groups.forEach(group => updateGroupCheckbox(group));
+        }
+
+        // Update card visual state
+        function updateCardState(group) {
+            const card = document.querySelector(`.group-checkbox[data-group="${group}"]`).closest('.card');
+            const groupCheckbox = document.querySelector(`.group-checkbox[data-group="${group}"]`);
+
+            card.classList.remove('card-selected', 'card-partial');
+
+            if (groupCheckbox.checked) {
+                card.classList.add('card-selected');
+            } else if (groupCheckbox.indeterminate) {
+                card.classList.add('card-partial');
+            }
+        }
+
+        // Update all card states
+        function updateCardStates() {
+            const groups = new Set(Array.from(permissionCheckboxes).map(cb => cb.dataset.group));
+            groups.forEach(group => updateCardState(group));
+        }
+
+        // Group header click
+        document.querySelectorAll('.group-header').forEach(header => {
+            header.addEventListener('click', function(e) {
+                if (!e.target.matches('input[type="checkbox"]') && !e.target.matches('label')) {
+                    const checkbox = this.querySelector('.group-checkbox');
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key.toLowerCase()) {
+                    case 'a':
+                        e.preventDefault();
+                        selectAllBtn.click();
+                        break;
+                    case 'd':
+                        e.preventDefault();
+                        deselectAllBtn.click();
+                        break;
+                    case 'c':
+                        e.preventDefault();
+                        selectCommonBtn.click();
+                        break;
+                }
+            }
+        });
+
+        // Form validation
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const selectedCount = document.querySelectorAll('.permission-checkbox:checked').length;
+
+            // Validate stakeholder if custom
+            if (stakeholderSelect.value === 'custom') {
+                const customValue = document.querySelector('input[name="custom_stakeholder"]').value.trim();
+                if (!customValue) {
+                    e.preventDefault();
+                    alert('Please enter a custom stakeholder name');
+                    return;
+                }
+            }
+
+            // Warn if no permissions
+            if (selectedCount === 0) {
+                if (!confirm('No permissions selected. Create role without permissions?')) {
+                    e.preventDefault();
+                }
+            }
+        });
+
+        // Initialize
+        updateGroupCheckboxes();
+        updateCardStates();
+        updateStats();
+
+        // Add tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
 </script>
 @endpush

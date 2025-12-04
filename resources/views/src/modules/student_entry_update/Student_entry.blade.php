@@ -3,7 +3,8 @@
 @section('title', 'Add Student')
 
 @section('content')
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 @php
     $dropdowns = config('student');
 
@@ -21,17 +22,41 @@
     $bs_stu_disability_type_master = DB::table('bs_stu_disability_type_master')->pluck('name', 'id')->toArray();  
     $bs_child_mainstreamed_master = DB::table('bs_child_mainstreamed_master')->pluck('name', 'id')->toArray();  
 
+   //============Start =====Enrollmnent==================== 
+
+    $bs_previous_schooling_type_master = DB::table('bs_previous_schooling_type_master')->pluck('name', 'id')->toArray();  
+    $bs_stu_appeared_master = DB::table('bs_stu_appeared_master')->pluck('name', 'id')->toArray(); 
+    $bs_class_master = DB::table('bs_class_master')->pluck('name', 'id')->toArray(); 
+
+    $bs_class_section_master = DB::table('bs_class_section_master')->pluck('name', 'id')->toArray(); 
+
+    $bs_stream_master = DB::table('bs_stream_master')->pluck('name', 'id')->toArray(); 
+    $bs_school_medium = DB::table('bs_school_medium')->pluck('id', 'id')->toArray();
+    $bs_school_classwise_section = DB::table('bs_school_classwise_section')->pluck('id', 'id')->toArray();  
+
+    $bs_admission_type_master = DB::table('bs_admission_type_master')->pluck('name', 'id')->toArray(); 
+      //========END=========Enrollmnent==================== 
+
+        //========Start=========Contact ==================== 
 
 
+    $bs_country_master = DB::table('bs_country_master')->pluck('name', 'id')->toArray(); 
+    $state_master = DB::table('bs_state_master')->pluck('name', 'id')->toArray(); 
+    $district_master = DB::table('bs_district_master')->pluck('name', 'id')->toArray(); 
+    $block_munc_corp_master = DB::table('bs_block_munc_corp_master')->pluck('name', 'id')->toArray(); 
+    
+//================================================
+
+  
     $genders = $gender_master;
     $mother_tongue = $mother_tongue_master;
-    
+
     $social_category = $social_category_master;
     $religion = $religion_master;
 
     $nationality = $nationality_master;
     $blood_group = $blood_group_master;
-    
+
     $guardian_relationship = $guardian_relationship_master;
     $income = $income_master;
 
@@ -39,6 +64,20 @@
     $stu_disability_type_master = $bs_stu_disability_type_master;
 
     $child_mainstreamed_master = $bs_child_mainstreamed_master;
+    $class_master = $bs_class_master;
+
+    $school_classwise_section = $bs_school_classwise_section;
+
+ //======Start===========Enrollmnent==================== 
+
+
+    $previous_schooling_type_master = $bs_previous_schooling_type_master;
+    $stu_appeared_master = $bs_stu_appeared_master;
+    $class_section_master = $bs_class_section_master;
+    $stream_master = $bs_stream_master;
+    $school_medium = $bs_school_medium;
+
+    $admission_type_master = $bs_admission_type_master;
 @endphp
 
 <div class="container-fluid full-width-content">
@@ -69,6 +108,9 @@
          <li class="nav-item" role="presentation">
           <button class="nav-link" id="enrollment_details-tab" data-bs-toggle="tab" data-bs-target="#enrollment_details" type="button" role="tab">Enrollment Details</button>
         </li>
+          <li class="nav-item" role="presentation">
+          <button class="nav-link" id="contact_info_tab-tab" data-bs-toggle="tab" data-bs-target="#contact_info_tab" type="button" role="tab">Contact Info</button>
+        </li>
       </ul>
     </div>
 
@@ -76,7 +118,8 @@
       <div class="tab-content" id="studentTabContent">
         <!-- ========================== -->
           <div class="tab-pane fade show active" id="general_info" role="tabpanel" aria-labelledby="general_info-tab">
-            <form id="basic_info_of_student" method="POST" action="#" novalidate>
+            <form id="basic_info_of_student" method="POST" action="{{ route('student.store_student_entry_basic_details') }}" novalidate>
+
               @csrf
               <h6 class=" card-header bg-heading-primary text-white py-2">
               GENERAL INFORMATION OF THE STUDENT
@@ -432,7 +475,8 @@
          <!-- ========================== -->
          <!-- TAB 2: ENROLMENT DETAILS -->
         <div class="tab-pane fade" id="enrollment_details" role="tabpanel" aria-labelledby="enrollment_details-tab">
-          <form id="enrollment_details_form" method="POST" action="#" novalidate>
+      <form id="student_enrollment_details" method="POST" action="{{ route('student.store_enrollment_details') }}" novalidate>
+
             @csrf
 
             <h6 class=" card-header bg-heading-primary text-white py-2">
@@ -442,40 +486,156 @@
               <div class="col-md-6">
                 <!-- Admission Number in School -->
                 <div class="mb-3">
-                  <label class="form-label small">Admission Number in School</label>
+                  <label class="form-label small">Admission Number in School<span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-hash"></i></span>
-                    <input name="admission_number" type="text" class="form-control" placeholder="Admission number in school">
+                    <input name="admission_number" 
+                      type="text" 
+                      class="form-control" 
+                      placeholder="Admission number in school"
+                      maxlength="10"
+                      pattern="\d*"
+                      inputmode="numeric"
+                    >
                   </div>
                 </div>
 
-                <!-- Status of Admission in Previous Academic Year / Year of Rejoining -->
-                <div class="mb-3">
-                  <label class="form-label small">Status of student in Previous Academic Year of Schooling *</label>
+                <!-- Status of Admission in Previous Academic Year -->
+                <div class="mb-3" id ="previous_school_status">
+                  <label class="form-label small">Status of student in Previous Academic Year of Schooling<span class="text-danger">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-history"></i></span>
-                    <select name="admission_status_prev" class="form-select">
-                      <option value="">-Please Select-</option>
-                      <option value="Continuing">Continuing</option>
-                      <option value="Re-joined">Re-joined</option>
-                      <option value="New Admission">New Admission</option>
+                    <select name="admission_status_prev"  id="admission_status_prev" class="form-select">
+                          <option value="">-Please Select-</option>
+                          @foreach($previous_schooling_type_master ?? [] as $val => $label)
+                          <option value="{{ $val }}">{{ $label }}</option>
+                          @endforeach
                     </select>
                   </div>
                 </div>
+
+
+
+                <div class="mb-3"  id ="prev_class_studied_appeared_exam" style="display:none;">
+                  <label class="form-label small">In the Previous class studied – whether appeared for examinations<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                        <select name="prev_class_appeared_exam" id="prev_class_appeared_exam"  class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($dropdowns['prev_class_appeared_exam'] as $val => $label)
+                            <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                      </select>
+                  </div>
+                </div>
+
+
+                <div class="mb-3" id="previous_class_studied_result_examination" style="display:none;">
+                  <label class="form-label small">In the previous class studied – Result of the examination<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                      <select name="previous_class_result_examination" id="previous_class_result_examination" class="form-select">
+                          <option value="">-Please Select-</option>
+                          @foreach($stu_appeared_master ?? [] as $val => $label)
+                          <option value="{{ $val }}">{{ $label }}</option>
+                          @endforeach
+                    </select>
+                  </div>
+                </div>
+
+
+                <div class="mb-3" id="percentage_of_overall_marks_section" style="display:none;">
+                  <label class="form-label small">In the previous class studied - % of overall marks obtained in the examination<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                      <input name="percentage_of_overall_marks" id="percentage_of_overall_marks"
+                      type="text" 
+                      class="form-control" 
+                      placeholder="% of overall marks obtained"
+                      maxlength="3"
+                      pattern="\d*"
+                      inputmode="numeric"
+                    >
+                  </div>
+                </div>
+
+                  <div class="mb-3" id="no_of_days_attended_section" style="display:none;">
+                  <label class="form-label small">No. of days child attended school (in the previous academic year)<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                   <input name="no_of_days_attended" id="no_of_days_attended" 
+                      type="text" 
+                      class="form-control" 
+                      placeholder="No of days child attended school"
+                      maxlength="3"
+                      pattern="\d*"
+                      inputmode="numeric"
+                    >
+                  </div>
+                </div>
+                  <div class="mb-3" id="previous_class_studied" style="display:none;">
+                  <label class="form-label small">Grade/Class Studied in the Previous/Last Academic Year (Previous Class)*<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                    <select name="previous_class" id="previous_class" class="form-select">
+                          <option value="">-Please Select-</option>
+                          @foreach($class_master ?? [] as $val => $label)
+                          <option value="{{ $val }}">{{ $label }}</option>
+                          @endforeach
+                    </select>
+                  </div>
+                </div>
+                  <div class="mb-3" id="previous_section_section" style="display:none;">
+                  <label class="form-label small">Previous Section<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                    <select name="class_section" id="class_section" class="form-select">
+                          <option value="">-Please Select-</option>
+                          @foreach($class_section_master ?? [] as $val => $label)
+                          <option value="{{ $val }}">{{ $label }}</option>
+                          @endforeach
+                    </select>
+                  </div>
+                </div>
+                  <div class="mb-3" id="previous_stream_section" style="display:none;">
+                  <label class="form-label small">Previous Stream<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                    <select name="student_stream" id="student_stream" class="form-select">
+                          <option value="">-Please Select-</option>
+                          @foreach($stream_master ?? [] as $val => $label)
+                          <option value="{{ $val }}">{{ $label }}</option>
+                          @endforeach
+                    </select>
+                  </div>
+                </div>
+                  <div class="mb-3" id="previous_roll_no_section" style="display:none;">
+                  <label class="form-label small">Previous Roll No.<span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-history"></i></span>
+                     <input name="previous_student_roll_no" id="previous_student_roll_no"
+                      type="text" 
+                      class="form-control" 
+                      placeholder="Enter Previous Roll Number"
+                      maxlength="10"
+                      pattern="\d*"
+                      inputmode="numeric"
+                    >
+                  </div>
+                </div>
+
+                <!-- ================================================== -->
 
                 <!-- Present Class -->
                 <div class="mb-3">
                   <label class="form-label small">Present Class</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-book-open"></i></span>
-                    <select name="present_class" class="form-select">
-                      <option value="">-Please Select-</option>
-                      <option value="Nursery">Nursery</option>
-                      <option value="KG">KG</option>
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                      <!-- add more as needed -->
+                    <select name="present_class" id="present_class" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($class_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
                     </select>
                   </div>
                 </div>
@@ -485,7 +645,12 @@
                   <label class="form-label small">Academic Year</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-calendar-alt"></i></span>
-                    <input name="academic_year" type="text" class="form-control" placeholder="e.g. 2024-2025">
+                  <select name="accademic_year" id="accademic_year"  class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($dropdowns['accademic_year'] as $val => $label)
+                            <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                      </select>
                   </div>
                 </div>
 
@@ -494,20 +659,25 @@
                   <label class="form-label small">Present Section</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-layout"></i></span>
-                    <input name="present_section" type="text" class="form-control" placeholder="Section (if any)">
+                      <select name="present_section" id="present_section" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($school_classwise_section ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                     </select>
                   </div>
                 </div>
 
                 <!-- Present Medium -->
                 <div class="mb-3">
-                  <label class="form-label small">Present Medium</label>
+                  <label class="form-label small">Medium</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-chat"></i></span>
-                    <select name="present_medium" class="form-select">
-                      <option value="">-Please Select-</option>
-                      <option value="English">English</option>
-                      <option value="Hindi">Hindi</option>
-                      <option value="Regional">Regional</option>
+                         <select name="school_medium" id="school_medium" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($school_medium ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
                     </select>
                   </div>
                 </div>
@@ -539,11 +709,11 @@
                   <label class="form-label small">Admission Type</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bx bx-transfer-alt"></i></span>
-                    <select name="admission_type" class="form-select">
-                      <option value="">-Please Select-</option>
-                      <option value="Regular">Regular</option>
-                      <option value="Transfer">Transfer</option>
-                      <option value="Other">Other</option>
+                         <select name="admission_type" id="admission_type" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($admission_type_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
                     </select>
                   </div>
                 </div>
@@ -553,12 +723,236 @@
             </div>
 
             <div class="form-actions text-end mt-3">
-              <button class="btn btn-secondary me-2" data-bs-toggle="tab" data-bs-target="#general_info" type="button">Previous</button>
-              <button class="btn btn-success" data-bs-toggle="tab" data-bs-target="#tab3" type="button">Next</button>
+              <button class="btn btn-secondary me-2" data-bs-toggle="tab" type="button">Previous</button>
+              <button id="enrollment_details_save_btn" class="btn btn-success" data-bs-toggle="tab" type="button">Next</button>
             </div>
+
           </form>
         </div>
           <!-- ========================== -->
+        <div class="tab-pane fade" id="contact_info_tab" role="tabpanel"    aria-labelledby="contact_info_tab-tab">
+            <form id="contact_info_of_student_and_guardian" method="POST" action="{{ route('student.store_student_entry_contact_details') }}" novalidate>
+            @csrf
+            
+            <h6 class=" card-header bg-heading-primary text-white py-2">
+              CONTACT INFORMATION FOR STUDENT
+            </h6> 
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3" id="student_country_section">
+                  <label class="form-label small">Select Country</label>
+                  <select name="student_country" id= "student_country" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($bs_country_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Address</label>
+                  <input name="student_address" type="text" class="form-control" placeholder="Enter Address">
+                </div>
+
+               
+                <div class="mb-3" id="student_district_section">
+                  <label class="form-label small">District</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                  <select name="student_district" id= "student_district"  class="select2 form-select2">
+                        <option value="">-Please Select-</option>
+                        @foreach($district_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                  </div>
+                </div> 
+
+                <div class="mb-3">
+                  <label class="form-label small">Panchayat</label>
+                  <input name="student_panchayat" type="text" class="form-control" placeholder="Enter Panchayat / Ward">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Police Station</label>
+                  <input name="student_police_station" type="text" class="form-control" placeholder="Police station">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Mobile Number (Student / Parent / Guardian)</label>
+                  <input name="student_mobile" type="text" class="form-control" placeholder="Mobile number">
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3" id="student_state_section">
+                  <label class="form-label small">State</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                  <select name="student_state" id= "student_state"  class="select2 form-select2">
+                        <option value="">-Please Select-</option>
+                        @foreach($state_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                  </div>
+                </div> 
+
+
+                <div class="mb-3">
+                  <label class="form-label small">Habitation / Locality</label>
+                  <input name="student_locality" type="text" class="form-control" placeholder="Habitation / Locality">
+                </div>
+
+                <div class="mb-3" id="student_block_section">
+                  <label class="form-label small">Block / Municipality</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                  <select name="student_block" id= "student_block"  class="select2 form-select2">
+                        <option value="">-Please Select-</option>
+                        @foreach($block_munc_corp_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                  </div>
+                </div> 
+
+                <div class="mb-3">
+                  <label class="form-label small">Post Office</label>
+                  <input name="student_post_office" type="text" class="form-control" placeholder="Post office">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Pin Code</label>
+                  <input name="student_pincode" type="text" class="form-control" placeholder="Pin Code">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Contact email id (Student/Parent/Guardian)</label>
+                  <input name="student_email" type="email" class="form-control" placeholder="Email">
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-3">
+
+            <h6 class=" card-header bg-heading-primary text-white py-2">
+              CONTACT INFORMATION FOR GUARDIAN
+            </h6> 
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" id="same-as-student" />
+              <label class="form-check-label small" for="same-as-student">Same as Student Address</label>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3" id="guardian_country_section">
+                  <label class="form-label small">Select Country</label>
+                  <select name="guardian_country" id= "guardian_country" class="form-select">
+                        <option value="">-Please Select-</option>
+                        @foreach($bs_country_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Address</label>
+                  <input name="guardian_address" type="text" class="form-control" placeholder="Guardian address">
+                </div>
+
+              
+
+
+                <div class="mb-3" id="guardian_district_section">
+                  <label class="form-label small">District</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                  <select name="guardian_district" id= "guardian_district"  class="select2 form-select2">
+                        <option value="">-Please Select-</option>
+                        @foreach($district_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                  </div>
+                </div> 
+
+                <div class="mb-3">
+                  <label class="form-label small">Panchayat</label>
+                  <input name="guardian_panchayat" type="text" class="form-control" placeholder="Panchayat / Ward">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Police Station</label>
+                  <input name="guardian_police_station" type="text" class="form-control" placeholder="Police station">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Mobile Number (Guardian)</label>
+                  <input name="guardian_mobile" type="text" class="form-control" placeholder="Mobile number">
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3" id="guardian_state_section">
+                  <label class="form-label small">State</label>
+                    <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                      <select name="guardian_state" id= "guardian_state"  class="select2  form-select2">
+                        <option value="">-Please Select-</option>
+                        @foreach($state_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                </div> 
+
+                <div class="mb-3">
+                  <label class="form-label small">Habitation / Locality</label>
+                  <input name="guardian_locality" type="text" class="form-control" placeholder="Habitation / Locality">
+                </div>
+
+                <div class="mb-3" id="guardian_block_section">
+                  <label class="form-label small">Block / Municipality</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                  <select name="guardian_block" id= "guardian_block" class="select2 form-select2">
+                        <option value="">-Please Select-</option>
+                        @foreach($block_munc_corp_master ?? [] as $val => $label)
+                        <option value="{{ $val }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                  </div>
+                </div> 
+
+
+               
+
+                <div class="mb-3">
+                  <label class="form-label small">Post Office</label>
+                  <input name="guardian_post_office" type="text" class="form-control" placeholder="Post office">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Pin Code</label>
+                  <input name="guardian_pincode" type="text" class="form-control" placeholder="Pin Code">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small">Contact email id (Guardian)</label>
+                  <input name="guardian_email" type="email" class="form-control" placeholder="Email">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions text-end mt-3">
+              <button class="btn btn-secondary me-2" data-bs-toggle="tab" type="button">Previous</button>
+               <button id="contact_info_save_btn" class="btn btn-success" type="button">Next</button>
+            </div>
+          </form>
+        </div>
+
+      <!-- ============================ -->
       </div>
     </div>
   </div>
@@ -572,6 +966,13 @@
 @section('scripts')
 @push('scripts')
 <script>
+
+
+$(document).ready(function() {
+    $('.select2').select2({
+        width: '100%' // Tells JS to fill the container we defined in CSS
+    });
+});
 
     document.addEventListener("DOMContentLoaded", function () {
         let aadhaar_child = document.getElementById("aadhaar_child");
@@ -626,72 +1027,241 @@
         }
     });
 
+// =========================================================================
+      $('#admission_status_prev').on('change', function () {
+
+            let selected = $(this).val();
+            let showValue = "1";
+
+            if (selected === showValue) {
+              $('#prev_class_studied_appeared_exam').show();
+              $('#no_of_days_attended_section').show();
+              $('#previous_class_studied').show();
+              $('#previous_section_section').show();
+              $('#previous_roll_no_section').show();
+              $('#previous_stream_section').show();
+            } else {
+              $('#prev_class_studied_appeared_exam').hide();
+              $('#no_of_days_attended_section').hide();
+              $('#previous_class_studied').hide();
+              $('#previous_section_section').hide();
+              $('#previous_roll_no_section').hide();
+              $('#previous_stream_section').hide();
+              // clear selection
+              $('#prev_class_appeared_exam').val('');
+              $('#no_of_days_attended').val('');  
+              $('#previous_class').val('');  
+              $('#class_section').val('');  
+              $('#previous_student_roll_no').val('');  
+              $('#student_stream').val('');  
+            }
+        });
+
+        $('#prev_class_appeared_exam').on('change', function () {
+          let value = $(this).val();
+
+          if (value === "1") {
+              $('#previous_class_studied_result_examination').show();
+              $('#percentage_of_overall_marks_section').show();
+          } else {
+              $('#previous_class_studied_result_examination').hide();
+              $('#percentage_of_overall_marks_section').hide();
+
+              // Clear fields
+              $('#previous_class_result_examination').val('');
+              $('#percentage_of_overall_marks').val('');
+          }
+        });
+
+
 
 
     // ================================
   $(function() {
 
-    function clearInlineErrors() {
-      $('.is-invalid').removeClass('is-invalid');
-      $('.invalid-feedback.js-dynamic').remove();
-    }
+      function clearInlineErrors() {
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback.js-dynamic').remove();
+      }
 
-    function getCsrfToken() {
-      return $('meta[name="csrf-token"]').attr('content') || '';
-    }
+      function getCsrfToken() {
+        return $('meta[name="csrf-token"]').attr('content') || '';
+      }
 
-    $('#basic_info_save_btn').off('click').on('click', function () {
+
+      // ==================================
+      // Student Basic  Details Save 
+      $('#basic_info_save_btn').off('click').on('click', function () {
+        var $btn = $(this);
+        var $basicForm = $('#basic_info_of_student');
+        var $enrollForm = $('#student_enrollment_details'); // must exist (see blade change)
+
+        clearInlineErrors();
+
+        $btn.prop('disabled', true).text('Saving...');
+
+        // Start with FormData from basic info form
+        var formData = new FormData($basicForm[0]);
+
+        // If enrollment form exists, append its fields to the same FormData
+        if ($enrollForm.length) {
+          // Use native elements to include file inputs correctly and match browser behavior.
+          // We'll append each input/select/textarea that has a name and is not disabled.
+          $enrollForm.find('input, select, textarea').each(function() {
+            var el = this;
+            var $el = $(el);
+            var name = $el.attr('name');
+
+            if (!name || $el.prop('disabled')) return;
+
+            // For checkboxes/radios: only append if checked
+            if (el.type === 'checkbox' || el.type === 'radio') {
+              if (!el.checked) return;
+            }
+
+            // For file inputs: append all files
+            if (el.type === 'file') {
+              var files = el.files;
+              for (var i = 0; i < files.length; i++) {
+                // Append multiple files using same field name (as browser does)
+                formData.append(name, files[i]);
+              }
+            } else {
+              // Normal inputs/selects/textareas: append value.
+              // Note: if name already exists, FormData.append will create a second entry.
+              formData.append(name, $el.val());
+            }
+          });
+        }
+
+        // Debug: list entries (optional, safe to remove in production)
+        console.log("------ MERGED FORM DATA ------");
+        for (let pair of formData.entries()) {
+          console.log(pair[0] + ':', pair[1]);
+        }
+        console.log("------ END MERGED FORM DATA ------");
+
+        $.ajax({
+          url: "{{ route('student.store_student_entry_basic_details') }}",
+
+          type: "POST",
+          data: formData,
+          processData: false,
+          contentType: false,
+          dataType: 'json',
+          headers: {
+            'X-CSRF-TOKEN': getCsrfToken(),
+            'Accept': 'application/json'
+          },
+          timeout: 20000,
+
+          beforeSend: function() {
+          console.log('Sending merged AJAX to {{ route("student.store_student_entry_basic_details") }}');
+          },
+
+          success: function (res, textStatus, jqXHR) {
+            console.log("AJAX success", res);
+
+            if (res && res.success) {
+              if (window.toastr) {
+                toastr.success(res.message || 'Saved successfully');
+              } else {
+                alert(res.message || 'Saved successfully');
+              }
+
+              // Move to enrollment details tab after successful save
+              var $nextTabBtn = $('#enrollment_details-tab');
+              if ($nextTabBtn.length) {
+                $nextTabBtn.tab('show');
+              }
+            } else {
+              console.warn('Unexpected body', res);
+              alert(res.message || 'Saved but unexpected response. Check console.');
+            }
+
+            $btn.prop('disabled', false).text('Next');
+          },
+
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.error("AJAX error. Status:", jqXHR.status, errorThrown);
+
+            clearInlineErrors();
+
+            if (jqXHR.status === 422) {
+              var resp = jqXHR.responseJSON || {};
+              var errors = resp.errors || {};
+
+              $.each(errors, function(field, messages) {
+                var selector = '[name="'+field+'"]';
+                var $el = $(selector);
+
+                if (!$el.length) {
+                  var alt = field.replace(/\.(\w+)/g, '[$1]');
+                  $el = $('[name="'+alt+'"]');
+                }
+
+                if ($el.length) {
+                  $el.addClass('is-invalid');
+                  var $group = $el.closest('.input-group');
+                  var messageHtml = '<div class="invalid-feedback d-block js-dynamic">' + (messages[0] || '') + '</div>';
+
+                  if ($group.length) {
+                    $group.after(messageHtml);
+                  } else {
+                    $el.after(messageHtml);
+                  }
+                } else {
+                  console.warn('Field not found in DOM for error:', field, messages);
+                }
+              });
+
+              var $first = $('.is-invalid').first();
+              if ($first.length) {
+                $('html, body').animate({ scrollTop: $first.offset().top - 90 }, 400);
+                $first.focus();
+              }
+            } else if (jqXHR.status === 419) {
+              alert('Session expired (419). Please reload the page and try again.');
+            } else {
+              alert('Something went wrong. See console & network tab for details.');
+            }
+
+            $btn.prop('disabled', false).text('Next');
+          },
+
+          complete: function() {
+            console.log('AJAX complete');
+          }
+        });
+      });
+
+
+     // ==================================
+      // Student Enrollment Details Save 
+    $('#enrollment_details_save_btn').off('click').on('click', function () {
       var $btn = $(this);
-      var $basicForm = $('#basic_info_of_student');
-      var $enrollForm = $('#enrollment_details_form'); // must exist (see blade change)
+      var $enrollForm = $('#student_enrollment_details');
 
       clearInlineErrors();
 
       $btn.prop('disabled', true).text('Saving...');
 
-      // Start with FormData from basic info form
-      var formData = new FormData($basicForm[0]);
+      // Build FormData only from enrollment form
+      var formData = new FormData($enrollForm[0]);
 
-      // If enrollment form exists, append its fields to the same FormData
-      if ($enrollForm.length) {
-        // Use native elements to include file inputs correctly and match browser behavior.
-        // We'll append each input/select/textarea that has a name and is not disabled.
-        $enrollForm.find('input, select, textarea').each(function() {
-          var el = this;
-          var $el = $(el);
-          var name = $el.attr('name');
+      // Ensure a single CSRF token (optional, but avoids duplicate _token entries)
+      formData.delete('_token');
+      formData.append('_token', getCsrfToken());
 
-          if (!name || $el.prop('disabled')) return;
-
-          // For checkboxes/radios: only append if checked
-          if (el.type === 'checkbox' || el.type === 'radio') {
-            if (!el.checked) return;
-          }
-
-          // For file inputs: append all files
-          if (el.type === 'file') {
-            var files = el.files;
-            for (var i = 0; i < files.length; i++) {
-              // Append multiple files using same field name (as browser does)
-              formData.append(name, files[i]);
-            }
-          } else {
-            // Normal inputs/selects/textareas: append value.
-            // Note: if name already exists, FormData.append will create a second entry.
-            formData.append(name, $el.val());
-          }
-        });
-      }
-
-      // Debug: list entries (optional, safe to remove in production)
-      console.log("------ MERGED FORM DATA ------");
+      // Debug logging (optional)
+      console.log("------ ENROLLMENT FORM DATA ------");
       for (let pair of formData.entries()) {
         console.log(pair[0] + ':', pair[1]);
       }
-      console.log("------ END MERGED FORM DATA ------");
+      console.log("------ END ENROLLMENT FORM DATA ------");
 
       $.ajax({
-        url: "{{ route('student.store') }}",
+        url: "{{ route('student.store_enrollment_details') }}",
         type: "POST",
         data: formData,
         processData: false,
@@ -703,63 +1273,46 @@
         },
         timeout: 20000,
 
-        beforeSend: function() {
-          console.log('Sending merged AJAX to {{ route("student.store") }}');
+        beforeSend: function () {
+          console.log('Sending enrollment AJAX to {{ route("student.store_enrollment_details") }}');
         },
 
-        success: function (res, textStatus, jqXHR) {
-          console.log("AJAX success", res);
-
+        success: function (res) {
           if (res && res.success) {
-            if (window.toastr) {
-              toastr.success(res.message || 'Saved successfully');
-            } else {
-              alert(res.message || 'Saved successfully');
-            }
+            if (window.toastr) toastr.success(res.message || 'Enrollment saved.');
+            else alert(res.message || 'Enrollment saved.');
 
-            // Move to enrollment details tab after successful save
-            var $nextTabBtn = $('#enrollment_details-tab');
-            if ($nextTabBtn.length) {
-              $nextTabBtn.tab('show');
-            }
+            // If you want to switch tabs programmatically after save, do it here:
+            // $('#someNextTabButton').tab('show');
           } else {
             console.warn('Unexpected body', res);
-            alert(res.message || 'Saved but unexpected response. Check console.');
+            alert(res.message || 'Saved but unexpected response.');
           }
 
           $btn.prop('disabled', false).text('Next');
         },
 
-        error: function (jqXHR, textStatus, errorThrown) {
-          console.error("AJAX error. Status:", jqXHR.status, errorThrown);
-
+        error: function (jqXHR) {
           clearInlineErrors();
 
           if (jqXHR.status === 422) {
             var resp = jqXHR.responseJSON || {};
             var errors = resp.errors || {};
 
-            $.each(errors, function(field, messages) {
-              var selector = '[name="'+field+'"]';
+            $.each(errors, function (field, messages) {
+              var selector = '[name="' + field + '"]';
               var $el = $(selector);
-
               if (!$el.length) {
                 var alt = field.replace(/\.(\w+)/g, '[$1]');
-                $el = $('[name="'+alt+'"]');
+                $el = $('[name="' + alt + '"]');
               }
-
               if ($el.length) {
                 $el.addClass('is-invalid');
                 var $group = $el.closest('.input-group');
                 var messageHtml = '<div class="invalid-feedback d-block js-dynamic">' + (messages[0] || '') + '</div>';
-
-                if ($group.length) {
-                  $group.after(messageHtml);
-                } else {
-                  $el.after(messageHtml);
-                }
+                if ($group.length) $group.after(messageHtml); else $el.after(messageHtml);
               } else {
-                console.warn('Field not found in DOM for error:', field, messages);
+                console.warn('Field not found for error:', field, messages);
               }
             });
 
@@ -777,15 +1330,115 @@
           $btn.prop('disabled', false).text('Next');
         },
 
-        complete: function() {
-          console.log('AJAX complete');
+        complete: function () {
+          console.log('Enrollment AJAX complete');
         }
       });
     });
 
-    // Keep your clickable date-group behavior unchanged
-    const dobGroup = document.getElementById('dobGroup');
-    const dobField = document.getElementById('dobField');
+    // ================================
+   // Student Contact Details Save 
+   (function($) {
+    function clearInlineErrors() {
+      $('.is-invalid').removeClass('is-invalid');
+      $('.invalid-feedback.js-dynamic').remove();
+    }
+    function getCsrfToken() {
+      return $('meta[name="csrf-token"]').attr('content') || '';
+    }
+
+    $('#contact_info_save_btn').off('click').on('click', function () {
+      var $btn = $(this);
+      var $form = $('#contact_info_of_student_and_guardian');
+
+      clearInlineErrors();
+      $btn.prop('disabled', true).text('Saving...');
+
+      var formData = new FormData($form[0]);
+
+      // ensure single _token
+      formData.delete('_token');
+      formData.append('_token', getCsrfToken());
+
+      console.log("------ CONTACT FORM DATA ------");
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ':', pair[1]);
+      }
+      console.log("------ END CONTACT FORM DATA ------");
+
+      $.ajax({
+        url: "{{ route('student.store_student_entry_contact_details') }}", // fixed
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        headers: {
+          'X-CSRF-TOKEN': getCsrfToken(),
+          'Accept': 'application/json'
+        },
+        timeout: 20000,
+        beforeSend: function () {
+          console.log('Sending contact AJAX to {{ route("student.store_student_entry_contact_details") }}');
+        },
+        success: function (res) {
+          if (res && res.success) {
+            if (window.toastr) toastr.success(res.message || 'Contact info saved.');
+            else alert(res.message || 'Contact info saved.');
+            // maybe move to next tab or reset
+          } else {
+            console.warn('Unexpected body', res);
+            alert(res.message || 'Saved but unexpected response.');
+          }
+          $btn.prop('disabled', false).text('Next');
+        },
+        error: function (jqXHR) {
+          clearInlineErrors();
+
+          if (jqXHR.status === 422) {
+            var resp = jqXHR.responseJSON || {};
+            var errors = resp.errors || {};
+            $.each(errors, function (field, messages) {
+              var selector = '[name="' + field + '"]';
+              var $el = $(selector);
+              if (!$el.length) {
+                var alt = field.replace(/\.(\w+)/g, '[$1]');
+                $el = $('[name="' + alt + '"]');
+              }
+              if ($el.length) {
+                $el.addClass('is-invalid');
+                var $group = $el.closest('.input-group');
+                var messageHtml = '<div class="invalid-feedback d-block js-dynamic">' + (messages[0] || '') + '</div>';
+                if ($group.length) $group.after(messageHtml); else $el.after(messageHtml);
+              } else {
+                console.warn('Field not found for error:', field, messages);
+              }
+            });
+
+            var $first = $('.is-invalid').first();
+            if ($first.length) {
+              $('html, body').animate({ scrollTop: $first.offset().top - 90 }, 400);
+              $first.focus();
+            }
+          } else if (jqXHR.status === 419) {
+            alert('Session expired (419). Please reload the page and try again.');
+          } else {
+            alert('Something went wrong. See console & network tab for details.');
+          }
+
+          $btn.prop('disabled', false).text('Next');
+        },
+        complete: function () {
+          console.log('Contact AJAX complete');
+        }
+      });
+    });
+  })(jQuery);
+
+    // ----------------------------------------
+      // Keep your clickable date-group behavior unchanged
+      const dobGroup = document.getElementById('dobGroup');
+      const dobField = document.getElementById('dobField');
     if (dobGroup && dobField) {
       dobGroup.addEventListener('click', () => {
         if (typeof dobField.showPicker === 'function') {
@@ -795,7 +1448,6 @@
         }
       });
     }
-
   });
 </script>
 

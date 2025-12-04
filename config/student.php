@@ -22,15 +22,23 @@ return [
     ],
 
 
-    'accademic' => [
-    1 => '',
-    2 => 'SC',
-    3 => 'ST',
-    4 => 'OBC',
-    5 => 'OTHERS',
-    6 => 'NOT APPLICABLE',
-    ],
+    // 'accademic' => [
+    // 1 => '',
+    // 2 => 'SC',
+    // 3 => 'ST',
+    // 4 => 'OBC',
+    // 5 => 'OTHERS',
+    // 6 => 'NOT APPLICABLE',
+    // ],
 
+'prev_class_appeared_exam' => [
+        1 => 'Appeared',
+        0 => 'Not Appeared',
+    ],
+'accademic_year' => [
+        2025 => '2025',
+        2026 => '2026',
+    ],
 
 
     'religions' => [

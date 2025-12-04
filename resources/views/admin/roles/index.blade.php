@@ -1,375 +1,390 @@
 @extends('layouts.app')
 
 @section('title', 'Role Management')
-@section('page-title', 'Role Management')
-@section('page-subtitle', 'Manage system roles and permissions')
+@section('page-title', 'Roles')
+@section('page-subtitle', 'Manage user roles and permissions')
 
 @push('css')
-    <style>
-        .role-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
+<style>
+    .role-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-        .action-buttons {
-            display: flex;
-            gap: 0.25rem;
-            flex-wrap: nowrap;
-        }
+    .table-sm th, .table-sm td {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+    }
 
-        .action-btn {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
+    .badge-sm {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.4rem;
+    }
 
-        .action-btn:hover {
-            transform: translateY(-1px);
-        }
+    .btn-xs {
+        padding: 0.125rem 0.375rem;
+        font-size: 0.75rem;
+        line-height: 1.2;
+        border-radius: 0.25rem;
+    }
 
-        .empty-state {
-            padding: 2rem;
-            text-align: center;
-        }
+    .stats-card {
+        padding: 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+    }
 
-        .empty-state i {
-            font-size: 3rem;
-            opacity: 0.5;
-            margin-bottom: 1rem;
-        }
+    .filter-card {
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 0.75rem;
+    }
 
-        .permission-count {
-            font-size: 0.75rem;
-            color: #6c757d;
-        }
-    </style>
+    .permission-chip {
+        display: inline-block;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        padding: 0.125rem 0.375rem;
+        font-size: 0.7rem;
+        margin: 0.125rem;
+        color: #6c757d;
+    }
+</style>
 @endpush
 
 @section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h3 class="card-title mb-0">Roles List</h3>
-                        <div class="card-actions">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Quick Stats -->
+            <div class="row mb-3">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card stats-card bg-light">
+                        <div class="card-body p-2">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class='bx bx-shield text-primary fs-5'></i>
+                                </div>
+                                <div class="flex-grow-1 ms-2">
+                                    <h6 class="mb-0 fw-bold">{{ $totalRoles }}</h6>
+                                    <small class="text-muted">Total Roles</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card stats-card bg-light">
+                        <div class="card-body p-2">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class='bx bx-user-check text-success fs-5'></i>
+                                </div>
+                                <div class="flex-grow-1 ms-2">
+                                    <h6 class="mb-0 fw-bold">{{ $rolesWithUsers }}</h6>
+                                    <small class="text-muted">With Users</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card stats-card bg-light">
+                        <div class="card-body p-2">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class='bx bx-key text-info fs-5'></i>
+                                </div>
+                                <div class="flex-grow-1 ms-2">
+                                    <h6 class="mb-0 fw-bold">{{ $rolesWithPermissions }}</h6>
+                                    <small class="text-muted">With Permissions</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card stats-card bg-light">
+                        <div class="card-body p-2">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class='bx bx-lock text-warning fs-5'></i>
+                                </div>
+                                <div class="flex-grow-1 ms-2">
+                                    <h6 class="mb-0 fw-bold">{{ $protectedRoles }}</h6>
+                                    <small class="text-muted">Protected</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 fs-6 fw-bold">
+                            <i class='bx bx-list-ul me-2'></i>Role Management
+                        </h5>
+                        <div>
                             @can('create roles')
-                                <a href="{{ route('admin.roles.create') }}" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-plus me-1"></i> Create New Role
-                                </a>
+                            <a href="{{ route('admin.roles.create') }}" class="btn btn-primary btn-sm">
+                                <i class='bx bx-plus me-1'></i>New Role
+                            </a>
                             @endcan
                         </div>
                     </div>
-                    <div class="card-body">
-                        <!-- Success/Error Messages -->
-                        @session('success')
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <i class="fas fa-check me-2"></i>
-                                {{ $value }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- Filter Card -->
+                <div class="card-body border-bottom py-2">
+                    <div class="filter-card">
+                        <form method="GET" action="{{ route('admin.roles.index') }}" id="searchForm">
+                            <div class="row g-2">
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold">Search</label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text"><i class='bx bx-search'></i></span>
+                                        <input type="text" name="search" class="form-control form-control-sm"
+                                               placeholder="Role name..." value="{{ request('search') }}">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label small fw-bold">Users</label>
+                                    <select name="users_count" class="form-select form-select-sm">
+                                        <option value="all">All Users</option>
+                                        <option value="0" {{ request('users_count') == '0' ? 'selected' : '' }}>No Users</option>
+                                        <option value="1-10" {{ request('users_count') == '1-10' ? 'selected' : '' }}>1-10 Users</option>
+                                        <option value="10+" {{ request('users_count') == '10+' ? 'selected' : '' }}>10+ Users</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label small fw-bold">Permissions</label>
+                                    <select name="permissions_count" class="form-select form-select-sm">
+                                        <option value="all">All Permissions</option>
+                                        <option value="0" {{ request('permissions_count') == '0' ? 'selected' : '' }}>No Permissions</option>
+                                        <option value="1-10" {{ request('permissions_count') == '1-10' ? 'selected' : '' }}>1-10 Permissions</option>
+                                        <option value="10+" {{ request('permissions_count') == '10+' ? 'selected' : '' }}>10+ Permissions</option>
+                                    </select>
+                                </div>
+
+                                @if(!empty($stakeholderTypes))
+                                <div class="col-md-2">
+                                    <label class="form-label small fw-bold">Stakeholder</label>
+                                    <select name="stakeholder" class="form-select form-select-sm">
+                                        <option value="">All Stakeholders</option>
+                                        @foreach($stakeholderTypes as $type)
+                                        <option value="{{ $type }}" {{ request('stakeholder') == $type ? 'selected' : '' }}>
+                                            {{ $type }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @endif
+
+                                <div class="col-md-3 d-flex align-items-end">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class='bx bx-filter me-1'></i>Filter
+                                        </button>
+                                        <a href="{{ route('admin.roles.index') }}" class="btn btn-outline-secondary">
+                                            <i class='bx bx-reset me-1'></i>Clear
+                                        </a>
+                                    </div>
+
+                                    @if(request()->hasAny(['search', 'users_count', 'permissions_count', 'stakeholder']))
+                                    <span class="badge bg-info ms-2 align-self-center">
+                                        {{ $roles->total() }} found
+                                    </span>
+                                    @endif
+                                </div>
                             </div>
-                        @endsession
+                        </form>
+                    </div>
+                </div>
 
-                        @session('error')
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <i class="fas fa-exclamation-circle me-2"></i>
-                                {{ $value }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        @endsession
-
-                        <!-- Advanced Search Section -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="fas fa-search me-2"></i>Advanced Search
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <form method="GET" action="{{ route('admin.roles.index') }}" id="searchForm">
-                                    <div class="row g-3">
-                                        <!-- Global Search -->
-                                        <div class="col-md-6">
-                                            <label class="form-label">Global Search</label>
-                                            <input type="text" name="search" class="form-control"
-                                                placeholder="Search role names, permissions..."
-                                                value="{{ request('search') }}">
+                <!-- Table -->
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="40" class="ps-3">#</th>
+                                    <th width="60" class="text-center">Role</th>
+                                    <th width="80" class="text-center">Users</th>
+                                    <th width="120" class="text-center">Permissions</th>
+                                    <th width="120" class="text-center">Created</th>
+                                    <th width="100" class="text-end pe-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($roles as $role)
+                                <tr class="{{ $role->name === 'Super Admin' ? 'table-warning' : '' }}">
+                                    <td class="ps-3">
+                                        <small class="text-muted">#{{ $role->id }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="role-avatar rounded-circle me-2
+                                                {{ $role->name === 'Super Admin' ? 'bg-warning text-dark' :
+                                                   ($role->name === 'Admin' ? 'bg-primary text-white' : 'bg-secondary text-white') }}">
+                                                {{ substr($role->name, 0, 2) }}
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold small">{{ $role->name }}</div>
+                                                @if($role->description)
+                                                <small class="text-muted">{{ Str::limit($role->description, 40) }}</small>
+                                                @endif
+                                                @if(in_array($role->name, ['Super Admin', 'State Admin']))
+                                                <div>
+                                                    <span class="badge badge-sm bg-warning">
+                                                        <i class='bx bx-shield-quarter me-1'></i>Protected
+                                                    </span>
+                                                </div>
+                                                @endif
+                                            </div>
                                         </div>
-
-                                        <!-- Users Count Filter -->
-                                        <div class="col-md-3">
-                                            <label class="form-label">Users Count</label>
-                                            <select name="users_count" class="form-select">
-                                                <option value="all">All</option>
-                                                <option value="0" {{ request('users_count') == '0' ? 'selected' : '' }}>No Users</option>
-                                                <option value="1-10" {{ request('users_count') == '1-10' ? 'selected' : '' }}>1-10 Users</option>
-                                                <option value="10+" {{ request('users_count') == '10+' ? 'selected' : '' }}>10+ Users</option>
-                                            </select>
-                                        </div>
-
-                                        <!-- Permissions Count Filter -->
-                                        <div class="col-md-3">
-                                            <label class="form-label">Permissions Count</label>
-                                            <select name="permissions_count" class="form-select">
-                                                <option value="all">All</option>
-                                                <option value="0" {{ request('permissions_count') == '0' ? 'selected' : '' }}>No Permissions</option>
-                                                <option value="1-10" {{ request('permissions_count') == '1-10' ? 'selected' : '' }}>1-10 Permissions</option>
-                                                <option value="10+" {{ request('permissions_count') == '10+' ? 'selected' : '' }}>10+ Permissions</option>
-                                            </select>
-                                        </div>
-
-                                        <!-- Action Buttons -->
-                                        <div class="col-md-12 d-flex align-items-end gap-2">
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="fas fa-search me-1"></i> Search
-                                            </button>
-                                            <a href="{{ route('admin.roles.index') }}" class="btn btn-secondary">
-                                                <i class="fas fa-redo me-1"></i> Reset
-                                            </a>
-
-                                            @if (request()->hasAny(['search', 'users_count', 'permissions_count']))
-                                                <span class="badge bg-info align-self-center ms-2">
-                                                    <i class="fas fa-filter me-1"></i>
-                                                    {{ $roles->total() }} results found
-                                                </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge
+                                            {{ $role->users_count > 0 ? 'bg-success' : 'bg-light text-dark' }}">
+                                            {{ $role->users_count }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if($role->permissions_count > 0)
+                                        <div class="d-flex flex-wrap gap-1">
+                                            @foreach($role->permissions->take(2) as $permission)
+                                            <span class="permission-chip">
+                                                {{ Str::limit($permission->name, 12) }}
+                                            </span>
+                                            @endforeach
+                                            @if($role->permissions_count > 2)
+                                            <span class="permission-chip">
+                                                +{{ $role->permissions_count - 2 }}
+                                            </span>
                                             @endif
                                         </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                                        @else
+                                        <span class="badge bg-light text-muted">None</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ $role->created_at->format('M d, Y') }}
+                                        </small>
+                                    </td>
+                                    <td class="text-end pe-3">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            @can('view roles')
+                                            <a href="{{ route('admin.roles.show', $role->id) }}"
+                                               class="btn btn-outline-info"
+                                               title="View">
+                                                <i class='bx bx-show'></i>
+                                            </a>
+                                            @endcan
 
-                        <!-- Quick Stats Section -->
-                        <div class="bulk-action-section">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <label class="form-label small text-muted mb-1">Quick Stats</label>
-                                    <div class="d-flex gap-4 text-center">
-                                        <div>
-                                            <div class="h5 mb-0 text-primary">{{ $roles->total() }}</div>
-                                            <small class="text-muted">Total Roles</small>
+                                            @can('edit roles')
+                                            <a href="{{ route('admin.roles.edit', $role->id) }}"
+                                               class="btn btn-outline-primary {{ in_array($role->name, ['Super Admin', 'State Admin']) && !auth()->user()->hasRole('Super Admin') ? 'disabled' : '' }}"
+                                               title="Edit">
+                                                <i class='bx bx-edit'></i>
+                                            </a>
+                                            @endcan
+
+                                            @can('delete roles')
+                                            @if(!in_array($role->name, ['Super Admin', 'State Admin']))
+                                            <button type="button"
+                                                    class="btn btn-outline-danger"
+                                                    title="Delete"
+                                                    onclick="confirmDelete('{{ $role->id }}', '{{ $role->name }}')">
+                                                <i class='bx bx-trash'></i>
+                                            </button>
+                                            <form id="delete-form-{{ $role->id }}"
+                                                  action="{{ route('admin.roles.destroy', $role->id) }}"
+                                                  method="POST" style="display: none;">
+                                                @csrf
+                                                @method('DELETE')
+                                            </form>
+                                            @endif
+                                            @endcan
                                         </div>
-                                        <div>
-                                            <div class="h5 mb-0 text-success">{{ $rolesWithUsers ?? 0 }}</div>
-                                            <small class="text-muted">Roles with Users</small>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <div class="py-4">
+                                            <i class='bx bx-shield fs-1 text-muted mb-3'></i>
+                                            <h6 class="text-muted mb-2">No roles found</h6>
+                                            <p class="small text-muted mb-3">
+                                                {{ request()->hasAny(['search', 'users_count', 'permissions_count', 'stakeholder'])
+                                                   ? 'Try adjusting your filters'
+                                                   : 'Create your first role' }}
+                                            </p>
+                                            @can('create roles')
+                                            <a href="{{ route('admin.roles.create') }}" class="btn btn-primary btn-sm">
+                                                <i class='bx bx-plus me-1'></i>Create Role
+                                            </a>
+                                            @endcan
                                         </div>
-                                        <div>
-                                            <div class="h5 mb-0 text-info">{{ $rolesWithPermissions ?? 0 }}</div>
-                                            <small class="text-muted">Roles with Permissions</small>
-                                        </div>
-                                        <div>
-                                            <div class="h5 mb-0 text-warning">{{ $protectedRoles ?? 0 }}</div>
-                                            <small class="text-muted">Protected Roles</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Roles Table -->
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th width="60px">ID</th>
-                                        <th>Role Information</th>
-                                        <th>Users</th>
-                                        <th>Permissions</th>
-                                        <th>Created At</th>
-                                        <th width="150px">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($roles as $role)
-                                        <tr class="{{ $role->name === 'Super Admin' ? 'table-warning' : '' }}">
-                                            <td>
-                                                <span class="text-muted">#{{ $role->id }}</span>
-                                            </td>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <div class="role-badge me-3
-                                                        {{ $role->name === 'Super Admin' ? 'bg-warning text-dark' :
-                                                           ($role->name === 'Admin' ? 'bg-primary' : 'bg-secondary') }}">
-                                                        {{ substr($role->name, 0, 2) }}
-                                                    </div>
-                                                    <div>
-                                                        <div class="fw-bold">{{ $role->name }}</div>
-                                                        @if($role->description)
-                                                            <div class="text-muted small">{{ $role->description }}</div>
-                                                        @endif
-                                                        @if(in_array($role->name, ['Super Admin', 'State Admin']))
-                                                            <small class="text-warning">
-                                                                <i class="fas fa-shield-alt me-1"></i>Protected Role
-                                                            </small>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="text-center">
-                                                    <div class="h5 mb-0 {{ $role->users_count > 0 ? 'text-success' : 'text-muted' }}">
-                                                        {{ $role->users_count }}
-                                                    </div>
-                                                    <small class="text-muted">users</small>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="text-center">
-                                                    <div class="h5 mb-0 {{ $role->permissions_count > 0 ? 'text-info' : 'text-muted' }}">
-                                                        {{ $role->permissions_count }}
-                                                    </div>
-                                                    <small class="text-muted">permissions</small>
-                                                </div>
-                                                @if($role->permissions_count > 0)
-                                                    <div class="permission-count mt-1">
-                                                        @foreach($role->permissions->take(3) as $permission)
-                                                            <span class="badge bg-light text-dark small me-1">
-                                                                {{ $permission->name }}
-                                                            </span>
-                                                        @endforeach
-                                                        @if($role->permissions_count > 3)
-                                                            <small class="text-muted">+{{ $role->permissions_count - 3 }} more</small>
-                                                        @endif
-                                                    </div>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <span class="text-muted small" title="{{ $role->created_at->format('M j, Y g:i A') }}">
-                                                    {{ $role->created_at->diffForHumans() }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div class="action-buttons">
-                                                    @can('view roles')
-                                                        <a href="{{ route('admin.roles.show', $role->id) }}"
-                                                            class="btn btn-info btn-sm action-btn" title="View Details">
-                                                            <i class="menu-icon tf-icons bx bx-eye"></i>
-                                                        </a>
-                                                    @endcan
-
-                                                    @can('edit roles')
-                                                        <a href="{{ route('admin.roles.edit', $role->id) }}"
-                                                            class="btn btn-primary btn-sm action-btn" title="Edit Role"
-                                                            {{ in_array($role->name, ['Super Admin', 'State Admin']) && !auth()->user()->hasRole('Super Admin') ? 'disabled' : '' }}>
-                                                            <i class="menu-icon tf-icons bx bx-edit"></i>
-                                                        </a>
-                                                    @endcan
-
-                                                    @can('delete roles')
-                                                        @if(!in_array($role->name, ['Super Admin', 'State Admin']))
-                                                            <form method="POST"
-                                                                action="{{ route('admin.roles.destroy', $role->id) }}"
-                                                                class="d-inline"
-                                                                onsubmit="return confirm('Are you sure you want to delete {{ $role->name }} role?')">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit"
-                                                                    class="btn btn-danger btn-sm action-btn"
-                                                                    title="Delete Role">
-                                                                    <i class="menu-icon tf-icons bx bx-trash"></i>
-                                                                </button>
-                                                            </form>
-                                                        @endif
-                                                    @endcan
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="6" class="text-center py-4">
-                                                <div class="empty-state">
-                                                    <i class="fas fa-shield-alt"></i>
-                                                    <h4 class="mt-3">No Roles Found</h4>
-                                                    <p class="text-muted">No roles match your search criteria.</p>
-                                                    @can('create roles')
-                                                        <a href="{{ route('admin.roles.create') }}" class="btn btn-primary">
-                                                            <i class="fas fa-plus me-1"></i> Create First Role
-                                                        </a>
-                                                    @endcan
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Pagination -->
-                        @if ($roles->hasPages())
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <div class="text-muted small">
-                                    Showing {{ $roles->firstItem() }} to {{ $roles->lastItem() }} of
-                                    {{ $roles->total() }} entries
-                                </div>
-                                <div>
-                                    {{ $roles->links('pagination::bootstrap-5') }}
-                                </div>
-                            </div>
-                        @endif
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
+
+                    <!-- Pagination -->
+                    @if($roles->hasPages())
+                    <div class="card-footer bg-white py-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="small text-muted">
+                                Showing {{ $roles->firstItem() }} to {{ $roles->lastItem() }} of {{ $roles->total() }}
+                            </div>
+                            <div>
+                                {{ $roles->onEachSide(1)->links('pagination::bootstrap-5') }}
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
+</div>
 @endsection
 
 @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Advanced Search Form Handling
-            const searchForm = document.getElementById('searchForm');
-            if (searchForm) {
-                // Auto-submit form when filters change
-                const autoSubmitFields = searchForm.querySelectorAll('select[name="users_count"], select[name="permissions_count"]');
-                autoSubmitFields.forEach(field => {
-                    field.addEventListener('change', function() {
-                        searchForm.submit();
-                    });
-                });
-            }
-
-            // Clear all filters
-            const clearFiltersBtn = document.querySelector('a[href="{{ route('admin.roles.index') }}"]');
-            if (clearFiltersBtn) {
-                clearFiltersBtn.addEventListener('click', function(e) {
-                    if (window.location.search) {
-                        e.preventDefault();
-                        window.location.href = "{{ route('admin.roles.index') }}";
-                    }
-                });
-            }
-
-            // Pagination preservation
-            function preservePagination() {
-                const paginationLinks = document.querySelectorAll('.pagination a');
-                paginationLinks.forEach(link => {
-                    const url = new URL(link.href);
-                    const currentUrl = new URL(window.location.href);
-
-                    // Preserve all search parameters
-                    currentUrl.searchParams.forEach((value, key) => {
-                        if (key !== 'page') {
-                            url.searchParams.set(key, value);
-                        }
-                    });
-
-                    link.href = url.toString();
-                });
-            }
-
-            preservePagination();
-
-            // Initialize tooltips
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
-            const tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-submit form on filter change
+        const filters = document.querySelectorAll('select[name="users_count"], select[name="permissions_count"], select[name="stakeholder"]');
+        filters.forEach(filter => {
+            filter.addEventListener('change', function() {
+                document.getElementById('searchForm').submit();
             });
         });
-    </script>
+
+        // Initialize tooltips
+        const tooltips = document.querySelectorAll('[title]');
+        tooltips.forEach(el => {
+            new bootstrap.Tooltip(el);
+        });
+    });
+
+    function confirmDelete(id, name) {
+        if (confirm(`Are you sure you want to delete "${name}" role?`)) {
+            document.getElementById(`delete-form-${id}`).submit();
+        }
+    }
+</script>
 @endpush
