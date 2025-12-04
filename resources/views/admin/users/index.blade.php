@@ -356,7 +356,7 @@
                                                     @endforeach
                                                 </div>
                                                 <small class="text-muted">
-                                                    {{ $user->permissions_count ?? 0 }} permissions
+                                                    {{-- {{ $user->permissions_count ?? 0 }} permissions --}}
                                                 </small>
                                             </td>
                                             <td>

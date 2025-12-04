@@ -1,275 +1,439 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Role')
-@section('page-title', 'Edit Role')
-@section('page-subtitle', 'Update role information and permissions')
+@section('title', isset($user) ? 'Edit User' : 'Create User')
+@section('page-title', isset($user) ? 'Edit User' : 'Create User')
+@section('page-subtitle', isset($user) ? 'Update user information' : 'Add a new user to the system')
 
 @push('css')
 <style>
-.permission-group-card {
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-}
+    .card-sm {
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+    }
 
-.permission-group-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
-}
+    .breadcrumb-item a {
+        text-decoration: none;
+    }
 
-.group-checkbox {
-    margin-left: 10px;
-}
+    .breadcrumb-item.active {
+        color: #6c757d;
+    }
 
-.form-check-label small {
-    font-size: 0.75rem;
-    color: #6b7280;
-}
+    .role-card {
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
 
-.permission-checkbox:checked {
-    background-color: var(--bs-success);
-    border-color: var(--bs-success);
-}
+    .role-card:hover {
+        border-color: #0d6efd;
+        background-color: rgba(13, 110, 253, 0.05);
+    }
 
-.group-checkbox:checked {
-    background-color: var(--bs-success);
-    border-color: var(--bs-success);
-}
+    .role-card.selected {
+        border-color: #0d6efd;
+        background-color: rgba(13, 110, 253, 0.1);
+        box-shadow: 0 0 0 1px rgba(13, 110, 253, 0.25);
+    }
 
-/* Card states */
-.card-header.bg-success {
-    background-color: rgba(25, 135, 84, 0.15) !important;
-    border-left: 4px solid var(--bs-success);
-    color: var(--bs-success);
-}
+    .role-card.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #f8f9fa;
+    }
 
-.card-header.bg-warning {
-    background-color: rgba(255, 193, 7, 0.15) !important;
-    border-left: 4px solid var(--bs-warning);
-    color: var(--bs-warning);
-}
+    .role-card.disabled:hover {
+        border-color: #dee2e6;
+        background-color: #f8f9fa;
+    }
 
-.card-header.bg-light {
-    border-left: 4px solid #e9ecef;
-}
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
 
-/* Card body states */
-.card-body.bg-success {
-    background-color: rgba(25, 135, 84, 0.05) !important;
-}
+    .password-strength {
+        margin-top: 0.5rem;
+    }
 
-.card-body.bg-warning {
-    background-color: rgba(255, 193, 7, 0.05) !important;
-}
+    .progress {
+        height: 4px;
+    }
 
-/* Selected card styling */
-.card-success {
-    border-color: var(--bs-success) !important;
-    box-shadow: 0 0 0 1px var(--bs-success);
-}
+    .password-requirements li {
+        font-size: 0.75rem;
+        margin-bottom: 0.125rem;
+    }
 
-.card-warning {
-    border-color: var(--bs-warning) !important;
-    box-shadow: 0 0 0 1px var(--bs-warning);
-}
+    .password-requirements .valid {
+        color: #198754;
+    }
 
-/* Checkbox labels */
-.form-check-input:checked + .form-check-label {
-    font-weight: 600;
-}
+    .password-requirements .invalid {
+        color: #dc3545;
+    }
 
-/* Group header styling */
-.group-header {
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.group-header:hover {
-    background-color: rgba(0, 0, 0, 0.02) !important;
-}
-
-/* Permission item styling */
-.permission-item {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
-}
-
-.permission-item:last-child {
-    border-bottom: none;
-}
-
-.permission-item:hover {
-    background-color: rgba(0, 0, 0, 0.02);
-    border-radius: 4px;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-}
-
-/* Stats badge */
-.group-stats {
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-/* Animation for state changes */
-.permission-group-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+    .requirement-icon {
+        width: 16px;
+        display: inline-block;
+    }
 </style>
 @endpush
 
 @section('content')
 <div class="container-fluid">
     <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{{ route('dashboard') }}">
-                    <i class="bx bx-home-alt"></i> Dashboard
-                </a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{{ route('admin.roles.index') }}">
-                    <i class="bx bx-shield"></i> Role Management
-                </a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">
-                <i class="bx bx-edit"></i> Edit Role
-            </li>
-        </ol>
-    </nav>
+    <div class="row mb-3">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.users.index') }}">Users</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ isset($user) ? 'Edit' : 'Create' }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Error Display -->
+    <x-error-display />
 
     <div class="row">
         <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title mb-0">Edit Role Information</h3>
-                    <div class="card-actions">
-                        <a href="{{ route('admin.roles.index') }}" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-arrow-left me-1"></i> Back to Roles
+            <div class="card card-sm">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 fs-6 fw-bold">
+                            <i class='bx {{ isset($user) ? "bx-edit" : "bx-user-plus" }} me-2'></i>
+                            {{ isset($user) ? 'Edit User' : 'Create New User' }}
+                        </h5>
+                        <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary btn-sm">
+                            <i class='bx bx-arrow-back me-1'></i>Back
                         </a>
                     </div>
                 </div>
-                <form method="POST" action="{{ route('admin.roles.update', $role->id) }}">
-                    @csrf
-                    @method('PUT')
-                    <div class="card-body">
-                        @if ($errors->any())
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <i class="fas fa-exclamation-circle me-2"></i>
-                                <strong>Whoops!</strong> There were some problems with your input.
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        @endif
 
-                        <div class="row">
+                <form method="POST" action="{{ isset($user) ? route('admin.users.update', $user->id) : route('admin.users.store') }}" id="userForm">
+                    @csrf
+                    @if(isset($user))
+                        @method('PUT')
+                    @endif
+
+                    <div class="card-body">
+                        <!-- Basic Information -->
+                        <div class="row mb-4">
+                            <div class="col-12 mb-3">
+                                <h6 class="fw-bold border-bottom pb-2 mb-3">
+                                    <i class='bx bx-user-circle me-2'></i>Basic Information
+                                </h6>
+                            </div>
+
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="name" class="form-label">Role Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                        id="name" name="name" value="{{ old('name', $role->name) }}"
-                                        placeholder="Enter role name" required>
+                                    <label class="form-label small fw-bold">Full Name <span class="text-danger">*</span></label>
+                                    <input type="text"
+                                           class="form-control form-control-sm @error('name') is-invalid @enderror"
+                                           id="name"
+                                           name="name"
+                                           value="{{ old('name', $user->name ?? '') }}"
+                                           placeholder="Enter full name"
+                                           required>
                                     @error('name')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <div class="invalid-feedback small">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
+
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="description" class="form-label">Description</label>
-                                    <textarea class="form-control" id="description" name="description"
-                                        placeholder="Enter role description" rows="1">{{ old('description', $role->description) }}</textarea>
+                                    <label class="form-label small fw-bold">Email <span class="text-danger">*</span></label>
+                                    <input type="email"
+                                           class="form-control form-control-sm @error('email') is-invalid @enderror"
+                                           id="email"
+                                           name="email"
+                                           value="{{ old('email', $user->email ?? '') }}"
+                                           placeholder="Enter email address"
+                                           required>
+                                    @error('email')
+                                        <div class="invalid-feedback small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">Phone Number</label>
+                                    <input type="text"
+                                           class="form-control form-control-sm @error('phone') is-invalid @enderror"
+                                           id="phone"
+                                           name="phone"
+                                           value="{{ old('phone', $user->phone ?? '') }}"
+                                           placeholder="Enter phone number"
+                                           maxlength="15">
+                                    @error('phone')
+                                        <div class="invalid-feedback small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">DISE Code</label>
+                                    <input type="text"
+                                           class="form-control form-control-sm @error('dise_code') is-invalid @enderror"
+                                           id="dise_code"
+                                           name="dise_code"
+                                           value="{{ old('dise_code', $user->dise_code ?? '') }}"
+                                           placeholder="Enter 11-digit DISE code"
+                                           maxlength="11"
+                                           pattern="[0-9]{11}">
+                                    @error('dise_code')
+                                        <div class="invalid-feedback small">{{ $message }}</div>
+                                    @enderror
+                                    <small class="text-muted">11-digit DISE code starting with 192</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">Department</label>
+                                    <input type="text"
+                                           class="form-control form-control-sm @error('department') is-invalid @enderror"
+                                           id="department"
+                                           name="department"
+                                           value="{{ old('department', $user->department ?? '') }}"
+                                           placeholder="Enter department">
+                                    @error('department')
+                                        <div class="invalid-feedback small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">Designation</label>
+                                    <input type="text"
+                                           class="form-control form-control-sm @error('designation') is-invalid @enderror"
+                                           id="designation"
+                                           name="designation"
+                                           value="{{ old('designation', $user->designation ?? '') }}"
+                                           placeholder="Enter designation">
+                                    @error('designation')
+                                        <div class="invalid-feedback small">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row">
+                        <!-- Password Section -->
+                        <div class="row mb-4">
                             <div class="col-12">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <div>
-                                        <h5 class="mb-1">Permissions</h5>
-                                        <p class="text-muted mb-0">Update the permissions for this role</p>
-                                    </div>
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-success btn-sm" id="selectAllBtn">
-                                            <i class="fas fa-check-double me-1"></i> Select All
-                                        </button>
-                                        <button type="button" class="btn btn-warning btn-sm" id="selectPartialBtn">
-                                            <i class="fas fa-minus me-1"></i> Select Common
-                                        </button>
-                                        <button type="button" class="btn btn-secondary btn-sm" id="deselectAllBtn">
-                                            <i class="fas fa-times me-1"></i> Deselect All
-                                        </button>
-                                    </div>
-                                </div>
-
-                                @error('permissions')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-
-                                <!-- Permissions Summary -->
-                                <div class="alert alert-info d-flex justify-content-between align-items-center mb-4">
-                                    <div>
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        <span id="permissionsCount">0</span> permissions selected
-                                    </div>
-                                    <div class="small">
-                                        <span id="groupsFullySelected">0</span> groups fully selected •
-                                        <span id="groupsPartiallySelected">0</span> groups partially selected
-                                    </div>
-                                </div>
+                                <h6 class="fw-bold border-bottom pb-2 mb-3">
+                                    <i class='bx bx-lock me-2'></i>Password Settings
+                                </h6>
 
                                 <div class="row">
-                                    @foreach($permissions as $group => $groupPermissions)
-                                    <div class="col-md-4 mb-4">
-                                        <div class="card permission-group-card h-100">
-                                            <div class="card-header group-header bg-light d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <h6 class="card-title mb-0 text-capitalize">{{ $group }}</h6>
-                                                    <small class="text-muted group-stats">
-                                                        {{ count($groupPermissions) }} permissions
-                                                    </small>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">
+                                                {{ isset($user) ? 'New Password' : 'Password' }}
+                                                @if(!isset($user))<span class="text-danger">*</span>@endif
+                                            </label>
+                                            <input type="password"
+                                                   class="form-control form-control-sm @error('password') is-invalid @enderror"
+                                                   id="password"
+                                                   name="password"
+                                                   placeholder="{{ isset($user) ? 'Leave blank to keep current' : 'Enter strong password' }}"
+                                                   {{ !isset($user) ? 'required' : '' }}
+                                                   minlength="8">
+                                            @error('password')
+                                                <div class="invalid-feedback small">{{ $message }}</div>
+                                            @enderror
+
+                                            <!-- Password Strength -->
+                                            <div class="password-strength">
+                                                <div class="progress">
+                                                    <div class="progress-bar" id="password-strength-bar" role="progressbar"></div>
                                                 </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input group-checkbox"
-                                                        type="checkbox"
-                                                        data-group="{{ $group }}"
-                                                        id="group_{{ $group }}">
-                                                    <label class="form-check-label small" for="group_{{ $group }}">
-                                                        All
-                                                    </label>
-                                                </div>
+                                                <small class="text-muted" id="password-strength-text">Password strength</small>
                                             </div>
-                                            <div class="card-body">
-                                                @foreach($groupPermissions as $permission)
-                                                <div class="permission-item">
-                                                    <div class="form-check mb-0">
-                                                        <input class="form-check-input permission-checkbox"
-                                                            type="checkbox"
-                                                            name="permissions[]"
-                                                            value="{{ $permission->id }}"
-                                                            id="permission_{{ $permission->id }}"
-                                                            data-group="{{ $group }}"
-                                                            {{ in_array($permission->id, $rolePermissions) ? 'checked' : '' }}>
-                                                        <label class="form-check-label small" for="permission_{{ $permission->id }}">
-                                                            {{ $permission->name }}
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                @endforeach
+
+                                            <!-- Requirements -->
+                                            <div class="password-requirements mt-2">
+                                                <small class="text-muted d-block mb-1">Requirements:</small>
+                                                <ul class="list-unstyled mb-0">
+                                                    <li id="req-length" class="invalid">
+                                                        <span class="requirement-icon"><i class='bx bx-x'></i></span>
+                                                        At least 8 characters
+                                                    </li>
+                                                    <li id="req-uppercase" class="invalid">
+                                                        <span class="requirement-icon"><i class='bx bx-x'></i></span>
+                                                        One uppercase letter
+                                                    </li>
+                                                    <li id="req-lowercase" class="invalid">
+                                                        <span class="requirement-icon"><i class='bx bx-x'></i></span>
+                                                        One lowercase letter
+                                                    </li>
+                                                    <li id="req-number" class="invalid">
+                                                        <span class="requirement-icon"><i class='bx bx-x'></i></span>
+                                                        One number
+                                                    </li>
+                                                    <li id="req-special" class="invalid">
+                                                        <span class="requirement-icon"><i class='bx bx-x'></i></span>
+                                                        One special character
+                                                    </li>
+                                                </ul>
                                             </div>
                                         </div>
                                     </div>
-                                    @endforeach
+
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">
+                                                {{ isset($user) ? 'Confirm New Password' : 'Confirm Password' }}
+                                                @if(!isset($user))<span class="text-danger">*</span>@endif
+                                            </label>
+                                            <input type="password"
+                                                   class="form-control form-control-sm @error('password_confirmation') is-invalid @enderror"
+                                                   id="password_confirmation"
+                                                   name="password_confirmation"
+                                                   placeholder="{{ isset($user) ? 'Confirm new password' : 'Confirm password' }}"
+                                                   {{ !isset($user) ? 'required' : '' }}>
+                                            @error('password_confirmation')
+                                                <div class="invalid-feedback small">{{ $message }}</div>
+                                            @enderror
+
+                                            <!-- Match Indicator -->
+                                            <div class="mt-2">
+                                                <small id="password-match-text" class="text-muted">
+                                                    <i class='bx bx-info-circle'></i> Passwords must match
+                                                </small>
+                                            </div>
+                                        </div>
+
+                                        @if(isset($user))
+                                        <div class="alert alert-light border small mt-3">
+                                            <i class='bx bx-info-circle me-1'></i>
+                                            Leave password fields blank to keep current password
+                                        </div>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Status -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="status" name="status" value="1"
+                                           {{ old('status', isset($user) ? $user->status : true) ? 'checked' : '' }}>
+                                    <label class="form-check-label small fw-bold" for="status">
+                                        <i class='bx bx-check-circle me-1'></i>
+                                        Active User Account
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Role Selection -->
+                        <div class="row">
+                            <div class="col-12">
+                                <h6 class="fw-bold border-bottom pb-2 mb-3">
+                                    <i class='bx bx-shield-alt me-2'></i>System Role <span class="text-danger">*</span>
+                                </h6>
+
+                                @error('role')
+                                    <div class="alert alert-danger small mb-3">{{ $message }}</div>
+                                @enderror
+
+                                <div class="row" id="roleSelection">
+                                    @foreach($roles as $role)
+                                        @php
+                                            $roleDisplay = $role->name;
+                                            $roleDescription = '';
+                                            if ($role->name === 'Super Admin') {
+                                                $roleDisplay = 'Super Admin';
+                                                $roleDescription = 'Full system access';
+                                            } elseif ($role->name === 'State Admin') {
+                                                $roleDisplay = 'State Admin';
+                                                $roleDescription = 'State level access';
+                                            } elseif ($role->name === 'District Admin') {
+                                                $roleDisplay = 'District Admin';
+                                                $roleDescription = 'District level access';
+                                            } elseif ($role->name === 'Block Admin') {
+                                                $roleDisplay = 'Block Admin';
+                                                $roleDescription = 'Block level access';
+                                            } elseif ($role->name === 'School Admin') {
+                                                $roleDisplay = 'School Admin';
+                                                $roleDescription = 'School level access';
+                                            } else {
+                                                $roleDisplay = $role->name;
+                                                $roleDescription = $role->description ?? 'System role';
+                                            }
+
+                                            $isDisabled = $role->name === 'Super Admin' && !auth()->user()->hasRole('Super Admin');
+                                            $isSelected = isset($userRole) && in_array($role->name, $userRole) || old('role') == $role->name;
+                                        @endphp
+
+                                        <div class="col-md-4 col-lg-3">
+                                            <div class="role-card {{ $isDisabled ? 'disabled' : '' }} {{ $isSelected ? 'selected' : '' }}"
+                                                 data-role="{{ $role->name }}">
+                                                <div class="form-check mb-0">
+                                                    <input class="form-check-input"
+                                                           type="radio"
+                                                           name="role"
+                                                           value="{{ $role->name }}"
+                                                           id="role_{{ $role->name }}"
+                                                           {{ $isSelected ? 'checked' : '' }}
+                                                           {{ $isDisabled ? 'disabled' : '' }}>
+                                                    <label class="form-check-label w-100" for="role_{{ $role->name }}">
+                                                        <div class="d-flex align-items-center mb-1">
+                                                            <i class='bx bx-shield-quarter me-2 text-primary'></i>
+                                                            <span class="fw-semibold small">{{ $roleDisplay }}</span>
+                                                        </div>
+                                                        @if($roleDescription)
+                                                            <small class="text-muted d-block">{{ $roleDescription }}</small>
+                                                        @endif
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                @if(!auth()->user()->hasRole('Super Admin'))
+                                <div class="alert alert-warning small mt-3">
+                                    <i class='bx bx-info-circle me-1'></i>
+                                    <strong>Note:</strong> You cannot assign or modify Super Admin roles.
+                                </div>
+                                @endif
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-footer text-end">
-                        <a href="{{ route('admin.roles.index') }}" class="btn btn-secondary">Cancel</a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i> Update Role
-                        </button>
+
+                    <div class="card-footer bg-white py-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="small text-muted">
+                                @if(isset($user))
+                                    User ID: #{{ $user->id }}
+                                    <span class="mx-2">•</span>
+                                    Last updated: {{ $user->updated_at->format('M d, Y') }}
+                                @endif
+                            </div>
+                            <div class="btn-group">
+                                <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary btn-sm">
+                                    <i class='bx bx-x me-1'></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-sm" id="submitBtn">
+                                    <i class='bx {{ isset($user) ? "bx-save" : "bx-user-plus" }} me-1'></i>
+                                    {{ isset($user) ? 'Update User' : 'Create User' }}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -280,232 +444,233 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Elements
-    const selectAllBtn = document.getElementById('selectAllBtn');
-    const deselectAllBtn = document.getElementById('deselectAllBtn');
-    const selectPartialBtn = document.getElementById('selectPartialBtn');
-    const permissionCheckboxes = document.querySelectorAll('.permission-checkbox');
-    const groupCheckboxes = document.querySelectorAll('.group-checkbox');
-    const permissionsCount = document.getElementById('permissionsCount');
-    const groupsFullySelected = document.getElementById('groupsFullySelected');
-    const groupsPartiallySelected = document.getElementById('groupsPartiallySelected');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elements
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('password_confirmation');
+        const passwordStrengthBar = document.getElementById('password-strength-bar');
+        const passwordStrengthText = document.getElementById('password-strength-text');
+        const passwordMatchText = document.getElementById('password-match-text');
+        const submitBtn = document.getElementById('submitBtn');
+        const form = document.getElementById('userForm');
 
-    // Common permissions (you can customize this list)
-    const commonPermissions = [
-        'view users', 'view roles', 'view permissions',
-        'edit profile', 'update profile'
-    ];
+        // Role selection
+        const roleCards = document.querySelectorAll('.role-card:not(.disabled)');
 
-    // Update statistics
-    function updateStatistics() {
-        const totalPermissions = permissionCheckboxes.length;
-        const selectedPermissions = document.querySelectorAll('.permission-checkbox:checked').length;
+        // Password strength checker
+        function checkPasswordStrength(pass) {
+            let strength = 0;
+            const requirements = {
+                length: pass.length >= 8,
+                uppercase: /[A-Z]/.test(pass),
+                lowercase: /[a-z]/.test(pass),
+                number: /[0-9]/.test(pass),
+                special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass)
+            };
 
-        let fullGroups = 0;
-        let partialGroups = 0;
+            // Calculate strength (0-100)
+            strength += requirements.length ? 20 : 0;
+            strength += requirements.uppercase ? 20 : 0;
+            strength += requirements.lowercase ? 20 : 0;
+            strength += requirements.number ? 20 : 0;
+            strength += requirements.special ? 20 : 0;
 
-        groupCheckboxes.forEach(checkbox => {
-            const group = checkbox.getAttribute('data-group');
-            const groupPermissions = document.querySelectorAll(`.permission-checkbox[data-group="${group}"]`);
-            const checkedCount = Array.from(groupPermissions).filter(cb => cb.checked).length;
+            return { strength, requirements };
+        }
 
-            if (checkedCount === groupPermissions.length) {
-                fullGroups++;
-            } else if (checkedCount > 0) {
-                partialGroups++;
+        // Update password strength UI
+        function updatePasswordStrength() {
+            const pass = password.value;
+            const { strength, requirements } = checkPasswordStrength(pass);
+
+            // Update progress bar
+            passwordStrengthBar.style.width = strength + '%';
+
+            // Update color and text
+            if (strength <= 20) {
+                passwordStrengthBar.className = 'progress-bar bg-danger';
+                passwordStrengthText.textContent = 'Very Weak';
+            } else if (strength <= 40) {
+                passwordStrengthBar.className = 'progress-bar bg-warning';
+                passwordStrengthText.textContent = 'Weak';
+            } else if (strength <= 60) {
+                passwordStrengthBar.className = 'progress-bar bg-info';
+                passwordStrengthText.textContent = 'Fair';
+            } else if (strength <= 80) {
+                passwordStrengthBar.className = 'progress-bar bg-primary';
+                passwordStrengthText.textContent = 'Good';
+            } else {
+                passwordStrengthBar.className = 'progress-bar bg-success';
+                passwordStrengthText.textContent = 'Excellent';
             }
+
+            // Update requirement indicators
+            Object.keys(requirements).forEach(req => {
+                const element = document.getElementById(`req-${req}`);
+                const icon = element.querySelector('i');
+
+                if (requirements[req]) {
+                    element.classList.remove('invalid');
+                    element.classList.add('valid');
+                    icon.className = 'bx bx-check';
+                } else {
+                    element.classList.remove('valid');
+                    element.classList.add('invalid');
+                    icon.className = 'bx bx-x';
+                }
+            });
+        }
+
+        // Check password match
+        function checkPasswordMatch() {
+            const pass = password.value;
+            const confirm = confirmPassword.value;
+
+            if (!confirm) {
+                passwordMatchText.innerHTML = '<i class="bx bx-info-circle"></i> Passwords must match';
+                passwordMatchText.className = 'text-muted';
+                return false;
+            }
+
+            if (pass === confirm) {
+                passwordMatchText.innerHTML = '<i class="bx bx-check-circle text-success"></i> Passwords match';
+                passwordMatchText.className = 'text-success';
+                return true;
+            } else {
+                passwordMatchText.innerHTML = '<i class="bx bx-x-circle text-danger"></i> Passwords do not match';
+                passwordMatchText.className = 'text-danger';
+                return false;
+            }
+        }
+
+        // Validate DISE code
+        function validateDiseCode() {
+            const code = document.getElementById('dise_code').value;
+            if (code && !/^\d{11}$/.test(code)) {
+                showToast('DISE code must be exactly 11 digits', 'error');
+                return false;
+            }
+            return true;
+        }
+
+        // Validate form
+        function validateForm() {
+            const isEdit = {{ isset($user) ? 'true' : 'false' }};
+            const pass = password.value;
+
+            // Password validation for new users
+            if (!isEdit) {
+                const { strength } = checkPasswordStrength(pass);
+                if (strength < 60) {
+                    showToast('Please choose a stronger password. Include uppercase, lowercase, numbers, and special characters.', 'error');
+                    password.focus();
+                    return false;
+                }
+
+                if (!checkPasswordMatch()) {
+                    showToast('Passwords do not match. Please confirm your password.', 'error');
+                    confirmPassword.focus();
+                    return false;
+                }
+            }
+
+            // Password validation for edits (if provided)
+            if (pass) {
+                const { strength } = checkPasswordStrength(pass);
+                if (strength < 60) {
+                    showToast('New password is too weak. Include uppercase, lowercase, numbers, and special characters.', 'error');
+                    password.focus();
+                    return false;
+                }
+
+                if (!checkPasswordMatch()) {
+                    showToast('Passwords do not match. Please confirm your new password.', 'error');
+                    confirmPassword.focus();
+                    return false;
+                }
+            }
+
+            // Validate DISE code
+            if (!validateDiseCode()) {
+                return false;
+            }
+
+            // Check role selection
+            const selectedRole = document.querySelector('input[name="role"]:checked');
+            if (!selectedRole) {
+                showToast('Please select a role for the user.', 'error');
+                return false;
+            }
+
+            return true;
+        }
+
+        // Role selection handling
+        roleCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const radio = this.querySelector('input[type="radio"]');
+                if (!radio.disabled) {
+                    radio.checked = true;
+                    updateRoleSelection();
+                }
+            });
         });
 
-        permissionsCount.textContent = `${selectedPermissions} / ${totalPermissions}`;
-        groupsFullySelected.textContent = fullGroups;
-        groupsPartiallySelected.textContent = partialGroups;
-    }
-
-    // Select All button
-    selectAllBtn.addEventListener('click', function() {
-        permissionCheckboxes.forEach(checkbox => {
-            checkbox.checked = true;
-        });
-        groupCheckboxes.forEach(checkbox => {
-            checkbox.checked = true;
-            checkbox.indeterminate = false;
-        });
-        updateGroupCheckboxStates();
-        updateCardVisualStates();
-        updateStatistics();
-    });
-
-    // Select Common Permissions button
-    selectPartialBtn.addEventListener('click', function() {
-        permissionCheckboxes.forEach(checkbox => {
-            const label = checkbox.nextElementSibling.textContent.toLowerCase();
-            checkbox.checked = commonPermissions.some(perm => label.includes(perm.toLowerCase()));
-        });
-        updateGroupCheckboxStates();
-        updateCardVisualStates();
-        updateStatistics();
-    });
-
-    // Deselect All button
-    deselectAllBtn.addEventListener('click', function() {
-        permissionCheckboxes.forEach(checkbox => {
-            checkbox.checked = false;
-        });
-        groupCheckboxes.forEach(checkbox => {
-            checkbox.checked = false;
-            checkbox.indeterminate = false;
-        });
-        updateGroupCheckboxStates();
-        updateCardVisualStates();
-        updateStatistics();
-    });
-
-    // Group checkbox functionality
-    groupCheckboxes.forEach(groupCheckbox => {
-        groupCheckbox.addEventListener('change', function() {
-            const group = this.getAttribute('data-group');
-            const groupPermissions = document.querySelectorAll(`.permission-checkbox[data-group="${group}"]`);
-
-            groupPermissions.forEach(permissionCheckbox => {
-                permissionCheckbox.checked = this.checked;
+        function updateRoleSelection() {
+            roleCards.forEach(card => {
+                card.classList.remove('selected');
             });
 
-            this.indeterminate = false;
-            updateCardVisualState(group);
-            updateStatistics();
-        });
-    });
-
-    // Individual permission checkbox functionality
-    permissionCheckboxes.forEach(permissionCheckbox => {
-        permissionCheckbox.addEventListener('change', function() {
-            const group = this.getAttribute('data-group');
-            updateGroupCheckboxState(group);
-            updateCardVisualState(group);
-            updateStatistics();
-        });
-    });
-
-    // Function to update group checkbox state based on individual permissions
-    function updateGroupCheckboxState(group) {
-        const groupPermissions = document.querySelectorAll(`.permission-checkbox[data-group="${group}"]`);
-        const groupCheckbox = document.querySelector(`.group-checkbox[data-group="${group}"]`);
-
-        const checkedCount = Array.from(groupPermissions).filter(cb => cb.checked).length;
-        const totalCount = groupPermissions.length;
-
-        if (checkedCount === 0) {
-            groupCheckbox.checked = false;
-            groupCheckbox.indeterminate = false;
-        } else if (checkedCount === totalCount) {
-            groupCheckbox.checked = true;
-            groupCheckbox.indeterminate = false;
-        } else {
-            groupCheckbox.checked = false;
-            groupCheckbox.indeterminate = true;
-        }
-    }
-
-    // Function to update all group checkbox states
-    function updateGroupCheckboxStates() {
-        const groups = Array.from(groupCheckboxes).map(cb => cb.getAttribute('data-group'));
-        groups.forEach(group => updateGroupCheckboxState(group));
-    }
-
-    // Function to update card visual state
-    function updateCardVisualState(group) {
-        const groupCard = document.querySelector(`.group-checkbox[data-group="${group}"]`).closest('.permission-group-card');
-        const cardHeader = groupCard.querySelector('.card-header');
-        const cardBody = groupCard.querySelector('.card-body');
-        const groupCheckbox = document.querySelector(`.group-checkbox[data-group="${group}"]`);
-
-        // Remove existing classes
-        cardHeader.classList.remove('bg-success', 'bg-warning', 'bg-light');
-        cardBody.classList.remove('bg-success', 'bg-warning');
-        groupCard.classList.remove('card-success', 'card-warning');
-
-        if (groupCheckbox.checked) {
-            // Fully selected - Success state
-            cardHeader.classList.add('bg-success');
-            cardBody.classList.add('bg-success');
-            groupCard.classList.add('card-success');
-        } else if (groupCheckbox.indeterminate) {
-            // Partially selected - Warning state
-            cardHeader.classList.add('bg-warning');
-            cardBody.classList.add('bg-warning');
-            groupCard.classList.add('card-warning');
-        } else {
-            // Not selected - Default state
-            cardHeader.classList.add('bg-light');
-        }
-    }
-
-    // Function to update all card visual states
-    function updateCardVisualStates() {
-        const groups = Array.from(groupCheckboxes).map(cb => cb.getAttribute('data-group'));
-        groups.forEach(group => updateCardVisualState(group));
-    }
-
-    // Group header click to select/deselect all
-    document.querySelectorAll('.group-header').forEach(header => {
-        header.addEventListener('click', function(e) {
-            // Don't trigger if checkbox was clicked
-            if (!e.target.matches('input[type="checkbox"]')) {
-                const groupCheckbox = this.querySelector('.group-checkbox');
-                groupCheckbox.checked = !groupCheckbox.checked;
-                groupCheckbox.dispatchEvent(new Event('change'));
-            }
-        });
-    });
-
-    // Add keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        // Ctrl + A to select all
-        if (e.ctrlKey && e.key === 'a') {
-            e.preventDefault();
-            selectAllBtn.click();
-        }
-
-        // Ctrl + D to deselect all
-        if (e.ctrlKey && e.key === 'd') {
-            e.preventDefault();
-            deselectAllBtn.click();
-        }
-
-        // Ctrl + C to select common
-        if (e.ctrlKey && e.key === 'c') {
-            e.preventDefault();
-            selectPartialBtn.click();
-        }
-    });
-
-    // Form submission validation
-    const form = document.querySelector('form');
-    form.addEventListener('submit', function(e) {
-        const checkedPermissions = document.querySelectorAll('.permission-checkbox:checked');
-        if (checkedPermissions.length === 0) {
-            if (!confirm('No permissions selected. Are you sure you want to update this role without any permissions?')) {
-                e.preventDefault();
-            }
-        }
-
-        // Additional validation for protected roles
-        const roleName = document.getElementById('name').value;
-        if (['Super Admin', 'State Admin'].includes(roleName)) {
-            const superAdminPermissions = document.querySelectorAll('.permission-checkbox:checked').length;
-            if (superAdminPermissions < permissionCheckboxes.length * 0.8) { // At least 80% of permissions
-                if (!confirm('This is a protected role. Are you sure you want to assign limited permissions?')) {
-                    e.preventDefault();
+            const selectedRadio = document.querySelector('input[name="role"]:checked');
+            if (selectedRadio) {
+                const selectedCard = selectedRadio.closest('.role-card');
+                if (selectedCard) {
+                    selectedCard.classList.add('selected');
                 }
             }
         }
-    });
 
-    // Initialize on page load
-    updateGroupCheckboxStates();
-    updateCardVisualStates();
-    updateStatistics();
-});
+        // Initialize role selection
+        updateRoleSelection();
+
+        // Event listeners
+        password.addEventListener('input', function() {
+            updatePasswordStrength();
+            checkPasswordMatch();
+        });
+
+        confirmPassword.addEventListener('input', checkPasswordMatch);
+
+        // DISE code numeric only
+        document.getElementById('dise_code').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Add loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Processing...';
+        });
+
+        // Initialize password strength if password exists
+        if (password.value) {
+            updatePasswordStrength();
+            checkPasswordMatch();
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            const event = new CustomEvent('show-toast', {
+                detail: { message, type }
+            });
+            window.dispatchEvent(event);
+        }
+    });
 </script>
 @endpush

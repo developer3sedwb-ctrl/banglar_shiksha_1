@@ -108,7 +108,7 @@ class UserController extends Controller
         $roles = Role::pluck('name', 'name');
 
         // Paginate results - ensure proper pagination
-        $users = $query->paginate(5)->withQueryString();
+        $users = $query->paginate(12)->withQueryString();
 
         return view('admin.users.index', compact(
             'users',
@@ -278,8 +278,17 @@ class UserController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $roles = Role::where('name', '!=', 'Super Admin')->pluck('name', 'name')->all();
-        $userRole = $user->roles->pluck('name', 'name')->all();
+        // Get roles with proper ordering and exclude Super Admin if needed
+        $roles = Role::orderBy('name')->get();
+
+        // If user is not Super Admin, filter out Super Admin role
+        if (!auth()->user()->hasRole('Super Admin')) {
+            $roles = $roles->filter(function ($role) {
+                return $role->name !== 'Super Admin';
+            });
+        }
+
+        $userRole = $user->roles->pluck('name')->toArray();
 
         return view('admin.users.edit', compact('user', 'roles', 'userRole'));
     }
@@ -302,7 +311,7 @@ class UserController extends Controller
             'department' => 'nullable|string|max:255',
             'designation' => 'nullable|string|max:255',
             'password' => 'nullable|same:confirm-password',
-            'roles' => 'required',
+            'role' => 'required',
             'status' => 'boolean'
         ]);
 
@@ -321,7 +330,7 @@ class UserController extends Controller
             $oldData = $user->toArray(); // Store old data for sync
 
             $user->update($input);
-            $user->syncRoles($request->input('roles'));
+            $user->syncRoles($request->input('role'));
 
             // Sync update to central app if user has sso_id
             if ($user->sso_id && !empty($input['password'])) {

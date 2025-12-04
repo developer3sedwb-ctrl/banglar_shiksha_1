@@ -36,6 +36,11 @@ Route::get('/health', [SSOController::class, 'health'])->name('health');
 // Protected routes (require SSO authentication - both web and API)
 Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
 
+    // For change password
+    Route::post('/change-password', [SSOController::class, 'changePassword'])->name('change.password');
+    // For updating phone to UDIN
+    Route::post('/api/update-phone-udin', [SSOController::class, 'updatePhoneUdin'])->middleware('auth');
+
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -70,30 +75,32 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
     Route::view('/student-entry', 'src.modules.student_entry_update.Student_entry')
         ->name('student.entry');
 
-        
+    Route::post('/student/store', [StudentInfoController::class, 'store'])
+        ->name('student.store');
 
-     
-    Route::post('/student/store_student_entry_basic_details', 
+
+    Route::post(
+        '/student/store_student_entry_basic_details',
         [StudentInfoController::class, 'StoreStudentEntryStoreBasicDetails']
     )->name('student.store_student_entry_basic_details');
 
-Route::post(
-    '/student/store_enrollment_details',
-    [StudentInfoController::class, 'storeEnrollmentDetails']
-)->name('student.store_enrollment_details');
+    Route::post(
+        '/student/store_enrollment_details',
+        [StudentInfoController::class, 'storeEnrollmentDetails']
+    )->name('student.store_enrollment_details');
 
 
 
-Route::post(
-    '/student/store_student_entry_contact_details',
-    [StudentInfoController::class, 'storeStudentContactDetails']
-)->name('student.store_student_entry_contact_details');
+    Route::post(
+        '/student/store_student_entry_contact_details',
+        [StudentInfoController::class, 'storeStudentContactDetails']
+    )->name('student.store_student_entry_contact_details');
 
 
-//      Route::post('/student/basic/store', [StudentInfoController::class, 'storeBasic'])->name('student.basic.store');
-// Route::post('/student/enrollment/store', [StudentInfoController::class, 'storeEnrollment'])->name('student.enrollment.store');
+    //      Route::post('/student/basic/store', [StudentInfoController::class, 'storeBasic'])->name('student.basic.store');
+    // Route::post('/student/enrollment/store', [StudentInfoController::class, 'storeEnrollment'])->name('student.enrollment.store');
 
-     
+
     Route::view('/student-edit', 'src.modules.student_entry_update.Student_edit')
         ->name('student.edit');
 
@@ -224,7 +231,7 @@ Route::post(
         Route::get('/getdisecode/{ward_id}', [CommonController::class, 'getDisecode'])->name('api.get.disecode');
 
         Route::get('/school/block/{block_id}', [CommonController::class, 'getSchoolByBlock'])->name('api.get.schoolByBlock');
-        
+
         Route::get('/get-vocational-trade-sector', [CommonController::class, 'getVocationalTradeSector'])->name('get.vocational.trade.sector');
         Route::post('/get-vocational-job-role-by-trade-sector', [CommonController::class, 'getJobRoleByVocationalTradeSector'])->name('get.jobrole.by_vocational_trade.sector');
     });
@@ -248,10 +255,9 @@ Route::post(
 
         Route::get('/student-entry-ap', [StudentInfoController::class, 'getStudentEntry'])->name('hoi.get_student_entry_form');
         Route::post('/save-student-facility-and-other-details', [StudentInfoController::class, 'storeStudentFacilityAndOtherDetails'])->name('hoi.student.facility');
-        Route::post('/save-student-vocational-details',[StudentInfoController::class, 'saveVocationalDetails'])->name('save.vocational.details');
+        Route::post('/save-student-vocational-details', [StudentInfoController::class, 'saveVocationalDetails'])->name('save.vocational.details');
         Route::delete('/student-entry/reset', [StudentInfoController::class, 'resetEntry'])->name('student.entry.reset');
-
-        });
+    });
 
     // Route::get('/test-error', function () {
     //     // wrong SQL to trigger QueryException
