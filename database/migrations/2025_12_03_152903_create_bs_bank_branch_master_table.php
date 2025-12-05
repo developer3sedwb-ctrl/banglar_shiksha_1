@@ -14,24 +14,23 @@ return new class extends Migration
         Schema::create('bs_bank_branch_master', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name', 255);
+            $table->unsignedBigInteger('bank_id_fk');
+            $table->foreign('bank_id_fk')->references('id')->on('bs_bank_code_name_master')->onDelete('cascade');
             $table->string('bank_name', 100);
-            $table->string('bank_ifsc', 11);
-            $table->string('bank_micr', 12)->nullable();
+            $table->char('bank_code', 6)->nullable();
+            $table->char('branch_ifsc', 11);
             $table->text('address')->nullable();
             $table->string('contact', 15)->nullable();
             $table->string('city', 50)->nullable();
             $table->string('district', 50)->nullable();
             $table->string('state', 50)->nullable();
-            $table->smallInteger('state_code_fk')->nullable();
-            $table->string('bank_code', 5)->nullable();
-            $table->string('bank_code_fk', 11);
-            $table->for('bank_code_fk', 11);
+            $table->smallInteger('status')->default(1)->comment('1 = active');
             // Audit fields
             $table->timestamps();
             
             $table->softDeletes();
             // Indexes
-            $table->index(['status', 'bank_ifsc'], 'idx_status_bank_ifsc');
+            $table->index(['status', 'branch_ifsc'], 'idx_status_bank_branch_ifsc');
         });
     }
 

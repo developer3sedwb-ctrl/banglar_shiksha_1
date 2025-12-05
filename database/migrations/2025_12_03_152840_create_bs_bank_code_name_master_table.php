@@ -15,16 +15,15 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('name', 50);
             $table->char('bank_code', 6);
-            $table->string('bank_ifsc', 20);
+            $table->char('bank_ifsc', 11);
             $table->string('digit_in_account_no', 50);
             $table->smallInteger('status')->default(1)->comment('1 = active');
-            // Audit fields
             $table->timestamps();
-            
             $table->softDeletes();
-            // Indexes
-            $table->index(['status', 'bank_ifsc'], 'idx_status_bank_ifsc');          
+            $table->unique(['name','status','bank_ifsc'], 'uniq_bank_ifsc');
+            $table->index(['status', 'bank_ifsc'], 'idx_status_bank_ifsc');
         });
+
     }
 
     /**
