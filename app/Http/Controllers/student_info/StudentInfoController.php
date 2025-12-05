@@ -8,6 +8,11 @@ use App\Models\student_info\StudentFacilityAndOtherDetails;
 use App\Models\student_info\StudentVocationalDetails;
 use App\Models\student_info\StudentEntryDraftTracker;
 use App\Models\student_info\StudentContactInfo;
+use App\Models\student_info\BankList;
+
+use App\Models\student_info\BranchList;
+
+use App\Models\student_info\EntryStudentBankInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -729,6 +734,39 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
             ], 500);
         }
     }
+
+        // app/Http/Controllers/BankController.php
+
+public function getBranches(Request $request)
+{
+    $bankId = $request->query('bank_id');
+
+    if (empty($bankId)) {
+        return response()->json(['branches' => []]);
+    }
+
+    $branches = \App\Models\student_info\BranchList::where('bank_id_fk', $bankId)
+                ->where('status', 1)
+                ->orderBy('name')
+                ->get(['id', 'name', 'branch_ifsc']); // use 'name' not 'branch_name'
+
+    return response()->json(['branches' => $branches]);
+}
+
+public function getIfsc(Request $request)
+{
+    $branchId = $request->query('branch_id');
+
+    if (empty($branchId)) {
+        return response()->json(['ifsc' => null]);
+    }
+
+    $branch = \App\Models\student_info\BranchList::where('id', $branchId)
+                ->where('status', 1)
+                ->first(['branch_ifsc']);
+
+    return response()->json(['ifsc' => $branch ? trim($branch->branch_ifsc) : null]);
+}
 
 
 }
