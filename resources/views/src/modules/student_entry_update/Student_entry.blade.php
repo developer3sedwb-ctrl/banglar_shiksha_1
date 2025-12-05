@@ -80,106 +80,112 @@
     $admission_type_master = $bs_admission_type_master;
 @endphp
 
-<div class="container-fluid full-width-content">
-    <!-- PAGE HEADING -->
-    <div class="page-header mb-3 d-flex justify-content-between align-items-center">
-      <div class="page-header mb-3">
-        <h4 class="fw-bold"><i class="bx bx-user"></i> Add Student</h4>
-      </div>
-      <div class="d-flex gap-2">
-        <a href="{{ route('student.bulk.upload') }}" class="btn btn-success">
-            <i class="bx bx-upload"></i> Student Bulk Upload
-        </a>
-        <a href="{{ route('dashboard') }}" class="btn btn-primary">
-          <i class="bx bx-arrow-back"></i> Back
-        </a>
-      </div>
-    </div>
-
-      <!-- CARD WITH TABS -->
-      <div class="card card-full">
-        <div class="row">
-          @if(isset($data['current_step']) && $data['current_step'] >= 1)
-          <div class="alert-danger d-flex justify-content-between align-items-center">
-              <span>
-                  <strong>Resume Entry?</strong> You have an unfinished student entry at Step {{ $data['current_step'] }}.
-              </span>
-
-              <div>
-                  <!-- Resume Button -->
-                  <button id="resumeEntryBtn" class="btn btn-success btn-sm">
-                      Resume from Step {{ $data['current_step'] }}
-                  </button>
-
-                  <!-- Start New Button -->
-                  <button id="startNewEntryBtn" class="btn btn-danger btn-sm">
-                      Start New Entry
-                  </button>
-              </div>
-          </div>
-          @endif
+    <div class="container-fluid full-width-content">
+      <!-- PAGE HEADING -->
+      <div class="page-header mb-3 d-flex justify-content-between align-items-center">
+        <div class="page-header mb-3">
+          <h4 class="fw-bold"><i class="bx bx-user"></i> Add Student</h4>
         </div>
-          <div class="card-header d-flex align-items-center justify-content-between border-bottom">
-            @php
-                $current = $data['current_step'] ?? 1;
-            @endphp
+        <div class="d-flex gap-2">
+          <a href="{{ route('student.bulk.upload') }}" class="btn btn-success">
+              <i class="bx bx-upload"></i> Student Bulk Upload
+          </a>
+          <a href="{{ route('dashboard') }}" class="btn btn-primary">
+            <i class="bx bx-arrow-back"></i> Back
+          </a>
+        </div>
+      </div>
+  
+<div class="alert-container">
+    @if(isset($data['current_step']) && $data['current_step'] >= 1)
+        <div class="entry-alert-box">
+            <span class="entry-alert-text">
+                <strong>Resume Entry ?</strong>
+                You have a student entry that is still incomplete at Step {{ $data['current_step'] }}.
+            </span>
 
-            <ul class="nav nav-tabs mb-0" id="studentTab" role="tablist">
+            <div class="entry-alert-actions">
+                <button id="resumeEntryBtn" class="btn btn-success">
+                    Resume from Step {{ $data['current_step'] }}
+                </button>
 
-                {{-- STEP 1 --}}
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link {{ $current >= 1 ? '' : '' }} active"
-                        id="general_info-tab" data-bs-toggle="tab"
-                        data-bs-target="#general_info" type="button" role="tab">
-                        General Info
-                    </button>
-                </li>
+                <button id="startNewEntryBtn" class="btn btn-danger">
+                    Start New Entry
+                </button>
+            </div>
+        </div>
+    @endif
+</div>
 
-                {{-- STEP 2 --}}
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link {{ $current >= 2 ? '' : '' }}"
-                        id="enrollment_details-tab" data-bs-toggle="tab"
-                        data-bs-target="#enrollment_details" type="button" role="tab">
-                        Enrollment Details
-                    </button>
-                </li>
+    <!-- CARD WITH TABS -->
+     <div class="card card-full">
+            <!-- ================================Student Previous Entry Delete====================================== -->
 
-                {{-- STEP 3 --}}
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link {{ $current >= 3 ? '' : '' }}"
-                        id="facility-other-dtls-tab" data-bs-toggle="tab"
-                        data-bs-target="#facility_other_dtls_tab" type="button" role="tab">
-                        Facilities & Other Details
-                    </button>
-                </li>
 
-                {{-- STEP 4 --}}
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link {{ $current >= 4 ? '' : '' }}"
-                        id="vocational-tab" data-bs-toggle="tab"
-                        data-bs-target="#vocational_tab" type="button" role="tab">
-                        Vocational Details
-                    </button>
-                </li>
 
-                {{-- STEP 5 --}}
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link {{ $current >= 5 ? '' : '' }}"
-                        id="contact_info_tab-tab" data-bs-toggle="tab"
-                        data-bs-target="#contact_info_tab" type="button" role="tab">
-                        Contact Info
-                    </button>
-                </li>
 
-                {{-- STEP 6 --}}
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link {{ $current >= 6 ? '' : '' }}"
-                        id="bank_dtls-tab" data-bs-toggle="tab"
-                        data-bs-target="#bank_dtls_tab" type="button" role="tab">
-                        Bank Details
-                    </button>
-                </li>
-            </ul>
+      <!-- ========================================================================================== -->
+      <div class="card-header d-flex align-items-center justify-content-between border-bottom">
+        @php
+            $current = $data['current_step'] ?? 1;
+        @endphp
+
+        <ul class="nav nav-tabs mb-0" id="studentTab" role="tablist">
+
+            {{-- STEP 1 --}}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {{ $current >= 1 ? '' : '' }} active"
+                    id="general_info-tab" data-bs-toggle="tab"
+                    data-bs-target="#general_info" type="button" role="tab">
+                    General Info
+                </button>
+            </li>
+
+            {{-- STEP 2 --}}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {{ $current >= 2 ? '' : '' }}"
+                    id="enrollment_details-tab" data-bs-toggle="tab"
+                    data-bs-target="#enrollment_details" type="button" role="tab">
+                    Enrollment Details
+                </button>
+            </li>
+
+            {{-- STEP 3 --}}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {{ $current >= 3 ? '' : '' }}"
+                    id="facility-other-dtls-tab" data-bs-toggle="tab"
+                    data-bs-target="#facility_other_dtls_tab" type="button" role="tab">
+                    Facilities & Other Details
+                </button>
+            </li>
+
+            {{-- STEP 4 --}}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {{ $current >= 4 ? '' : '' }}"
+                    id="vocational-tab" data-bs-toggle="tab"
+                    data-bs-target="#vocational_tab" type="button" role="tab">
+                    Vocational Details
+                </button>
+            </li>
+
+            {{-- STEP 5 --}}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {{ $current >= 5 ? '' : '' }}"
+                    id="contact_info_tab-tab" data-bs-toggle="tab"
+                    data-bs-target="#contact_info_tab" type="button" role="tab">
+                    Contact Info
+                </button>
+            </li>
+
+            {{-- STEP 6 --}}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {{ $current >= 6 ? '' : '' }}"
+                    id="bank_dtls-tab" data-bs-toggle="tab"
+                    data-bs-target="#bank_dtls_tab" type="button" role="tab">
+                    Bank Details
+                </button>
+            </li>
+        </ul>
       </div>
 
       <div class="card-body">
@@ -1716,9 +1722,44 @@
             </form>
           </div>
               <!-- ==========End of Bank ================ -->
-        </div>
       </div>
+    </div>
+  </div>
+
+
+
+<!-- ==========================DELETE PREVIOUS STUDENT ENTRY MODAL============================== -->
+<div class="modal fade" id="delete_previous_student_entry" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg">
+            
+            <button type="button" class="btn-close position-absolute end-0 m-2"
+                data-bs-dismiss="modal" aria-label="Close"></button>
+
+            <div class="text-center p-3">
+                <img src="{{ asset('images/delete_student.png') }}"
+                     width="80" height="80" alt="Icon">
+                <h5 class="fw-bold mt-2">
+                Are you sure you want to proceed?
+                </h5>
+                <p class="text-muted small"> The previous entry will be deleted permanently.</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary"
+                    data-bs-dismiss="modal">
+                    <i class="bx bx-x-circle me-1"></i> Cancel
+                </button>
+
+                <button type="button" class="btn btn-danger" id="confirmDeleteEntry">
+                    <i class="bx bx-trash me-1"></i> Delete Entry
+                </button>
+            </div>
+
+        </div>
+    </div>
 </div>
+
 @endsection
 
 @section('styles')
@@ -2547,22 +2588,26 @@
     //   }, 300);
     // });
 
-  document.getElementById("startNewEntryBtn")?.addEventListener("click", function() {
+  // When clicking "Start New Entry" → open modal instead of confirm()
+document.getElementById("startNewEntryBtn")?.addEventListener("click", function () {
+    let modal = new bootstrap.Modal(document.getElementById("delete_previous_student_entry"));
+    modal.show();
+});
 
-      if (!confirm("Are you sure? This will delete the previous entry permanently.")) {
-          return;
-      }
+// When clicking Delete inside modal
+document.getElementById("confirmDeleteEntry")?.addEventListener("click", function () {
 
-      let url = "{{ route('student.entry.reset') }}";
+    let url = "{{ route('student.entry.reset') }}";
 
-      sendRequest(url, "POST", null, { _method: "DELETE" })
-          .then(data => {
-              if (data) {
-                  alert(data.message);
-                  location.reload();
-              }
-          });
-  });
+    sendRequest(url, "POST", null, { _method: "DELETE" })
+        .then(data => {
+            if (data) {
+                alert(data.message);
+                location.reload();
+            }
+        });
+});
+
 </script>
 
 @endpush
