@@ -39,7 +39,7 @@ class StudentInfoController extends Controller
             'updated_by'   => $userId,
         ];
 
-          ['school_id_fk' => $inputMeta['school_id_fk']];
+        //   ['school_id_fk' => $inputMeta['school_id_fk']];
 
         $studentAttrs = [
             'studentname'                          => $request->student_name,
@@ -598,13 +598,16 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
                 'status' => 0,
                 'deleted_at' => now()
             ];
-
             // Soft delete + deactivate Facility records
             StudentFacilityAndOtherDetails::where('school_id_fk', $schoolId)
                 ->update($updateData);
 
             // Soft delete + deactivate Vocational records
             StudentVocationalDetails::where('school_id_fk', $schoolId)
+                ->update($updateData);
+            StudentInfo::where('school_id_fk', $schoolId)
+                ->update($updateData);
+            StudentEnrollmentInfo::where('school_id_fk', $schoolId)
                 ->update($updateData);
 
             // Soft delete + deactivate Draft Tracker

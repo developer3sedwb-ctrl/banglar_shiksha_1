@@ -99,8 +99,8 @@
 
   <!-- CARD WITH TABS -->
   <div class="card card-full">
-          <div class="row">
-        @if(isset($data['current_step']) && $data['current_step'] > 1)
+      <div class="row">
+        @if(isset($data['current_step']) && $data['current_step'] >= 1)
         <div class="alert-danger d-flex justify-content-between align-items-center">
             <span>
                 <strong>Resume Entry?</strong> You have an unfinished student entry at Step {{ $data['current_step'] }}.
@@ -121,31 +121,68 @@
         @endif
       </div>
     <div class="card-header d-flex align-items-center justify-content-between border-bottom">
-      <ul class="nav nav-tabs mb-0" id="studentTab" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="general_info-tab" data-bs-toggle="tab" data-bs-target="#general_info" type="button" role="tab">General Info</button>
-        </li>
+@php
+    $current = $data['current_step'] ?? 1;
+@endphp
 
-         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="enrollment_details-tab" data-bs-toggle="tab" data-bs-target="#enrollment_details" type="button" role="tab">Enrollment Details</button>
+<ul class="nav nav-tabs mb-0" id="studentTab" role="tablist">
 
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="facility-other-dtls-tab" data-bs-toggle="tab" data-bs-target="#facility_other_dtls_tab" type="button"
-            role="tab">Facilities & Other Detais</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="vocational-tab" data-bs-toggle="tab" data-bs-target="#vocational_tab" type="button"
-            role="tab">Vocational Details</button>
-        </li>
-        </li>
-          <li class="nav-item" role="presentation">
-          <button class="nav-link" id="contact_info_tab-tab" data-bs-toggle="tab" data-bs-target="#contact_info_tab" type="button" role="tab">Contact Info</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="bank_dtls-tab" data-bs-toggle="tab" data-bs-target="#bank_dtls_tab" type="button"
-            role="tab">Bank Details</button>
-        </li>
-      </ul>
+    {{-- STEP 1 --}}
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {{ $current >= 1 ? '' : 'disabled' }} active"
+            id="general_info-tab" data-bs-toggle="tab"
+            data-bs-target="#general_info" type="button" role="tab">
+            General Info
+        </button>
+    </li>
+
+    {{-- STEP 2 --}}
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {{ $current >= 2 ? '' : 'disabled' }}"
+            id="enrollment_details-tab" data-bs-toggle="tab"
+            data-bs-target="#enrollment_details" type="button" role="tab">
+            Enrollment Details
+        </button>
+    </li>
+
+    {{-- STEP 3 --}}
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {{ $current >= 3 ? '' : 'disabled' }}"
+            id="facility-other-dtls-tab" data-bs-toggle="tab"
+            data-bs-target="#facility_other_dtls_tab" type="button" role="tab">
+            Facilities & Other Details
+        </button>
+    </li>
+
+    {{-- STEP 4 --}}
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {{ $current >= 4 ? '' : 'disabled' }}"
+            id="vocational-tab" data-bs-toggle="tab"
+            data-bs-target="#vocational_tab" type="button" role="tab">
+            Vocational Details
+        </button>
+    </li>
+
+    {{-- STEP 5 --}}
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {{ $current >= 5 ? '' : 'disabled' }}"
+            id="contact_info_tab-tab" data-bs-toggle="tab"
+            data-bs-target="#contact_info_tab" type="button" role="tab">
+            Contact Info
+        </button>
+    </li>
+
+    {{-- STEP 6 --}}
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {{ $current >= 6 ? '' : 'disabled' }}"
+            id="bank_dtls-tab" data-bs-toggle="tab"
+            data-bs-target="#bank_dtls_tab" type="button" role="tab">
+            Bank Details
+        </button>
+    </li>
+
+</ul>
+
     </div>
 
     <div class="card-body">
@@ -1217,8 +1254,13 @@
 
             <!-- Buttons -->
             <div class="form-actions text-end mt-3">
-              <button class="btn btn-secondary me-2" type="button" data-bs-toggle="tab"
-                data-bs-target="#tab2">Previous</button>
+            <button class="btn btn-secondary me-2" 
+                    type="button" 
+                    data-bs-toggle="tab"
+                    data-bs-target="#enrollment_details">
+                Previous
+            </button>
+
 
               <button class="btn btn-success" type="button" id="save_facility_and_other_dtls">Save & Next</button>
             </div>
@@ -2032,6 +2074,8 @@
           if (res && res.success) {
             if (window.toastr) toastr.success(res.message || 'Contact info saved.');
             else alert(res.message || 'Contact info saved.');
+            document.querySelector('[data-bs-target="#bank_dtls_tab"]').click();
+
             // maybe move to next tab or reset
           } else {
             console.warn('Unexpected body', res);
@@ -2414,7 +2458,7 @@
           .then(res => {
               if (res && res.status) {
                   alert(res.message);
-                  document.querySelector('[data-bs-target="#bank_dtls_tab"]').click();
+                  document.querySelector('[data-bs-target="#contact_info_tab"]').click();
                   $btn.prop('disabled', false).text('Save & Next');
               }
           })
@@ -2428,6 +2472,35 @@
 });
 // {{--Vocational DETAILS OF THE STUDENT Aziza End --}}
 
+</script>
+<!-- {{--RESUME AND NEW ENTRY BY AZIZA  --}} -->
+<script>
+  // Start New Entry Button
+  $("#resumeEntryBtn").on("click", function () {
+
+    let step = {{ $data['current_step'] ?? 1 }};
+    let tabSelector = "#general_info";
+
+    switch (step) {
+        case 1: tabSelector = "#general_info"; break;
+        case 2: tabSelector = "#enrollment_details"; break;
+        case 3: tabSelector = "#facility_other_dtls_tab"; break;
+        case 4: tabSelector = "#vocational_tab"; break;
+        case 5: tabSelector = "#contact_info_tab"; break;
+        case 6: tabSelector = "#bank_dtls_tab"; break;
+    }
+
+    // Remember resume mode to stop auto-tab switching
+    window.resumeMode = true;
+
+    // Activate tab using jQuery
+    $(`button[data-bs-target='${tabSelector}']`).tab("show");
+
+    // Scroll into view
+    setTimeout(() => {
+        $(tabSelector).get(0).scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 300);
+});
 
   document.getElementById("startNewEntryBtn")?.addEventListener("click", function() {
 
