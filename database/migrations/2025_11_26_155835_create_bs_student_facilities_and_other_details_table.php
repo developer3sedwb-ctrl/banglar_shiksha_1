@@ -16,7 +16,7 @@ return new class extends Migration
                 district_id_fk SMALLINT NOT NULL,   -- PARTITION KEY
                 school_id_fk BIGINT NOT NULL,
 
-                student_code CHAR(14) NOT NULL,
+                student_code_fk CHAR(14) NOT NULL,
                 academic_year SMALLINT,
 
                 district_code_fk SMALLINT,
@@ -139,7 +139,7 @@ return new class extends Migration
             DB::statement("
                 ALTER TABLE $part
                 ADD CONSTRAINT {$part}_student_fk
-                    FOREIGN KEY (district_id_fk, student_code)
+                    FOREIGN KEY (district_id_fk, student_code_fk)
                     REFERENCES bs_student_master (district_code_fk, student_code)
                     ON UPDATE CASCADE
                     ON DELETE RESTRICT;
