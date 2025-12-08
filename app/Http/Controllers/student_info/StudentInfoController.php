@@ -25,7 +25,7 @@ use App\Http\Requests\StoreUserRequestStudentVocationalDetails;
 use Exception;
 use App\Http\Requests\StoreUserRequestStudentContactInfo;
 use Illuminate\Support\Facades\Schema;
-
+use App\Models\student_info\StudentBankDetailsTemp;
 
 class StudentInfoController extends Controller
 {
@@ -636,11 +636,6 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
     }
 
     // =====================================================================================
-
-        
-
-
-
     public function storeStudentContactDetails(StoreUserRequestStudentContactInfo $request)
     {
         DB::beginTransaction();
@@ -736,7 +731,7 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
     }
 
         // app/Http/Controllers/BankController.php
-
+    // =========================================================
         public function getBranches(Request $request)
         {
             $bankId = $request->query('bank_id');
@@ -752,6 +747,7 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
 
             return response()->json(['branches' => $branches]);
         }
+        // ============================================================
 
         public function getIfsc(Request $request)
         {
@@ -768,26 +764,66 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
             return response()->json(['ifsc' => $branch ? trim($branch->branch_ifsc) : null]);
         }
 
+public function bankDetailsOfStudent(Request $request)
+{
+    $userId   = auth()->id() ?? 1;
+    $schoolId = $request->input('school_id_fk', 1); 
+    // or use auth()->user()->school_id_fk depending on your flow
 
+    $validated = $request->validate([
+        'bank_name'              => 'required|integer|exists:bs_bank_code_name_master,id',
+        'branch_name'            => 'required|integer|exists:bs_bank_branch_master,id',
+        'ifsc'                   => 'required|string|max:20',
+        'account_number'         => 'required|string|max:50',
+        'confirm_account_number' => 'required|same:account_number',
+    ]);
 
-        public function bankDetailsOfStudent(Request $request)
-        {
-            $request->validate([
-                'bank_name'         => 'required',
-                'branch_name'       => 'required',
-                'ifsc'              => 'required',
-                'account_number'    => 'required|numeric',
-                'confirm_account_number' => 'required|same:account_number',
+    // -----------------------------
+    // Prepare data for updateOrCreate
+    // -----------------------------
 
-            ]);
+    $data = [
+        'bank_id_fk'      => $validated['bank_name'],
+        'branch_id_fk'    => $validated['branch_name'],
+        'bank_ifsc'       => $validated['ifsc'],
+        'stu_bank_acc_no' => $validated['account_number'],
 
-            // Save logic here...
+        'status'          => 1,
+        'entry_ip'        => $request->ip(),
+        'update_ip'       => $request->ip(),
+        'created_by'      => $userId,
+        'updated_by'      => $userId,
+    ];
 
-            return response()->json([
-                'status'  => true,
-                'message' => 'Bank details saved successfully.',
-            ]);
-        }
+    // -----------------------------
+    // CREATE or UPDATE (By school_id_fk)
+    // -----------------------------
+
+    $bank_info = EntryStudentBankInfo::updateOrCreate(
+        ['school_id_fk' => $schoolId],  // MATCH condition
+        $data                               // INSERT or UPDATE values
+    );
+
+    // -----------------------------
+    // Update Step Tracker
+    // -----------------------------
+    StudentEntryDraftTracker::updateOrCreate(
+        [
+            'school_id_fk' => $schoolId,
+            'step_number'  => 6,
+        ],
+        [
+            'created_by' => $userId,
+            'updated_by' => $userId,
+        ]
+    );
+
+    return response()->json([
+        'status'  => true,
+        'message' => 'Bank details saved successfully.',
+        'data'    => $bank_info
+    ]);
+}
 
 
 }
