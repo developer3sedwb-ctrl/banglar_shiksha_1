@@ -92,6 +92,7 @@ Route::post(
     [StudentInfoController::class, 'bankDetailsOfStudent']
 )->name('student.bank_details_of_student');
 
+
 Route::get('/get-branches', [StudentInfoController::class, 'getBranches']);
 Route::get('/get-ifsc', [StudentInfoController::class, 'getIfsc']);
 

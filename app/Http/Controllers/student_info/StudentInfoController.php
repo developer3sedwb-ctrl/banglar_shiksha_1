@@ -737,36 +737,57 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
 
         // app/Http/Controllers/BankController.php
 
-public function getBranches(Request $request)
-{
-    $bankId = $request->query('bank_id');
+        public function getBranches(Request $request)
+        {
+            $bankId = $request->query('bank_id');
 
-    if (empty($bankId)) {
-        return response()->json(['branches' => []]);
-    }
+            if (empty($bankId)) {
+                return response()->json(['branches' => []]);
+            }
 
-    $branches = \App\Models\student_info\BranchList::where('bank_id_fk', $bankId)
-                ->where('status', 1)
-                ->orderBy('name')
-                ->get(['id', 'name', 'branch_ifsc']); // use 'name' not 'branch_name'
+            $branches = \App\Models\student_info\BranchList::where('bank_id_fk', $bankId)
+                        ->where('status', 1)
+                        ->orderBy('name')
+                        ->get(['id', 'name', 'branch_ifsc']); // use 'name' not 'branch_name'
 
-    return response()->json(['branches' => $branches]);
-}
+            return response()->json(['branches' => $branches]);
+        }
 
-public function getIfsc(Request $request)
-{
-    $branchId = $request->query('branch_id');
+        public function getIfsc(Request $request)
+        {
+            $branchId = $request->query('branch_id');
 
-    if (empty($branchId)) {
-        return response()->json(['ifsc' => null]);
-    }
+            if (empty($branchId)) {
+                return response()->json(['ifsc' => null]);
+            }
 
-    $branch = \App\Models\student_info\BranchList::where('id', $branchId)
-                ->where('status', 1)
-                ->first(['branch_ifsc']);
+            $branch = \App\Models\student_info\BranchList::where('id', $branchId)
+                        ->where('status', 1)
+                        ->first(['branch_ifsc']);
 
-    return response()->json(['ifsc' => $branch ? trim($branch->branch_ifsc) : null]);
-}
+            return response()->json(['ifsc' => $branch ? trim($branch->branch_ifsc) : null]);
+        }
+
+
+
+        public function bankDetailsOfStudent(Request $request)
+        {
+            $request->validate([
+                'bank_name'         => 'required',
+                'branch_name'       => 'required',
+                'ifsc'              => 'required',
+                'account_number'    => 'required|numeric',
+                'confirm_account_number' => 'required|same:account_number',
+
+            ]);
+
+            // Save logic here...
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Bank details saved successfully.',
+            ]);
+        }
 
 
 }

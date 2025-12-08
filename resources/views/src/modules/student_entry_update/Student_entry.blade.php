@@ -1677,69 +1677,86 @@
 
           <!-- TAB 6: BANK DETAILS & UPLOAD  -- SUBHAJIT DAS-- -->
           <div class="tab-pane fade" id="bank_dtls_tab" role="tabpanel" aria-labelledby="bank_dtls-tab">
-             <form id="bank_details_of_student" method="POST" action="{{ route('student.bank_details_of_student') }}" novalidate>
-              @csrf
-            
-              <h6 class=" card-header bg-heading-primary text-white py-2">
-              BANK DETAILS
-              </h6> 
-              <div class="row">
-                <div class="col-md-6">
-                 <div class="mb-3">
-                  <label class="form-label small">Bank Name</label>
-                  <div class="input-group">
-                      <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
-                      <select name="bank_name" id="bank_name" class="select2 form-select2">
-                          <option value="">-Please Select-</option>
-                          @foreach($bank_code_name_master ?? [] as $val => $label)
-                              <option value="{{ $val }}">{{ $label }}</option>
-                          @endforeach
-                      </select>
-                  </div>
+                  <form id="bank_details_of_student" method="POST" action="{{ route('student.bank_details_of_student') }}" novalidate>
+                      @csrf
+
+                      <h6 class="card-header bg-heading-primary text-white py-2">
+                          BANK DETAILS
+                      </h6>
+
+                      <div class="row">
+
+                          <!-- LEFT COLUMN -->
+                          <div class="col-md-6">
+
+                              <!-- Bank Name -->
+                              <div class="mb-3">
+                                  <label class="form-label small">Bank Name</label>
+                                  <div class="input-group">
+                                      <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                                      <select name="bank_name" id="bank_name" class="form-select select2">
+                                          <option value="">-Please Select-</option>
+                                          @foreach($bank_code_name_master ?? [] as $val => $label)
+                                              <option value="{{ $val }}">{{ $label }}</option>
+                                          @endforeach
+                                      </select>
+                                  </div>
+                              </div>
+
+                              <!-- Branch Name -->
+                              <div class="mb-3">
+                                  <label class="form-label small">Branch Name</label>
+                                  <div class="input-group">
+                                      <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
+                                      <select name="branch_name" id="branch_name" class="form-select select2">
+                                          <option value="">-Please Select-</option>
+                                          @foreach($bank_branch_master ?? [] as $val => $label)
+                                              <option value="{{ $val }}">{{ $label }}</option>
+                                          @endforeach
+                                      </select>
+                                  </div>
+                              </div>
+
+                              <!-- IFSC -->
+                              <div class="mb-3">
+                                  <label class="form-label small">IFSC</label>
+                                  <input name="ifsc" id="ifsc" type="text" class="form-control" placeholder="IFSC code">
+                              </div>
+
+                          </div>
+
+                          <!-- RIGHT COLUMN -->
+                          <div class="col-md-6">
+
+                              <!-- Account Number -->
+                              <div class="mb-3">
+                                  <label class="form-label small">Account Number</label>
+                                  <input name="account_number" type="text" class="form-control" placeholder="Account number">
+                              </div>
+
+
+                              <!-- Confirm Account Number -->
+                              <div class="mb-3">
+                                  <label class="form-label small">Confirm Account Number</label>
+                                  <input name="confirm_account_number" type="text" class="form-control" placeholder="Re-enter account number">
+                              </div>
+
+                          </div>
+                      </div>
+
+                      <div class="form-actions text-end mt-3">
+                          <button class="btn btn-secondary me-2" data-bs-toggle="tab" data-bs-target="#tab5" type="button">
+                              Previous
+                          </button>
+
+                          <button class="btn btn-success" type="submit">
+                              Save Details
+                          </button>
+                      </div>
+
+                  </form>
               </div>
 
-              <div class="mb-3">
-                  <label class="form-label small">Branch Name</label>
-                  <div class="input-group">
-                      <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
-                      <select name="branch_name" id="branch_name" class="select2 form-select2">
-                          <option value="">-Please Select-</option>
-                              @foreach($bank_branch_master ?? [] as $val => $label)
-                              <option value="{{ $val }}">{{ $label }}</option>
-                          @endforeach
-                      </select>
-                  </div>
-              </div>
-
-              <div class="mb-3">
-                  <label class="form-label small">IFSC</label>
-                  <input name="ifsc" id="ifsc" type="text" class="form-control" placeholder="IFSC code">
-              </div>
-
-
-                  
-              
-                </div>
-
-                <div class="col-md-6">
-                  <div class="mb-3">
-                    <label class="form-label small">Account Number</label>
-                    <input name="branch_code" type="text" class="form-control" placeholder="Branch code">
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label small">Confirm Account Number</label>
-                    <input name="branch_code" type="text" class="form-control" placeholder="Branch code">
-                  </div>
-                </div>
-              </div>
-
-            
-              <div class="form-actions text-end mt-3">
-                <button class="btn btn-secondary me-2" data-bs-toggle="tab" data-bs-target="#tab5" type="button">Previous</button>
-                <button class="btn btn-success" type="submit">Save Details</button>
-              </div>
-            </form>
-          </div>
               <!-- ==========End of Bank ================ -->
       </div>
     </div>
@@ -1790,6 +1807,58 @@
 <script src="{{ asset('assets/js/common.js') }}"></script>
 <script>
   $(document).ready(function() {
+
+  $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $('#bank_details_of_student').on('submit', function (e) {
+        e.preventDefault(); // stop normal form submit
+
+        let form = $(this);
+
+        $.ajax({
+            url: form.attr('action'),      // "{{ route('student.bank_details_of_student') }}"
+            type: 'POST',
+            data: form.serialize(),
+            dataType: 'json',              // expect JSON from controller
+            beforeSend: function () {
+                // Optional: disable button / show loader
+                form.find('button[type="submit"]').prop('disabled', true).text('Saving...');
+            },
+            success: function (response) {
+                // Example: show success message
+                // You can customize this as per your UI
+                alert(response.message || 'Bank details saved successfully!');
+
+                // Optional: move to next tab, reset form, etc.
+                // $('#next_tab_btn').click();
+            },
+            error: function (xhr) {
+                // Basic error handling
+                if (xhr.status === 422) {
+                    // Laravel validation errors
+                    let errors = xhr.responseJSON.errors;
+                    let messages = [];
+
+                    $.each(errors, function (key, val) {
+                        messages.push(val[0]);
+                    });
+
+                    alert(messages.join('\n'));
+                } else {
+                    alert('Something went wrong. Please try again.');
+                }
+            },
+            complete: function () {
+                form.find('button[type="submit"]').prop('disabled', false).text('Save Details');
+            }
+        });
+    });
+
+    // ==========================================
 $(function () {
   // when bank changes -> request branches
   $('#bank_name').on('change', function () {
