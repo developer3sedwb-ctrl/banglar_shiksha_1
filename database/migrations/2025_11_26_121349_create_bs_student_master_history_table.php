@@ -12,10 +12,10 @@ return new class extends Migration
         // 1) CREATE MAIN PARTITIONED TABLE
         // ---------------------------------------------------
         DB::statement("
-            CREATE TABLE bs_student_master (
+            CREATE TABLE bs_student_history (
                 id BIGINT GENERATED ALWAYS AS IDENTITY,
-                state_code_fk INT NOT NULL,
                 district_code_fk INT NOT NULL,
+                state_code_fk INT NOT NULL,
                 subdivision_code_fk INT,
                 block_munc_code_fk INT NOT NULL,
                 circle_code_fk INT NOT NULL,
@@ -26,7 +26,7 @@ return new class extends Migration
                 studentname_as_per_aadhaar VARCHAR(500),
                 school_code_fk BIGINT,
                 gender_code_fk SMALLINT,
-                dob date,
+                dob DATE,
                 fathername VARCHAR(500),
                 mothername VARCHAR(500),
                 guardian_name VARCHAR(500),
@@ -115,34 +115,11 @@ return new class extends Migration
                 updated_by BIGINT,
                 update_by_stake_cd BIGINT NULL,
                 deleted_at TIMESTAMP NULL,
-                PRIMARY KEY (district_code_fk,student_code)
+                PRIMARY KEY (id, student_code,district_code_fk)
             )
             PARTITION BY LIST (district_code_fk);
         ");
 
-        // ---------------------------------------------------
-        // 2) GLOBAL UNIQUE AADHAAR (NULLABLE SAFE)
-        // ---------------------------------------------------
-        DB::statement("
-            CREATE UNIQUE INDEX uniq_aadhaar_global
-            ON bs_student_master (district_code_fk,aadhaar_number)
-            WHERE aadhaar_number IS NOT NULL;
-        ");
-
-        // ---------------------------------------------------
-        // 3) UNIQUE COMPOSITE ON IDENTITY (MUST INCLUDE PARTITION KEY)
-        // ---------------------------------------------------
-        DB::statement("
-            ALTER TABLE bs_student_master
-            ADD CONSTRAINT uniq_student_identity
-            UNIQUE (
-                district_code_fk,
-                studentname,
-                fathername,
-                mothername,
-                dob
-            );
-        ");
 
         // ---------------------------------------------------
         // 4) CREATE PARTITIONS FROM DISTRICT MASTER
@@ -151,22 +128,22 @@ return new class extends Migration
 
         foreach ($districts as $district) {
             DB::statement("
-                CREATE TABLE bs_student_master_{$district}
-                PARTITION OF bs_student_master
+                CREATE TABLE bs_student_history_{$district}
+                PARTITION OF bs_student_history
                 FOR VALUES IN ({$district});
             ");
 
             // Index helpful for most queries
             DB::statement("
-                CREATE INDEX idx_stu_school_{$district}
-                ON bs_student_master_{$district} (school_code_fk,student_code);
+                CREATE INDEX idx_stu_school_history_{$district}
+                ON bs_student_history_{$district} (school_code_fk,student_code);
             ");
         }
 
         // ---------------------------------------------------
         // 5) FOREIGN KEYS (AFTER TABLE EXISTS)
         // ---------------------------------------------------
-        Schema::table('bs_student_master', function (Blueprint $table) {
+        Schema::table('bs_student_history', function (Blueprint $table) {
             $table->foreign('district_code_fk')->references('id')->on('bs_district_master');
             $table->foreign('subdivision_code_fk')->references('id')->on('bs_subdivision_master');
             $table->foreign('block_munc_code_fk')->references('id')->on('bs_block_munc_corp_master');
@@ -214,7 +191,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        DB::statement("DROP TABLE IF EXISTS bs_student_master CASCADE;");
+        DB::statement("DROP TABLE IF EXISTS bs_student_history CASCADE;");
     }
 };
 

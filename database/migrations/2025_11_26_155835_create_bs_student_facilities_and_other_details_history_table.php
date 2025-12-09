@@ -11,7 +11,7 @@ return new class extends Migration
          | 1) MAIN PARTITIONED TABLE
          ----------------------------------------------------- */
         DB::statement("
-            CREATE TABLE IF NOT EXISTS bs_student_facilities_and_other_details (
+            CREATE TABLE IF NOT EXISTS bs_student_facilities_history (
                 id BIGINT GENERATED ALWAYS AS IDENTITY,
                 district_id_fk SMALLINT NOT NULL,   -- PARTITION KEY
                 school_id_fk BIGINT NOT NULL,
@@ -126,11 +126,11 @@ return new class extends Migration
          ----------------------------------------------------- */
         foreach ($districts as $d) {
 
-            $part = "bs_student_facilities_and_other_details_{$d->id}";
+            $part = "bs_student_facilities_history_{$d->id}";
 
             DB::statement("
                 CREATE TABLE IF NOT EXISTS $part
-                PARTITION OF bs_student_facilities_and_other_details
+                PARTITION OF bs_student_facilities_history
                 FOR VALUES IN ({$d->id});
             ");
 
@@ -188,6 +188,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        DB::statement("DROP TABLE IF EXISTS bs_student_facilities_and_other_details CASCADE;");
+        DB::statement("DROP TABLE IF EXISTS bs_student_facilities_history CASCADE;");
     }
 };
