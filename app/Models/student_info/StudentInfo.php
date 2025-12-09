@@ -43,6 +43,7 @@ class StudentInfo extends Model
         'stu_height_in_cms',
         'stu_weight_in_kgs',
         'guardian_qualification',
+        'cur_stream_code_fk',
         'created_by',
         'updated_by',
     ];

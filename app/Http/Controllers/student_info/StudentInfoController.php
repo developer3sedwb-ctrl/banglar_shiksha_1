@@ -146,7 +146,7 @@ class StudentInfoController extends Controller
 public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
 {
     DB::beginTransaction();
-
+// dd($request->all());
     try {
         $userId = auth()->id() ?? 1;
 
@@ -180,6 +180,7 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
             'admission_date'            => $request->admission_date_present,
 
             'admission_type_code_fk'    => $request->admission_type,
+            'cur_stream_code_fk'    => $request-> cur_stream_code,
 
             // meta
             'school_id_fk'              => $inputMeta['school_id_fk'],
@@ -188,12 +189,15 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
             'created_by'                => $inputMeta['created_by'],
             'updated_by'                => $inputMeta['updated_by'],
         ];
-     $studentEnrollmentInfoData = array_merge($enrollAttrs, $inputMeta);
 
-       $enroll = StudentEnrollmentInfo::updateOrCreate(
-        ['school_id_fk' => $inputMeta['school_id_fk']],
-            $studentEnrollmentInfoData
-        );
+
+            $studentEnrollmentInfoData = array_merge($enrollAttrs, $inputMeta);
+// dd($studentEnrollmentInfoData);
+
+            $enroll = StudentEnrollmentInfo::updateOrCreate(
+            ['school_id_fk' => $inputMeta['school_id_fk']],
+                $studentEnrollmentInfoData
+            );
 
 
         if ($enroll) {
@@ -282,45 +286,77 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
 
 
 
-        // ====================================================================
+        // =============================StudentInfo=======================================
         $student_basic_info = StudentInfo::where('school_id_fk', $schoolId)->first();
-// dd($student_basic_info);
+        // dd($student_basic_info);
 
-    if ($student_basic_info) {
-    $data['basic_info'] = [
-    'student_name'                => $student_basic_info->studentname,
-    'student_name_as_per_aadhaar' => $student_basic_info->studentname_as_per_aadhaar,
-    'gender'                      => $student_basic_info->gender_code_fk,
-    'dob'                         => $student_basic_info->dob,
-    'father_name'                 => $student_basic_info->fathername,
-    'mother_name'                 => $student_basic_info->mothername,
-    'guardian_name'               => $student_basic_info->guardian_name,
-    'aadhaar_child'               => $student_basic_info->aadhaar_number,
-    'mother_tongue'               => $student_basic_info->mothertonge_code_fk,
-    'social_category'             => $student_basic_info->social_category_code_fk,
-    'religion'                    => $student_basic_info->religion_code_fk,
-    'nationality'                 => $student_basic_info->nationality_code_fk,
-    'blood_group'                 => $student_basic_info->blood_group_code_fk,
-    'bpl_beneficiary'             => $student_basic_info->bpl_y_n,
-    'antyodaya_anna_yojana'       => $student_basic_info->bpl_aay_beneficiary_y_n,
-    'bpl_number'                  => $student_basic_info->bpl_no,
-    'disadvantaged_group'         => $student_basic_info->disadvantaged_group_y_n,
-    'cwsn'                        => $student_basic_info->cwsn_y_n,
-    'type_of_impairment'          => $student_basic_info->cwsn_disability_type_code_fk,
-    'disability_percentage'       => $student_basic_info->disability_percentage,
-    'out_of_school'               => $student_basic_info->out_of_sch_child_y_n,
-    'mainstreamed'                => $student_basic_info->child_mainstreamed,
-    'birth_reg_no'                => $student_basic_info->birth_registration_number,
-    'identification_mark'         => $student_basic_info->identification_mark,
-    'health_id'                   => $student_basic_info->health_id,
-    'relationship_with_guardian'  => $student_basic_info->stu_guardian_relationship,
-    'family_income'               => $student_basic_info->guardian_family_income,
-    'guardian_qualifications'     => $student_basic_info->guardian_qualification,
-    'student_height'              => $student_basic_info->stu_height_in_cms,
-    'student_weight'              => $student_basic_info->stu_weight_in_kgs,
-];
+            if ($student_basic_info) {
+            $data['basic_info'] = [
+            'student_name'                => $student_basic_info->studentname,
+            'student_name_as_per_aadhaar' => $student_basic_info->studentname_as_per_aadhaar,
+            'gender'                      => $student_basic_info->gender_code_fk,
+            'dob'                         => $student_basic_info->dob,
+            'father_name'                 => $student_basic_info->fathername,
+            'mother_name'                 => $student_basic_info->mothername,
+            'guardian_name'               => $student_basic_info->guardian_name,
+            'aadhaar_child'               => $student_basic_info->aadhaar_number,
+            'mother_tongue'               => $student_basic_info->mothertonge_code_fk,
+            'social_category'             => $student_basic_info->social_category_code_fk,
+            'religion'                    => $student_basic_info->religion_code_fk,
+            'nationality'                 => $student_basic_info->nationality_code_fk,
+            'blood_group'                 => $student_basic_info->blood_group_code_fk,
+            'bpl_beneficiary'             => $student_basic_info->bpl_y_n,
+            'antyodaya_anna_yojana'       => $student_basic_info->bpl_aay_beneficiary_y_n,
+            'bpl_number'                  => $student_basic_info->bpl_no,
+            'disadvantaged_group'         => $student_basic_info->disadvantaged_group_y_n,
+            'cwsn'                        => $student_basic_info->cwsn_y_n,
+            'type_of_impairment'          => $student_basic_info->cwsn_disability_type_code_fk,
+            'disability_percentage'       => $student_basic_info->disability_percentage,
+            'out_of_school'               => $student_basic_info->out_of_sch_child_y_n,
+            'mainstreamed'                => $student_basic_info->child_mainstreamed,
+            'birth_reg_no'                => $student_basic_info->birth_registration_number,
+            'identification_mark'         => $student_basic_info->identification_mark,
+            'health_id'                   => $student_basic_info->health_id,
+            'relationship_with_guardian'  => $student_basic_info->stu_guardian_relationship,
+            'family_income'               => $student_basic_info->guardian_family_income,
+            'guardian_qualifications'     => $student_basic_info->guardian_qualification,
+            'student_height'              => $student_basic_info->stu_height_in_cms,
+            'student_weight'              => $student_basic_info->stu_weight_in_kgs,
+            ];
 
             }
+            // ====================Enrollment========================================
+
+            // =============================StudentInfo=======================================
+            $student_enrollment_info = StudentEnrollmentInfo::where('school_id_fk', $schoolId)->first();
+// dd($student_enrollment_info);
+            if ($student_enrollment_info) {
+
+                $data['enrollment_info'] = [
+                    'admission_no'              => $student_enrollment_info->admission_no,
+                    'status_pre_year'           => $student_enrollment_info->status_pre_year,
+                    'prev_class_appeared_exam'  => $student_enrollment_info->prev_class_appeared_exam,
+                    'prev_class_exam_result'    => $student_enrollment_info->prev_class_exam_result,
+                    'prev_class_marks_percent'  => $student_enrollment_info->prev_class_marks_percent,
+                    'attendention_pre_year'     => $student_enrollment_info->attendention_pre_year,
+
+                    'pre_class_code_fk'         => $student_enrollment_info->pre_class_code_fk,
+                    'pre_section_code_fk'       => $student_enrollment_info->pre_section_code_fk,
+                    'pre_stream_code_fk'        => $student_enrollment_info->pre_stream_code_fk,
+                    'pre_roll_number'           => $student_enrollment_info->pre_roll_number,
+
+                    'cur_class_code_fk'         => $student_enrollment_info->cur_class_code_fk,
+                    'academic_year'             => $student_enrollment_info->academic_year,
+                    'cur_section_code_fk'       => $student_enrollment_info->cur_section_code_fk,
+                    'medium_code_fk'            => $student_enrollment_info->medium_code_fk,
+                    'cur_roll_number'           => $student_enrollment_info->cur_roll_number,
+                    'admission_date'            => $student_enrollment_info->admission_date,
+                    'cur_stream_code'            => $student_enrollment_info->cur_stream_code_fk,
+
+                    'admission_type_code_fk'    => $student_enrollment_info->admission_type_code_fk,
+                ];
+            }
+
 
             // ---------------------------------------------
             // 2. Load existing facility details (EDIT MODE)
