@@ -276,6 +276,49 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
                                             ->orderBy('id')
                                             ->get();
 
+
+
+
+        // ====================================================================
+        $student_basic_info = StudentInfo::where('school_id_fk', $schoolId)->first();
+// dd($student_basic_info);
+
+    if ($student_basic_info) {
+    $data['basic_info'] = [
+    'student_name'                => $student_basic_info->studentname,
+    'student_name_as_per_aadhaar' => $student_basic_info->studentname_as_per_aadhaar,
+    'gender'                      => $student_basic_info->gender_code_fk,
+    'dob'                         => $student_basic_info->dob,
+    'father_name'                 => $student_basic_info->fathername,
+    'mother_name'                 => $student_basic_info->mothername,
+    'guardian_name'               => $student_basic_info->guardian_name,
+    'aadhaar_child'               => $student_basic_info->aadhaar_number,
+    'mother_tongue'               => $student_basic_info->mothertonge_code_fk,
+    'social_category'             => $student_basic_info->social_category_code_fk,
+    'religion'                    => $student_basic_info->religion_code_fk,
+    'nationality'                 => $student_basic_info->nationality_code_fk,
+    'blood_group'                 => $student_basic_info->blood_group_code_fk,
+    'bpl_beneficiary'             => $student_basic_info->bpl_y_n,
+    'antyodaya_anna_yojana'       => $student_basic_info->bpl_aay_beneficiary_y_n,
+    'bpl_number'                  => $student_basic_info->bpl_no,
+    'disadvantaged_group'         => $student_basic_info->disadvantaged_group_y_n,
+    'cwsn'                        => $student_basic_info->cwsn_y_n,
+    'type_of_impairment'          => $student_basic_info->type_of_impairment,
+    'disability_percentage'       => $student_basic_info->disability_percentage,
+    'out_of_school'               => $student_basic_info->out_of_sch_child_y_n,
+    'mainstreamed'                => $student_basic_info->child_mainstreamed,
+    'birth_reg_no'                => $student_basic_info->birth_registration_number,
+    'identification_mark'         => $student_basic_info->identification_mark,
+    'health_id'                   => $student_basic_info->health_id,
+    'relationship_with_guardian'  => $student_basic_info->stu_guardian_relationship,
+    'family_income'               => $student_basic_info->guardian_family_income,
+    'guardian_qualifications'     => $student_basic_info->guardian_qualification,
+    'student_height'              => $student_basic_info->stu_height_in_cms,
+    'student_weight'              => $student_basic_info->stu_weight_in_kgs,
+];
+
+            }
+
             // ---------------------------------------------
             // 2. Load existing facility details (EDIT MODE)
             // ---------------------------------------------
@@ -829,135 +872,135 @@ public function bankDetailsOfStudent(Request $request)
     ]);
 }
 
- protected function finalizeStudentEntry(int $schoolId, int $userId)
-    {
+    protected function finalizeStudentEntry(int $schoolId, int $userId)
+        {
 
-        // dd( 'Finalizing student entry for school_id_fk: ' . $userId );
-        DB::transaction(function () use ($schoolId, $userId) {
+            // dd( 'Finalizing student entry for school_id_fk: ' . $userId );
+            DB::transaction(function () use ($schoolId, $userId) {
 
-            // ✅ fetch ONLY by school_id_fk
-            $basic   = StudentInfo::where('school_id_fk', $schoolId)->first();
-            $enroll  = StudentEnrollmentInfo::where('school_id_fk', $schoolId)->first();
-            $contact = StudentContactInfo::where('school_id_fk', $schoolId)->first();
-            $bank    = EntryStudentBankInfo::where('school_id_fk', $schoolId)->first();
+                // ✅ fetch ONLY by school_id_fk
+                $basic   = StudentInfo::where('school_id_fk', $schoolId)->first();
+                $enroll  = StudentEnrollmentInfo::where('school_id_fk', $schoolId)->first();
+                $contact = StudentContactInfo::where('school_id_fk', $schoolId)->first();
+                $bank    = EntryStudentBankInfo::where('school_id_fk', $schoolId)->first();
 
-            if (!$basic || !$enroll) {
-                throw new \RuntimeException('Basic or enrollment info missing for final submission');
-            }
+                if (!$basic || !$enroll) {
+                    throw new \RuntimeException('Basic or enrollment info missing for final submission');
+                }
 
-            // You may already have these in basic; otherwise map from school
-            $districtCode = $basic->district_code_fk   ?? 4;
-            $subdivision  = $basic->subdivision_code_fk ?? 45;
-            $circle       = $basic->circle_code_fk      ?? 115;
-            $gsWard       = $basic->gs_ward_code_fk     ?? 11026;
+                // You may already have these in basic; otherwise map from school
+                $districtCode = $basic->district_code_fk   ?? 4;
+                $subdivision  = $basic->subdivision_code_fk ?? 45;
+                $circle       = $basic->circle_code_fk      ?? 115;
+                $gsWard       = $basic->gs_ward_code_fk     ?? 11026;
 
-            // use any student_code logic you have (or keep null if not used)
-            $studentCode  = $basic->student_code ?? null;
+                // use any student_code logic you have (or keep null if not used)
+                $studentCode  = $basic->student_code ?? null;
 
-            $masterData = [
-                // -------- keys / location ----------
-                // 'school_id_fk'        => $schoolId,
-                'district_code_fk'    => 4,
-                'subdivision_code_fk' => $subdivision,
-                'circle_code_fk'      => $circle,
-                'gs_ward_code_fk'     => $gsWard,
-                'academic_year'       => $enroll->academic_year,
-                'student_code'        => 1,
+                $masterData = [
+                    // -------- keys / location ----------
+                    // 'school_id_fk'        => $schoolId,
+                    'district_code_fk'    => 4,
+                    'subdivision_code_fk' => $subdivision,
+                    'circle_code_fk'      => $circle,
+                    'gs_ward_code_fk'     => $gsWard,
+                    'academic_year'       => $enroll->academic_year,
+                    'student_code'        => 1,
 
-                'state_code_fk'      => 1,
-            
+                    'state_code_fk'      => 1,
+                
 
-                // -------- BASIC INFO ---------------
-                'studentname'                         => $basic->studentname,
-                'studentname_as_per_aadhaar'          => $basic->studentname_as_per_aadhaar,
-                'gender_code_fk'                      => $basic->gender_code_fk,
-                'dob'                                 => $basic->dob,
-                'fathername'                          => $basic->fathername,
-                'mothername'                          => $basic->mothername,
-                'guardian_name'                       => $basic->guardian_name,
-                'aadhaar_number'                      => $basic->aadhaar_number,
-                'mothertonge_code_fk'                 => $basic->mothertonge_code_fk,
-                'social_category_code_fk'             => $basic->social_category_code_fk,
-                'religion_code_fk'                    => $basic->religion_code_fk,
-                'bpl_y_n'                             => $basic->bpl_y_n,
-                'bpl_no'                              => $basic->bpl_no,
-                'bpl_aay_beneficiary_y_n'             => $basic->bpl_aay_beneficiary_y_n,
-                'disadvantaged_group_y_n'             => $basic->disadvantaged_group_y_n,
-                'cwsn_y_n'                            => $basic->cwsn_y_n,
-                'cwsn_disability_type_code_fk'        => $basic->cwsn_disability_type_code_fk,
-                'disability_percentage'               => $basic->disability_percentage,
-                'nationality_code_fk'                 => $basic->nationality_code_fk,
-                'out_of_sch_child_y_n'                => $basic->out_of_sch_child_y_n,
-                'child_mainstreamed'                  => $basic->child_mainstreamed,
-                'blood_group_code_fk'                 => $basic->blood_group_code_fk,
-                'birth_registration_number'           => $basic->birth_registration_number,
-                'identification_mark'                 => $basic->identification_mark,
-                'health_id'                           => $basic->health_id,
-                'stu_guardian_relationship'           => $basic->stu_guardian_relationship,
-                'guardian_family_income'              => $basic->guardian_family_income,
-                'stu_height_in_cms'                   => $basic->stu_height_in_cms,
-                'stu_weight_in_kgs'                   => $basic->stu_weight_in_kgs,
-                'guardian_qualification'              => $basic->guardian_qualification,
+                    // -------- BASIC INFO ---------------
+                    'studentname'                         => $basic->studentname,
+                    'studentname_as_per_aadhaar'          => $basic->studentname_as_per_aadhaar,
+                    'gender_code_fk'                      => $basic->gender_code_fk,
+                    'dob'                                 => $basic->dob,
+                    'fathername'                          => $basic->fathername,
+                    'mothername'                          => $basic->mothername,
+                    'guardian_name'                       => $basic->guardian_name,
+                    'aadhaar_number'                      => $basic->aadhaar_number,
+                    'mothertonge_code_fk'                 => $basic->mothertonge_code_fk,
+                    'social_category_code_fk'             => $basic->social_category_code_fk,
+                    'religion_code_fk'                    => $basic->religion_code_fk,
+                    'bpl_y_n'                             => $basic->bpl_y_n,
+                    'bpl_no'                              => $basic->bpl_no,
+                    'bpl_aay_beneficiary_y_n'             => $basic->bpl_aay_beneficiary_y_n,
+                    'disadvantaged_group_y_n'             => $basic->disadvantaged_group_y_n,
+                    'cwsn_y_n'                            => $basic->cwsn_y_n,
+                    'cwsn_disability_type_code_fk'        => $basic->cwsn_disability_type_code_fk,
+                    'disability_percentage'               => $basic->disability_percentage,
+                    'nationality_code_fk'                 => $basic->nationality_code_fk,
+                    'out_of_sch_child_y_n'                => $basic->out_of_sch_child_y_n,
+                    'child_mainstreamed'                  => $basic->child_mainstreamed,
+                    'blood_group_code_fk'                 => $basic->blood_group_code_fk,
+                    'birth_registration_number'           => $basic->birth_registration_number,
+                    'identification_mark'                 => $basic->identification_mark,
+                    'health_id'                           => $basic->health_id,
+                    'stu_guardian_relationship'           => $basic->stu_guardian_relationship,
+                    'guardian_family_income'              => $basic->guardian_family_income,
+                    'stu_height_in_cms'                   => $basic->stu_height_in_cms,
+                    'stu_weight_in_kgs'                   => $basic->stu_weight_in_kgs,
+                    'guardian_qualification'              => $basic->guardian_qualification,
 
-                // -------- ENROLLMENT ---------------
-                'admission_no'                        => $enroll->admission_no,
-                'admission_date'                      => $enroll->admission_date,
-                'status_pre_year'                     => $enroll->status_pre_year,
-                'prev_class_appeared_exam'            => $enroll->prev_class_appeared_exam,
-                'prev_class_exam_result'              => $enroll->prev_class_exam_result,
-                'prev_class_marks_percent'            => $enroll->prev_class_marks_percent,
-                'attendention_pre_year'               => $enroll->attendention_pre_year,
-                'pre_roll_number'                     => $enroll->pre_roll_number,
-                'pre_class_code_fk'                   => $enroll->pre_class_code_fk,
-                'pre_section_code_fk'                 => $enroll->pre_section_code_fk,
-                'pre_stream_code_fk'                  => $enroll->pre_stream_code_fk,
-                'cur_class_code_fk'                   => $enroll->cur_class_code_fk,
-                'cur_section_code_fk'                 => $enroll->cur_section_code_fk,
-                'cur_stream_code_fk'                  => $enroll->cur_stream_code_fk,
-                'cur_roll_number'                     => $enroll->cur_roll_number,
-                'medium_code_fk'                      => $enroll->medium_code_fk,
-                'admission_type_code_fk'              => $enroll->admission_type_code_fk,
+                    // -------- ENROLLMENT ---------------
+                    'admission_no'                        => $enroll->admission_no,
+                    'admission_date'                      => $enroll->admission_date,
+                    'status_pre_year'                     => $enroll->status_pre_year,
+                    'prev_class_appeared_exam'            => $enroll->prev_class_appeared_exam,
+                    'prev_class_exam_result'              => $enroll->prev_class_exam_result,
+                    'prev_class_marks_percent'            => $enroll->prev_class_marks_percent,
+                    'attendention_pre_year'               => $enroll->attendention_pre_year,
+                    'pre_roll_number'                     => $enroll->pre_roll_number,
+                    'pre_class_code_fk'                   => $enroll->pre_class_code_fk,
+                    'pre_section_code_fk'                 => $enroll->pre_section_code_fk,
+                    'pre_stream_code_fk'                  => $enroll->pre_stream_code_fk,
+                    'cur_class_code_fk'                   => $enroll->cur_class_code_fk,
+                    'cur_section_code_fk'                 => $enroll->cur_section_code_fk,
+                    'cur_stream_code_fk'                  => $enroll->cur_stream_code_fk,
+                    'cur_roll_number'                     => $enroll->cur_roll_number,
+                    'medium_code_fk'                      => $enroll->medium_code_fk,
+                    'admission_type_code_fk'              => $enroll->admission_type_code_fk,
 
-                // -------- CONTACT ------------------
-                'stu_country_code_fk'                 => $contact->stu_country_code_fk    ?? null,
-                'stu_contact_address'                 => $contact->stu_contact_address    ?? null,
-                'stu_contact_district'                => $contact->stu_contact_district   ?? null,
-                'stu_contact_panchayat'               => $contact->stu_contact_panchayat  ?? null,
-                'stu_police_station'                  => $contact->stu_police_station     ?? null,
-                'stu_mobile_no'                       => $contact->stu_mobile_no          ?? null,
-                'stu_state_code_fk'                   => $contact->stu_state_code_fk      ?? null,
-                'stu_contact_habitation'              => $contact->stu_contact_habitation ?? null,
-                'stu_contact_block'                   => $contact->stu_contact_block      ?? null,
-                'stu_post_office'                     => $contact->stu_post_office        ?? null,
-                'stu_pin_code'                        => $contact->stu_pin_code           ?? null,
-                'stu_email'                           => $contact->stu_email              ?? null,
+                    // -------- CONTACT ------------------
+                    'stu_country_code_fk'                 => $contact->stu_country_code_fk    ?? null,
+                    'stu_contact_address'                 => $contact->stu_contact_address    ?? null,
+                    'stu_contact_district'                => $contact->stu_contact_district   ?? null,
+                    'stu_contact_panchayat'               => $contact->stu_contact_panchayat  ?? null,
+                    'stu_police_station'                  => $contact->stu_police_station     ?? null,
+                    'stu_mobile_no'                       => $contact->stu_mobile_no          ?? null,
+                    'stu_state_code_fk'                   => $contact->stu_state_code_fk      ?? null,
+                    'stu_contact_habitation'              => $contact->stu_contact_habitation ?? null,
+                    'stu_contact_block'                   => $contact->stu_contact_block      ?? null,
+                    'stu_post_office'                     => $contact->stu_post_office        ?? null,
+                    'stu_pin_code'                        => $contact->stu_pin_code           ?? null,
+                    'stu_email'                           => $contact->stu_email              ?? null,
 
-                'address_equal'                       => $contact->address_equal ?? 0,
-                'guardian_country_code_fk'            => $contact->guardian_country_code_fk    ?? null,
-                'guardian_state_code_fk'              => $contact->guardian_state_code_fk      ?? null,
-                'guardian_contact_address'            => $contact->guardian_contact_address    ?? null,
-                'guardian_contact_habitation'         => $contact->guardian_contact_habitation ?? null,
-                'guardian_contact_district'           => $contact->guardian_contact_district   ?? null,
-                'guardian_contact_block'              => $contact->guardian_contact_block      ?? null,
-                'guardian_contact_panchayat'          => $contact->guardian_contact_panchayat  ?? null,
-                'guardian_post_office'                => $contact->guardian_post_office        ?? null,
-                'guardian_police_station'             => $contact->guardian_police_station     ?? null,
-                'guardian_pin_code'                   => $contact->guardian_pin_code           ?? null,
-                'guardian_mobile_no'                  => $contact->guardian_mobile_no          ?? null,
-                'guardian_email'                      => $contact->guardian_email              ?? null,
+                    'address_equal'                       => $contact->address_equal ?? 0,
+                    'guardian_country_code_fk'            => $contact->guardian_country_code_fk    ?? null,
+                    'guardian_state_code_fk'              => $contact->guardian_state_code_fk      ?? null,
+                    'guardian_contact_address'            => $contact->guardian_contact_address    ?? null,
+                    'guardian_contact_habitation'         => $contact->guardian_contact_habitation ?? null,
+                    'guardian_contact_district'           => $contact->guardian_contact_district   ?? null,
+                    'guardian_contact_block'              => $contact->guardian_contact_block      ?? null,
+                    'guardian_contact_panchayat'          => $contact->guardian_contact_panchayat  ?? null,
+                    'guardian_post_office'                => $contact->guardian_post_office        ?? null,
+                    'guardian_police_station'             => $contact->guardian_police_station     ?? null,
+                    'guardian_pin_code'                   => $contact->guardian_pin_code           ?? null,
+                    'guardian_mobile_no'                  => $contact->guardian_mobile_no          ?? null,
+                    'guardian_email'                      => $contact->guardian_email              ?? null,
 
-                // -------- BANK ---------------------
-                'bank_ifsc'                           => $bank->bank_ifsc       ?? null,
-                'stu_bank_acc_no'                     => $bank->stu_bank_acc_no ?? null,
+                    // -------- BANK ---------------------
+                    'bank_ifsc'                           => $bank->bank_ifsc       ?? null,
+                    'stu_bank_acc_no'                     => $bank->stu_bank_acc_no ?? null,
 
-                // -------- SYSTEM -------------------
-                'status'                              => 1,
-                'created_by'                          => $userId,
-                'updated_by'                          => $userId,
-            ];
+                    // -------- SYSTEM -------------------
+                    'status'                              => 1,
+                    'created_by'                          => $userId,
+                    'updated_by'                          => $userId,
+                ];
 
-            // 🔑 STRICTLY only by school_id_fk (as you asked)
-            StudentEntryMaster::updateOrCreate($masterData);
-        });
-    }
+                // 🔑 STRICTLY only by school_id_fk (as you asked)
+                StudentEntryMaster::Create($masterData);
+            });
+        }
 }

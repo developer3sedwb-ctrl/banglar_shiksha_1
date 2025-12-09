@@ -6,6 +6,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 @php
+    $basic = $data['basic_info'] ?? [];
+@endphp
+
+<!-- @dump($basic) -->
+@php
     $dropdowns = config('student');
 
     $gender_master = DB::table('bs_gender_master')->pluck('name', 'id')->toArray();
@@ -209,7 +214,12 @@
                     <label class="form-label small">Name of the Student <span class="text-danger">*</span></label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bx bx-user"></i></span>
-                      <input name="student_name" type="text" class="form-control" placeholder="Name of the student" required>
+                      <input name="student_name" 
+                      type="text" 
+                      class="form-control" 
+                      placeholder="Name of the student" 
+                      value="{{ old('student_name', $basic['student_name'] ?? '') }}"
+                      required>
                     </div>
                   </div>
 
@@ -232,7 +242,13 @@
                       </label>
                       <div class="input-group" id="dobGroup" style="cursor:pointer;">
                           <span class="input-group-text"><i class="bx bx-calendar"></i></span>
-                          <input id="dobField" name="dob" type="date" class="form-control" required>
+                         <input id="dobField" 
+                          name="dob" 
+                          type="date" 
+                          class="form-control" 
+                          value="{{ old('dob', $basic['dob'] ?? '') }}"
+                          required>
+
                       </div>
                   </div>
 
@@ -240,7 +256,13 @@
                     <label class="form-label small">Father's Name <span class="text-danger">*</span></label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bx bx-user"></i></span>
-                      <input name="father_name" type="text" class="form-control" placeholder="Father's name" required>
+                     <input name="father_name" 
+                      type="text" 
+                      class="form-control" 
+                      placeholder="Father's name" 
+                      value="{{ old('father_name', $basic['father_name'] ?? '') }}"
+                      required>
+
                     </div>
                   </div>
 
@@ -248,7 +270,13 @@
                     <label class="form-label small">Mother's Name <span class="text-danger">*</span></label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bx bx-user"></i></span>
-                      <input name="mother_name" type="text" class="form-control" placeholder="Mother's name" required>
+                 <input name="mother_name" 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="Mother's name" 
+                  value="{{ old('mother_name', $basic['mother_name'] ?? '') }}"
+                  required>
+
                     </div>
                   </div>
 
@@ -256,7 +284,7 @@
                     <label class="form-label small">Guardian's  Name <span class="text-danger">*</span></label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bx bx-user"></i></span>
-                      <input name="guardian_name" type="text" class="form-control" placeholder="Guardian's name" required>
+                      <input name="guardian_name" type="text" class="form-control" placeholder="Guardian's name" value="{{ old('guardian_name', $basic['guardian_name'] ?? '') }}" required>
                     </div>
                   </div>
 
@@ -270,6 +298,7 @@
                               type="text"
                               class="form-control"
                               placeholder="Aadhaar no of child"
+                              value="{{ old('aadhaar_child', $basic['aadhaar_child'] ?? '') }}"
                               maxlength="12"
                           >
                       </div>
@@ -279,7 +308,7 @@
                     <label class="form-label small">Name of Student as Per Aadhaar</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bx bx-id-card"></i></span>
-                    <input name="student_name_as_per_aadhaar" type="text" class="form-control" placeholder="Name of student as per Aadhaar">
+                    <input name="student_name_as_per_aadhaar" type="text" class="form-control" placeholder="Name of student as per Aadhaar"   value="{{ old('student_name_as_per_aadhaar', $basic['student_name_as_per_aadhaar'] ?? '') }}">
                     </div>
                   </div>
 
