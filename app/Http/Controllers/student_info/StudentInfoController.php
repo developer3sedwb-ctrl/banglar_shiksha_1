@@ -33,108 +33,111 @@ use App\Models\student_info\StudentBankDetailsTemp;
 class StudentInfoController extends Controller
 {
   public function StoreStudentEntryStoreBasicDetails(StoreUserRequestStudentEntry $request)
-{
-    DB::beginTransaction();
+    {
+        DB::beginTransaction();
+        // dd(request()->all());
+        try {
+            $userId = auth()->id() ?? 1;
 
-    try {
-        $userId = auth()->id() ?? 1;
+            $inputMeta = [
+                'school_id_fk' => 1,
+                // 'entry_ip'     => request()->ip(),
+                // 'update_ip'    => request()->ip(),
+                'created_by'   => $userId,
+                'updated_by'   => $userId,
+            ];
 
-        $inputMeta = [
-            'school_id_fk' => 1,
-            // 'entry_ip'     => request()->ip(),
-            // 'update_ip'    => request()->ip(),
-            'created_by'   => $userId,
-            'updated_by'   => $userId,
-        ];
+            //   ['school_id_fk' => $inputMeta['school_id_fk']];
 
-        //   ['school_id_fk' => $inputMeta['school_id_fk']];
+            $studentAttrs = [
+                'studentname'                          => $request->student_name,
+                'studentname_as_per_aadhaar'           => $request->student_name_as_per_aadhaar,
+                'gender_code_fk'                       => $request->gender,
+                'dob'                                  => $request->dob,
+                'fathername'                           => $request->father_name,
+                'mothername'                           => $request->mother_name,
+                'guardian_name'                        => $request->guardian_name,
+                'aadhaar_number'                       => $request->aadhaar_child,
+                'mothertonge_code_fk'                  => $request->mother_tongue,
+                'social_category_code_fk'              => $request->social_category,
+                'religion_code_fk'                     => $request->religion,
+                'nationality_code_fk'                  => $request->nationality,
+                'blood_group_code_fk'                  => $request->blood_group,
+                'bpl_y_n'                              => $request->bpl_beneficiary,
+                'bpl_aay_beneficiary_y_n'              => $request->antyodaya_anna_yojana,
+                'bpl_no'                               => $request->bpl_number,
+                'disadvantaged_group_y_n'              => $request->disadvantaged_group,
+                'cwsn_y_n'                             => $request->cwsn,
+                'cwsn_disability_type_code_fk'         => $request->type_of_impairment,
+                'disability_percentage'                => $request->disability_percentage,
+                'out_of_sch_child_y_n'                 => $request->out_of_school,
+                'child_mainstreamed'                   => $request->mainstreamed,
+                'birth_registration_number'            => $request->birth_reg_no,
+                'identification_mark'                  => $request->identification_mark,
+                'health_id'                            => $request->health_id,
+                'stu_guardian_relationship'            => $request->relationship_with_guardian,
+                'guardian_family_income'               => $request->family_income,
+                'guardian_qualification'               => $request->guardian_qualifications,
+                'stu_height_in_cms'                    => $request->student_height,
+                'stu_weight_in_kgs'                    => $request->student_weight,
 
-        $studentAttrs = [
-            'studentname'                          => $request->student_name,
-            'studentname_as_per_aadhaar'           => $request->student_name_as_per_aadhaar,
-            'gender_code_fk'                       => $request->gender,
-            'dob'                                  => $request->dob,
-            'fathername'                           => $request->father_name,
-            'mothername'                           => $request->mother_name,
-            'guardian_name'                        => $request->guardian_name,
-            'aadhaar_number'                       => $request->aadhaar_child,
-            'mothertonge_code_fk'                  => $request->mother_tongue,
-            'social_category_code_fk'              => $request->social_category,
-            'religion_code_fk'                     => $request->religion,
-            'nationality_code_fk'                  => $request->nationality,
-            'blood_group_code_fk'                  => $request->blood_group,
-            'bpl_y_n'                              => $request->bpl_beneficiary,
-            'bpl_aay_beneficiary_y_n'              => $request->antyodaya_anna_yojana,
-            'bpl_no'                               => $request->bpl_number,
-            'disadvantaged_group_y_n'              => $request->disadvantaged_group,
-            'cwsn_y_n'                             => $request->cwsn,
-            'cwsn_disability_type_code_fk'         => $request->type_of_impairment,
-            'disability_percentage'                => $request->disability_percentage,
-            'out_of_sch_child_y_n'                 => $request->out_of_school,
-            'child_mainstreamed'                   => $request->mainstreamed,
-            'birth_registration_number'            => $request->birth_reg_no,
-            'identification_mark'                  => $request->identification_mark,
-            'health_id'                            => $request->health_id,
-            'stu_guardian_relationship'            => $request->relationship_with_guardian,
-            'guardian_family_income'               => $request->family_income,
-            'guardian_qualification'               => $request->guardian_qualifications,
-            'stu_height_in_cms'                    => $request->student_height,
-            'stu_weight_in_kgs'                    => $request->student_weight,
-
-            // metadata
-            'school_id_fk'                         => $inputMeta['school_id_fk'],
-            // 'entry_ip'                             => $inputMeta['entry_ip'],
-            // 'update_ip'                            => $inputMeta['update_ip'],
-            'created_by'                           => $inputMeta['created_by'],
-            'updated_by'                           => $inputMeta['updated_by'],
-        ];
-
-
+                // metadata
+                'school_id_fk'                         => $inputMeta['school_id_fk'],
+                // 'entry_ip'                             => $inputMeta['entry_ip'],
+                // 'update_ip'                            => $inputMeta['update_ip'],
+                'created_by'                           => $inputMeta['created_by'],
+                'updated_by'                           => $inputMeta['updated_by'],
+            ];
 
 
-        $studentInfoData = array_merge($studentAttrs, $inputMeta);
 
-        $basic_info_of_student = StudentInfo::updateOrCreate(
-            ['school_id_fk' => $inputMeta['school_id_fk']],
-            $studentInfoData
-        );
 
-        if ($basic_info_of_student) {
-        StudentEntryDraftTracker::updateOrCreate(
-            [
-                'school_id_fk' => $inputMeta['school_id_fk'],
-                'step_number'  => 1,
-            ],
-            [
-                'created_by' => $inputMeta['created_by'],
-                'updated_by' => $inputMeta['updated_by'],
-            ]
-        );
+            $studentInfoData = array_merge($studentAttrs, $inputMeta);
+
+
+            $basic_info_of_student = StudentInfo::updateOrCreate(
+                ['school_id_fk' => $inputMeta['school_id_fk']],
+                $studentInfoData
+            );
+
+            // dd($basic_info_of_student->toArray());
+
+            if ($basic_info_of_student) {
+            StudentEntryDraftTracker::updateOrCreate(
+                [
+                    'school_id_fk' => $inputMeta['school_id_fk'],
+                    'step_number'  => 1,
+                ],
+                [
+                    'created_by' => $inputMeta['created_by'],
+                    'updated_by' => $inputMeta['updated_by'],
+                ]
+            );
+        }
+
+            DB::commit();
+
+            return response()->json([
+                'success'    => true,
+                'message'    => 'Student saved successfully',
+            ], 201);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Log::error('Error saving student', [
+                'error'   => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'request' => $request->all(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error while saving student',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
-
-        DB::commit();
-
-        return response()->json([
-            'success'    => true,
-            'message'    => 'Student saved successfully',
-        ], 201);
-
-    } catch (\Throwable $e) {
-        DB::rollBack();
-
-        Log::error('Error saving student', [
-            'error'   => $e->getMessage(),
-            'trace'   => $e->getTraceAsString(),
-            'request' => $request->all(),
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Server error while saving student',
-            'error'   => $e->getMessage(),
-        ], 500);
-    }
-}
 
 
 
@@ -303,7 +306,7 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
     'bpl_number'                  => $student_basic_info->bpl_no,
     'disadvantaged_group'         => $student_basic_info->disadvantaged_group_y_n,
     'cwsn'                        => $student_basic_info->cwsn_y_n,
-    'type_of_impairment'          => $student_basic_info->type_of_impairment,
+    'type_of_impairment'          => $student_basic_info->cwsn_disability_type_code_fk,
     'disability_percentage'       => $student_basic_info->disability_percentage,
     'out_of_school'               => $student_basic_info->out_of_sch_child_y_n,
     'mainstreamed'                => $student_basic_info->child_mainstreamed,
