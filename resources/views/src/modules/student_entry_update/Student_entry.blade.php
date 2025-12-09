@@ -2890,32 +2890,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // Start New Entry Button
-    // $("#resumeEntryBtn").on("click", function () 
-    // {
+    $("#resumeEntryBtn").on("click", function () 
+    {
 
-    //   let step = {{ $data['current_step'] ?? 1 }};
-    //   let tabSelector = "#general_info";
+      let step = {{ $data['current_step'] ?? 1 }};
+      let tabSelector = "#general_info";
 
-    //   switch (step) {
-    //       case 1: tabSelector = "#general_info"; break;
-    //       case 2: tabSelector = "#enrollment_details"; break;
-    //       case 3: tabSelector = "#facility_other_dtls_tab"; break;
-    //       case 4: tabSelector = "#vocational_tab"; break;
-    //       case 5: tabSelector = "#contact_info_tab"; break;
-    //       case 6: tabSelector = "#bank_dtls_tab"; break;
-    //   }
+      switch (step) {
+          case 1: tabSelector = "#general_info"; break;
+          case 2: tabSelector = "#enrollment_details"; break;
+          case 3: tabSelector = "#facility_other_dtls_tab"; break;
+          case 4: tabSelector = "#vocational_tab"; break;
+          case 5: tabSelector = "#contact_info_tab"; break;
+          case 6: tabSelector = "#bank_dtls_tab"; break;
+      }
 
-    //   // Remember resume mode to stop auto-tab switching
-    //   window.resumeMode = true;
+      // Remember resume mode to stop auto-tab switching
+      window.resumeMode = true;
 
-    //   // Activate tab using jQuery
-    //   $(`button[data-bs-target='${tabSelector}']`).tab("show");
+      // Activate tab using jQuery
+      $(`button[data-bs-target='${tabSelector}']`).tab("show");
 
-    //   // Scroll into view
-    //   setTimeout(() => {
-    //       $(tabSelector).get(0).scrollIntoView({ behavior: "smooth", block: "start" });
-    //   }, 300);
-    // });
+      // Scroll into view
+      setTimeout(() => {
+          $(tabSelector).get(0).scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
+    });
 
   // When clicking "Start New Entry" → open modal instead of confirm()
 document.getElementById("startNewEntryBtn")?.addEventListener("click", function () {
