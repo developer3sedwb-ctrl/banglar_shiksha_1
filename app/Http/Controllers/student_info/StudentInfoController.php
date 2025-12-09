@@ -8,6 +8,14 @@ use App\Models\student_info\StudentFacilityAndOtherDetails;
 use App\Models\student_info\StudentVocationalDetails;
 use App\Models\student_info\StudentEntryDraftTracker;
 use App\Models\student_info\StudentContactInfo;
+use App\Models\student_info\BankList;
+
+use App\Models\student_info\StudentEntryMaster;
+
+
+use App\Models\student_info\BranchList;
+
+use App\Models\student_info\EntryStudentBankInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -20,113 +28,116 @@ use App\Http\Requests\StoreUserRequestStudentVocationalDetails;
 use Exception;
 use App\Http\Requests\StoreUserRequestStudentContactInfo;
 use Illuminate\Support\Facades\Schema;
-
+use App\Models\student_info\StudentBankDetailsTemp;
 
 class StudentInfoController extends Controller
 {
   public function StoreStudentEntryStoreBasicDetails(StoreUserRequestStudentEntry $request)
-{
-    DB::beginTransaction();
+    {
+        DB::beginTransaction();
+        // dd(request()->all());
+        try {
+            $userId = auth()->id() ?? 1;
 
-    try {
-        $userId = auth()->id() ?? 1;
+            $inputMeta = [
+                'school_id_fk' => 1,
+                // 'entry_ip'     => request()->ip(),
+                // 'update_ip'    => request()->ip(),
+                'created_by'   => $userId,
+                'updated_by'   => $userId,
+            ];
 
-        $inputMeta = [
-            'school_id_fk' => 1,
-            // 'entry_ip'     => request()->ip(),
-            // 'update_ip'    => request()->ip(),
-            'created_by'   => $userId,
-            'updated_by'   => $userId,
-        ];
+            //   ['school_id_fk' => $inputMeta['school_id_fk']];
 
-        //   ['school_id_fk' => $inputMeta['school_id_fk']];
+            $studentAttrs = [
+                'studentname'                          => $request->student_name,
+                'studentname_as_per_aadhaar'           => $request->student_name_as_per_aadhaar,
+                'gender_code_fk'                       => $request->gender,
+                'dob'                                  => $request->dob,
+                'fathername'                           => $request->father_name,
+                'mothername'                           => $request->mother_name,
+                'guardian_name'                        => $request->guardian_name,
+                'aadhaar_number'                       => $request->aadhaar_child,
+                'mothertonge_code_fk'                  => $request->mother_tongue,
+                'social_category_code_fk'              => $request->social_category,
+                'religion_code_fk'                     => $request->religion,
+                'nationality_code_fk'                  => $request->nationality,
+                'blood_group_code_fk'                  => $request->blood_group,
+                'bpl_y_n'                              => $request->bpl_beneficiary,
+                'bpl_aay_beneficiary_y_n'              => $request->antyodaya_anna_yojana,
+                'bpl_no'                               => $request->bpl_number,
+                'disadvantaged_group_y_n'              => $request->disadvantaged_group,
+                'cwsn_y_n'                             => $request->cwsn,
+                'cwsn_disability_type_code_fk'         => $request->type_of_impairment,
+                'disability_percentage'                => $request->disability_percentage,
+                'out_of_sch_child_y_n'                 => $request->out_of_school,
+                'child_mainstreamed'                   => $request->mainstreamed,
+                'birth_registration_number'            => $request->birth_reg_no,
+                'identification_mark'                  => $request->identification_mark,
+                'health_id'                            => $request->health_id,
+                'stu_guardian_relationship'            => $request->relationship_with_guardian,
+                'guardian_family_income'               => $request->family_income,
+                'guardian_qualification'               => $request->guardian_qualifications,
+                'stu_height_in_cms'                    => $request->student_height,
+                'stu_weight_in_kgs'                    => $request->student_weight,
 
-        $studentAttrs = [
-            'studentname'                          => $request->student_name,
-            'studentname_as_per_aadhaar'           => $request->student_name_as_per_aadhaar,
-            'gender_code_fk'                       => $request->gender,
-            'dob'                                  => $request->dob,
-            'fathername'                           => $request->father_name,
-            'mothername'                           => $request->mother_name,
-            'guardian_name'                        => $request->guardian_name,
-            'aadhaar_number'                       => $request->aadhaar_child,
-            'mothertonge_code_fk'                  => $request->mother_tongue,
-            'social_category_code_fk'              => $request->social_category,
-            'religion_code_fk'                     => $request->religion,
-            'nationality_code_fk'                  => $request->nationality,
-            'blood_group_code_fk'                  => $request->blood_group,
-            'bpl_y_n'                              => $request->bpl_beneficiary,
-            'bpl_aay_beneficiary_y_n'              => $request->antyodaya_anna_yojana,
-            'bpl_no'                               => $request->bpl_number,
-            'disadvantaged_group_y_n'              => $request->disadvantaged_group,
-            'cwsn_y_n'                             => $request->cwsn,
-            'cwsn_disability_type_code_fk'         => $request->type_of_impairment,
-            'disability_percentage'                => $request->disability_percentage,
-            'out_of_sch_child_y_n'                 => $request->out_of_school,
-            'child_mainstreamed'                   => $request->mainstreamed,
-            'birth_registration_number'            => $request->birth_reg_no,
-            'identification_mark'                  => $request->identification_mark,
-            'health_id'                            => $request->health_id,
-            'stu_guardian_relationship'            => $request->relationship_with_guardian,
-            'guardian_family_income'               => $request->family_income,
-            'guardian_qualification'               => $request->guardian_qualifications,
-            'stu_height_in_cms'                    => $request->student_height,
-            'stu_weight_in_kgs'                    => $request->student_weight,
-
-            // metadata
-            'school_id_fk'                         => $inputMeta['school_id_fk'],
-            // 'entry_ip'                             => $inputMeta['entry_ip'],
-            // 'update_ip'                            => $inputMeta['update_ip'],
-            'created_by'                           => $inputMeta['created_by'],
-            'updated_by'                           => $inputMeta['updated_by'],
-        ];
-
-
+                // metadata
+                'school_id_fk'                         => $inputMeta['school_id_fk'],
+                // 'entry_ip'                             => $inputMeta['entry_ip'],
+                // 'update_ip'                            => $inputMeta['update_ip'],
+                'created_by'                           => $inputMeta['created_by'],
+                'updated_by'                           => $inputMeta['updated_by'],
+            ];
 
 
-        $studentInfoData = array_merge($studentAttrs, $inputMeta);
 
-        $basic_info_of_student = StudentInfo::updateOrCreate(
-            ['school_id_fk' => $inputMeta['school_id_fk']],
-            $studentInfoData
-        );
 
-        if ($basic_info_of_student) {
-        StudentEntryDraftTracker::updateOrCreate(
-            [
-                'school_id_fk' => $inputMeta['school_id_fk'],
-                'step_number'  => 1,
-            ],
-            [
-                'created_by' => $inputMeta['created_by'],
-                'updated_by' => $inputMeta['updated_by'],
-            ]
-        );
+            $studentInfoData = array_merge($studentAttrs, $inputMeta);
+
+
+            $basic_info_of_student = StudentInfo::updateOrCreate(
+                ['school_id_fk' => $inputMeta['school_id_fk']],
+                $studentInfoData
+            );
+
+            // dd($basic_info_of_student->toArray());
+
+            if ($basic_info_of_student) {
+            StudentEntryDraftTracker::updateOrCreate(
+                [
+                    'school_id_fk' => $inputMeta['school_id_fk'],
+                    'step_number'  => 1,
+                ],
+                [
+                    'created_by' => $inputMeta['created_by'],
+                    'updated_by' => $inputMeta['updated_by'],
+                ]
+            );
+        }
+
+            DB::commit();
+
+            return response()->json([
+                'success'    => true,
+                'message'    => 'Student saved successfully',
+            ], 201);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Log::error('Error saving student', [
+                'error'   => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'request' => $request->all(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error while saving student',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
-
-        DB::commit();
-
-        return response()->json([
-            'success'    => true,
-            'message'    => 'Student saved successfully',
-        ], 201);
-
-    } catch (\Throwable $e) {
-        DB::rollBack();
-
-        Log::error('Error saving student', [
-            'error'   => $e->getMessage(),
-            'trace'   => $e->getTraceAsString(),
-            'request' => $request->all(),
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Server error while saving student',
-            'error'   => $e->getMessage(),
-        ], 500);
-    }
-}
 
 
 
@@ -267,6 +278,49 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
                                                 ->where('status', 1)
                                             ->orderBy('id')
                                             ->get();
+
+
+
+
+        // ====================================================================
+        $student_basic_info = StudentInfo::where('school_id_fk', $schoolId)->first();
+// dd($student_basic_info);
+
+    if ($student_basic_info) {
+    $data['basic_info'] = [
+    'student_name'                => $student_basic_info->studentname,
+    'student_name_as_per_aadhaar' => $student_basic_info->studentname_as_per_aadhaar,
+    'gender'                      => $student_basic_info->gender_code_fk,
+    'dob'                         => $student_basic_info->dob,
+    'father_name'                 => $student_basic_info->fathername,
+    'mother_name'                 => $student_basic_info->mothername,
+    'guardian_name'               => $student_basic_info->guardian_name,
+    'aadhaar_child'               => $student_basic_info->aadhaar_number,
+    'mother_tongue'               => $student_basic_info->mothertonge_code_fk,
+    'social_category'             => $student_basic_info->social_category_code_fk,
+    'religion'                    => $student_basic_info->religion_code_fk,
+    'nationality'                 => $student_basic_info->nationality_code_fk,
+    'blood_group'                 => $student_basic_info->blood_group_code_fk,
+    'bpl_beneficiary'             => $student_basic_info->bpl_y_n,
+    'antyodaya_anna_yojana'       => $student_basic_info->bpl_aay_beneficiary_y_n,
+    'bpl_number'                  => $student_basic_info->bpl_no,
+    'disadvantaged_group'         => $student_basic_info->disadvantaged_group_y_n,
+    'cwsn'                        => $student_basic_info->cwsn_y_n,
+    'type_of_impairment'          => $student_basic_info->cwsn_disability_type_code_fk,
+    'disability_percentage'       => $student_basic_info->disability_percentage,
+    'out_of_school'               => $student_basic_info->out_of_sch_child_y_n,
+    'mainstreamed'                => $student_basic_info->child_mainstreamed,
+    'birth_reg_no'                => $student_basic_info->birth_registration_number,
+    'identification_mark'         => $student_basic_info->identification_mark,
+    'health_id'                   => $student_basic_info->health_id,
+    'relationship_with_guardian'  => $student_basic_info->stu_guardian_relationship,
+    'family_income'               => $student_basic_info->guardian_family_income,
+    'guardian_qualifications'     => $student_basic_info->guardian_qualification,
+    'student_height'              => $student_basic_info->stu_height_in_cms,
+    'student_weight'              => $student_basic_info->stu_weight_in_kgs,
+];
+
+            }
 
             // ---------------------------------------------
             // 2. Load existing facility details (EDIT MODE)
@@ -631,68 +685,87 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
     }
 
     // =====================================================================================
-        //Section Aziza end date:01-12-2025
-        public function storeStudentContactDetails(StoreUserRequestStudentContactInfo $request)
-        {
+    public function storeStudentContactDetails(StoreUserRequestStudentContactInfo $request)
+    {
         DB::beginTransaction();
-
+        // dd(request()->all());
         try {
-            $model = new StudentContactInfo();
+            $userId = auth()->id() ?? 1;
 
-            // ---- Student contact fields (map incoming names -> DB columns) ----
-            $model->stu_country_code_fk      = $request->student_country;
-            $model->stu_contact_address      = $request->student_address;
-            $model->stu_contact_district     = $request->student_district;
-            $model->stu_contact_panchayat    = $request->student_panchayat;
-            $model->stu_police_station       = $request->student_police_station;
-            $model->stu_mobile_no            = $request->student_mobile;
-            $model->stu_state_code_fk        = $request->student_state;
-            $model->stu_contact_habitation   = $request->student_locality;
-            $model->stu_contact_block        = $request->student_block;
-            $model->stu_post_office          = $request->student_post_office;
-            $model->stu_pin_code             = $request->student_pincode;
-            $model->stu_email                = $request->student_email;
+            $inputMeta = [
+                'school_id_fk' => 1,
+                'created_by'   => $userId,
+                'updated_by'   => $userId,
+            ];
 
-            // address_equal may come from request or default — only set if present
-            if ($request->filled('address_equal')) {
-                $model->address_equal = $request->address_equal;
+            $data = [
+                // ---- Student contact fields ----
+                'stu_country_code_fk'     => $request->student_country,
+                'stu_contact_address'     => $request->student_address,
+                'stu_contact_district'    => $request->student_district,
+                'stu_contact_panchayat'   => $request->student_panchayat,
+                'stu_police_station'      => $request->student_police_station,
+                'stu_mobile_no'           => $request->student_mobile,
+                'stu_state_code_fk'       => $request->student_state,
+                'stu_contact_habitation'  => $request->student_locality,
+                'stu_contact_block'       => $request->student_block,
+                'stu_post_office'         => $request->student_post_office,
+                'stu_pin_code'            => $request->student_pincode,
+                'stu_email'               => $request->student_email,
+
+                // ---- Guardian contact fields ----
+                'guardian_country_code_fk'    => $request->guardian_country,
+                'guardian_contact_address'    => $request->guardian_address,
+                'guardian_contact_district'   => $request->guardian_district,
+                'guardian_contact_panchayat'  => $request->guardian_panchayat,
+                'guardian_police_station'     => $request->guardian_police_station,
+                'guardian_mobile_no'          => $request->guardian_mobile,
+                'guardian_state_code_fk'      => $request->guardian_state,
+                'guardian_contact_habitation' => $request->guardian_locality,
+                'guardian_contact_block'      => $request->guardian_block,
+                'guardian_post_office'        => $request->guardian_post_office,
+                'guardian_pin_code'           => $request->guardian_pincode,
+                'guardian_email'              => $request->guardian_email,
+
+
+                // System fields
+                'school_id_fk'              => $inputMeta['school_id_fk'],
+                // 'entry_ip'                  => $inputMeta['entry_ip'],
+                // 'update_ip'                 => $inputMeta['update_ip'],
+                'created_by'                => $inputMeta['created_by'],
+                'updated_by'                => $inputMeta['updated_by'],
+
+            ];
+    
+            $contact_info_of_student = StudentContactInfo::updateOrCreate(
+                ['school_id_fk' => $inputMeta['school_id_fk']],
+                $data
+            );
+
+            if ($contact_info_of_student) {
+                StudentEntryDraftTracker::updateOrCreate(
+                    [
+                        'school_id_fk' => $inputMeta['school_id_fk'],
+                        'step_number'  => 5,
+                    ],
+                    [
+                        'created_by' => $inputMeta['created_by'],
+                        'updated_by' => $inputMeta['updated_by'],
+                    ]
+                );
             }
-
-            // ---- Guardian contact fields ----
-            $model->guardian_country_code_fk = $request->guardian_country;
-            $model->guardian_contact_address = $request->guardian_address;
-            $model->guardian_contact_district= $request->guardian_district;
-            $model->guardian_contact_panchayat = $request->guardian_panchayat;
-            $model->guardian_police_station  = $request->guardian_police_station;
-            $model->guardian_mobile_no       = $request->guardian_mobile;
-            $model->guardian_state_code_fk   = $request->guardian_state;
-            $model->guardian_contact_habitation = $request->guardian_locality;
-            $model->guardian_contact_block   = $request->guardian_block;
-            $model->guardian_post_office     = $request->guardian_post_office;
-            $model->guardian_pin_code        = $request->guardian_pincode;
-            $model->guardian_email           = $request->guardian_email;
-
-            // ---- System fields ----
-            $model->status    = $request->get('status', 1);
-            $model->entry_ip  = $request->ip();
-            $model->created_by = auth()->id() ?? 1;
-
-            $model->save();
 
             DB::commit();
 
             return response()->json([
                 'success'    => true,
-                'message'    => 'Student contact info saved successfully',
-                'student_id' => $model->id,
-                'data'       => $model,
+                'message'    => 'Student saved successfully',
+                'contact_id' => $contact_info_of_student->id ?? null,
             ], 201);
-
         } catch (\Throwable $e) {
-
             DB::rollBack();
 
-            Log::error('Error saving student contact info', [
+            Log::error('Error saving student', [
                 'error'   => $e->getMessage(),
                 'trace'   => $e->getTraceAsString(),
                 'request' => $request->all(),
@@ -700,11 +773,237 @@ public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
 
             return response()->json([
                 'success' => false,
-                'message' => 'Server error while saving student contact info',
+                'message' => 'Server error while saving student',
                 'error'   => $e->getMessage(),
             ], 500);
         }
+    }
+
+        // app/Http/Controllers/BankController.php
+    // =========================================================
+        public function getBranches(Request $request)
+        {
+            $bankId = $request->query('bank_id');
+
+            if (empty($bankId)) {
+                return response()->json(['branches' => []]);
+            }
+
+            $branches = \App\Models\student_info\BranchList::where('bank_id_fk', $bankId)
+                        ->where('status', 1)
+                        ->orderBy('name')
+                        ->get(['id', 'name', 'branch_ifsc']); // use 'name' not 'branch_name'
+
+            return response()->json(['branches' => $branches]);
+        }
+        // ============================================================
+
+        public function getIfsc(Request $request)
+        {
+            $branchId = $request->query('branch_id');
+
+            if (empty($branchId)) {
+                return response()->json(['ifsc' => null]);
+            }
+
+            $branch = \App\Models\student_info\BranchList::where('id', $branchId)
+                        ->where('status', 1)
+                        ->first(['branch_ifsc']);
+
+            return response()->json(['ifsc' => $branch ? trim($branch->branch_ifsc) : null]);
         }
 
+public function bankDetailsOfStudent(Request $request)
+{
+    $userId   = auth()->id() ?? 1;
+    $schoolId = $request->input('school_id_fk', 1); 
+    // or use auth()->user()->school_id_fk depending on your flow
 
+    $validated = $request->validate([
+        'bank_name'              => 'required|integer|exists:bs_bank_code_name_master,id',
+        'branch_name'            => 'required|integer|exists:bs_bank_branch_master,id',
+        'ifsc'                   => 'required|string|max:20',
+        'account_number'         => 'required|string|max:50',
+        'confirm_account_number' => 'required|same:account_number',
+    ]);
+
+    // -----------------------------
+    // Prepare data for updateOrCreate
+    // -----------------------------
+
+    $data = [
+        'bank_id_fk'      => $validated['bank_name'],
+        'branch_id_fk'    => $validated['branch_name'],
+        'bank_ifsc'       => $validated['ifsc'],
+        'stu_bank_acc_no' => $validated['account_number'],
+
+        'status'          => 1,
+        'entry_ip'        => $request->ip(),
+        'update_ip'       => $request->ip(),
+        'created_by'      => $userId,
+        'updated_by'      => $userId,
+    ];
+
+    // -----------------------------
+    // CREATE or UPDATE (By school_id_fk)
+    // -----------------------------
+
+    $bank_info = EntryStudentBankInfo::updateOrCreate(
+        ['school_id_fk' => $schoolId],  // MATCH condition
+        $data                               // INSERT or UPDATE values
+    );
+
+    // -----------------------------
+    // Update Step Tracker
+    // -----------------------------
+    $this->finalizeStudentEntry($schoolId, $userId);
+    StudentEntryDraftTracker::updateOrCreate(
+        [
+            'school_id_fk' => $schoolId,
+            'step_number'  => 6,
+        ],
+        [
+            'created_by' => $userId,
+            'updated_by' => $userId,
+        ]
+    );
+
+    return response()->json([
+        'status'  => true,
+        'message' => 'Bank details saved successfully.',
+        'data'    => $bank_info
+    ]);
+}
+
+    protected function finalizeStudentEntry(int $schoolId, int $userId)
+        {
+
+            // dd( 'Finalizing student entry for school_id_fk: ' . $userId );
+            DB::transaction(function () use ($schoolId, $userId) {
+
+                // ✅ fetch ONLY by school_id_fk
+                $basic   = StudentInfo::where('school_id_fk', $schoolId)->first();
+                $enroll  = StudentEnrollmentInfo::where('school_id_fk', $schoolId)->first();
+                $contact = StudentContactInfo::where('school_id_fk', $schoolId)->first();
+                $bank    = EntryStudentBankInfo::where('school_id_fk', $schoolId)->first();
+
+                if (!$basic || !$enroll) {
+                    throw new \RuntimeException('Basic or enrollment info missing for final submission');
+                }
+
+                // You may already have these in basic; otherwise map from school
+                $districtCode = $basic->district_code_fk   ?? 4;
+                $subdivision  = $basic->subdivision_code_fk ?? 45;
+                $circle       = $basic->circle_code_fk      ?? 115;
+                $gsWard       = $basic->gs_ward_code_fk     ?? 11026;
+
+                // use any student_code logic you have (or keep null if not used)
+                $studentCode  = $basic->student_code ?? null;
+
+                $masterData = [
+                    // -------- keys / location ----------
+                    // 'school_id_fk'        => $schoolId,
+                    'district_code_fk'    => 4,
+                    'subdivision_code_fk' => $subdivision,
+                    'circle_code_fk'      => $circle,
+                    'gs_ward_code_fk'     => $gsWard,
+                    'academic_year'       => $enroll->academic_year,
+                    'student_code'        => 1,
+
+                    'state_code_fk'      => 1,
+                
+
+                    // -------- BASIC INFO ---------------
+                    'studentname'                         => $basic->studentname,
+                    'studentname_as_per_aadhaar'          => $basic->studentname_as_per_aadhaar,
+                    'gender_code_fk'                      => $basic->gender_code_fk,
+                    'dob'                                 => $basic->dob,
+                    'fathername'                          => $basic->fathername,
+                    'mothername'                          => $basic->mothername,
+                    'guardian_name'                       => $basic->guardian_name,
+                    'aadhaar_number'                      => $basic->aadhaar_number,
+                    'mothertonge_code_fk'                 => $basic->mothertonge_code_fk,
+                    'social_category_code_fk'             => $basic->social_category_code_fk,
+                    'religion_code_fk'                    => $basic->religion_code_fk,
+                    'bpl_y_n'                             => $basic->bpl_y_n,
+                    'bpl_no'                              => $basic->bpl_no,
+                    'bpl_aay_beneficiary_y_n'             => $basic->bpl_aay_beneficiary_y_n,
+                    'disadvantaged_group_y_n'             => $basic->disadvantaged_group_y_n,
+                    'cwsn_y_n'                            => $basic->cwsn_y_n,
+                    'cwsn_disability_type_code_fk'        => $basic->cwsn_disability_type_code_fk,
+                    'disability_percentage'               => $basic->disability_percentage,
+                    'nationality_code_fk'                 => $basic->nationality_code_fk,
+                    'out_of_sch_child_y_n'                => $basic->out_of_sch_child_y_n,
+                    'child_mainstreamed'                  => $basic->child_mainstreamed,
+                    'blood_group_code_fk'                 => $basic->blood_group_code_fk,
+                    'birth_registration_number'           => $basic->birth_registration_number,
+                    'identification_mark'                 => $basic->identification_mark,
+                    'health_id'                           => $basic->health_id,
+                    'stu_guardian_relationship'           => $basic->stu_guardian_relationship,
+                    'guardian_family_income'              => $basic->guardian_family_income,
+                    'stu_height_in_cms'                   => $basic->stu_height_in_cms,
+                    'stu_weight_in_kgs'                   => $basic->stu_weight_in_kgs,
+                    'guardian_qualification'              => $basic->guardian_qualification,
+
+                    // -------- ENROLLMENT ---------------
+                    'admission_no'                        => $enroll->admission_no,
+                    'admission_date'                      => $enroll->admission_date,
+                    'status_pre_year'                     => $enroll->status_pre_year,
+                    'prev_class_appeared_exam'            => $enroll->prev_class_appeared_exam,
+                    'prev_class_exam_result'              => $enroll->prev_class_exam_result,
+                    'prev_class_marks_percent'            => $enroll->prev_class_marks_percent,
+                    'attendention_pre_year'               => $enroll->attendention_pre_year,
+                    'pre_roll_number'                     => $enroll->pre_roll_number,
+                    'pre_class_code_fk'                   => $enroll->pre_class_code_fk,
+                    'pre_section_code_fk'                 => $enroll->pre_section_code_fk,
+                    'pre_stream_code_fk'                  => $enroll->pre_stream_code_fk,
+                    'cur_class_code_fk'                   => $enroll->cur_class_code_fk,
+                    'cur_section_code_fk'                 => $enroll->cur_section_code_fk,
+                    'cur_stream_code_fk'                  => $enroll->cur_stream_code_fk,
+                    'cur_roll_number'                     => $enroll->cur_roll_number,
+                    'medium_code_fk'                      => $enroll->medium_code_fk,
+                    'admission_type_code_fk'              => $enroll->admission_type_code_fk,
+
+                    // -------- CONTACT ------------------
+                    'stu_country_code_fk'                 => $contact->stu_country_code_fk    ?? null,
+                    'stu_contact_address'                 => $contact->stu_contact_address    ?? null,
+                    'stu_contact_district'                => $contact->stu_contact_district   ?? null,
+                    'stu_contact_panchayat'               => $contact->stu_contact_panchayat  ?? null,
+                    'stu_police_station'                  => $contact->stu_police_station     ?? null,
+                    'stu_mobile_no'                       => $contact->stu_mobile_no          ?? null,
+                    'stu_state_code_fk'                   => $contact->stu_state_code_fk      ?? null,
+                    'stu_contact_habitation'              => $contact->stu_contact_habitation ?? null,
+                    'stu_contact_block'                   => $contact->stu_contact_block      ?? null,
+                    'stu_post_office'                     => $contact->stu_post_office        ?? null,
+                    'stu_pin_code'                        => $contact->stu_pin_code           ?? null,
+                    'stu_email'                           => $contact->stu_email              ?? null,
+
+                    'address_equal'                       => $contact->address_equal ?? 0,
+                    'guardian_country_code_fk'            => $contact->guardian_country_code_fk    ?? null,
+                    'guardian_state_code_fk'              => $contact->guardian_state_code_fk      ?? null,
+                    'guardian_contact_address'            => $contact->guardian_contact_address    ?? null,
+                    'guardian_contact_habitation'         => $contact->guardian_contact_habitation ?? null,
+                    'guardian_contact_district'           => $contact->guardian_contact_district   ?? null,
+                    'guardian_contact_block'              => $contact->guardian_contact_block      ?? null,
+                    'guardian_contact_panchayat'          => $contact->guardian_contact_panchayat  ?? null,
+                    'guardian_post_office'                => $contact->guardian_post_office        ?? null,
+                    'guardian_police_station'             => $contact->guardian_police_station     ?? null,
+                    'guardian_pin_code'                   => $contact->guardian_pin_code           ?? null,
+                    'guardian_mobile_no'                  => $contact->guardian_mobile_no          ?? null,
+                    'guardian_email'                      => $contact->guardian_email              ?? null,
+
+                    // -------- BANK ---------------------
+                    'bank_ifsc'                           => $bank->bank_ifsc       ?? null,
+                    'stu_bank_acc_no'                     => $bank->stu_bank_acc_no ?? null,
+
+                    // -------- SYSTEM -------------------
+                    'status'                              => 1,
+                    'created_by'                          => $userId,
+                    'updated_by'                          => $userId,
+                ];
+
+                // 🔑 STRICTLY only by school_id_fk (as you asked)
+                StudentEntryMaster::Create($masterData);
+            });
+        }
 }
