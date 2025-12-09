@@ -914,7 +914,7 @@
                     <label class="form-label small">Present Roll No</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bx bx-list-ol"></i></span>
-                      <input name="present_roll_no" type="number" class="form-control" placeholder="Roll number" value="{{ old('pre_roll_number', $enrollment_info['pre_roll_number'] ?? '') }}">
+                      <input name="present_roll_no" type="number" class="form-control" placeholder="Roll number" value="{{ old('cur_roll_number', $enrollment_info['cur_roll_number'] ?? '') }}">
                     </div>
                   </div>
 
