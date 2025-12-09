@@ -102,7 +102,6 @@ return new class extends Migration
                 admission_type_code_fk SMALLINT,
                 bank_ifsc VARCHAR(20),
                 stu_bank_acc_no VARCHAR(50),
-                booth_code_fk INT,
                 assembly_code_fk INT,
                 student_img_upload_y_n SMALLINT DEFAULT 0,
                 excel_code_fk INT,
@@ -184,7 +183,6 @@ return new class extends Migration
 
             $table->foreign('medium_code_fk')->references('id')->on('bs_medium_master');
             $table->foreign('admission_type_code_fk')->references('id')->on('bs_admission_type_master');
-            $table->foreign('booth_code_fk')->references('id')->on('bs_booth_master');
             $table->foreign('assembly_code_fk')->references('id')->on('bs_assembly_master');
         });
     }
