@@ -10,7 +10,7 @@
     $enrollment_info = $data['enrollment_info'] ?? [];
 @endphp
 
-@dump($enrollment_info)
+<!-- @dump($enrollment_info) -->
 @php
     $dropdowns = config('student');
 
