@@ -3,10 +3,11 @@ function validateRequiredFields(formSelector) {
     let invalidFields = [];
     let messages = [];
 
-    // Clear old states
+    // Clear old states & messages
     $(formSelector).find(".is-invalid").removeClass("is-invalid");
+    $(formSelector).find(".required-error").remove();
 
-    // Loop all fields with "required"
+    // Loop all required fields
     $(formSelector)
         .find("[required]")
         .each(function () {
@@ -36,20 +37,27 @@ function validateRequiredFields(formSelector) {
 
             if (isEmpty) {
                 invalidFields.push(field);
-                messages.push(label + " is required");
+                messages.push(label);
 
+                // Add red border
+                field.addClass("is-invalid");
+
+                // Add inline message
+                field.after(
+                    '<small class="text-danger required-error">This field is required</small>'
+                );
+
+                // For radio/checkbox, mark first input
                 if (type === "radio" || type === "checkbox") {
-                    $('input[name="' + name + '"]')
-                        .first()
-                        .addClass("is-invalid");
-                } else {
-                    field.addClass("is-invalid");
+                    $('input[name="' + name + '"]').first().addClass("is-invalid");
                 }
             }
         });
 
+    // If invalid fields found
     if (invalidFields.length > 0) {
-        alert("Please fill required fields:\n\n" + messages.join("\n"));
+        let msg = messages.join(", ");
+        alert("Please fill required fields:\n\n" + msg);
 
         let firstInvalid = invalidFields[0];
 
@@ -67,6 +75,7 @@ function validateRequiredFields(formSelector) {
 
     return true;
 }
+
 
 async function sendRequest(url, method = "POST", formSelector = null, extraData = {}) {
     try {

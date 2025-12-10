@@ -32,6 +32,8 @@ class StudentInfo extends Model
         'disability_percentage',
         'nationality_code_fk',
         'out_of_sch_child_y_n',
+        
+        'child_mainstreamed',   
         'blood_group_code_fk',
         'birth_registration_number',
         'identification_mark',

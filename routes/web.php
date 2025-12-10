@@ -95,6 +95,16 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
         [StudentInfoController::class, 'storeStudentContactDetails']
     )->name('student.store_student_entry_contact_details');
 
+Route::post(
+    '/student/bank_details_of_student',
+    [StudentInfoController::class, 'bankDetailsOfStudent']
+)->name('student.bank_details_of_student');
+
+
+Route::get('/get-branches', [StudentInfoController::class, 'getBranches']);
+Route::get('/get-ifsc', [StudentInfoController::class, 'getIfsc']);
+
+
 
     //      Route::post('/student/basic/store', [StudentInfoController::class, 'storeBasic'])->name('student.basic.store');
     // Route::post('/student/enrollment/store', [StudentInfoController::class, 'storeEnrollment'])->name('student.enrollment.store');

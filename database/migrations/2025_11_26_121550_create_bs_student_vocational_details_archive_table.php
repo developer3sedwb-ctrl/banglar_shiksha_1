@@ -11,7 +11,7 @@ return new class extends Migration
          | 1) Create MAIN PARTITIONED TABLE
          ---------------------------------------------------- */
         DB::statement("
-            CREATE TABLE IF NOT EXISTS bs_student_vocational_details (
+            CREATE TABLE IF NOT EXISTS bs_student_vocational_details_archive (
                 id BIGINT GENERATED ALWAYS AS IDENTITY,
                 -- partition key (must match parent bs_student_master's partition column)
                 district_code_fk SMALLINT NOT NULL,
@@ -79,11 +79,11 @@ return new class extends Migration
         foreach ($districts as $d) {
 
             // safe partition name
-            $partitionName = "bs_student_vocational_details_{$d->id}";
+            $partitionName = "bs_student_vocational_details_archive_{$d->id}";
 
             DB::statement("
                 CREATE TABLE IF NOT EXISTS {$partitionName}
-                PARTITION OF bs_student_vocational_details
+                PARTITION OF bs_student_vocational_details_archive
                 FOR VALUES IN ({$d->id});
             ");
 
@@ -162,8 +162,8 @@ return new class extends Migration
 
             // helpful index for lookups by (district,student)
             DB::statement("
-                CREATE INDEX IF NOT EXISTS idx_{$partitionName}_district_student
-                ON {$partitionName} (district_code_fk, student_code_fk);
+                CREATE INDEX IF NOT EXISTS idx_{$partitionName}_district_student_archive
+                ON {$partitionName} (district_code_fk, student_code);
             ");
 
             // index by school
@@ -176,6 +176,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        DB::statement("DROP TABLE IF EXISTS bs_student_vocational_details CASCADE;");
+        DB::statement("DROP TABLE IF EXISTS bs_student_vocational_details_archive CASCADE;");
     }
 };

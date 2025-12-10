@@ -56,7 +56,7 @@ $guardian_qualification = $guardian_qualification_master;
   <div class="card card-full">
       <div class="row">
         @if(isset($data['current_step']) && $data['current_step'] > 1)
-        <div class="alert alert-danger d-flex justify-content-between align-items-center">
+        <div class="alert-danger d-flex justify-content-between align-items-center">
             <span>
                 <strong>Resume Entry?</strong> You have an unfinished student entry at Step {{ $data['current_step'] }}.
             </span>
@@ -79,28 +79,25 @@ $guardian_qualification = $guardian_qualification_master;
 
       <ul class="nav nav-tabs mb-0" id="studentTab" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="general_info-tab" data-bs-toggle="tab" data-bs-target="#general_info"
-            type="button" role="tab">General Info</button>
+          <button class="nav-link active" id="general_info-tab" data-bs-toggle="tab" data-bs-target="#general_info" type="button" role="tab">General Info</button>
         </li>
 
+         <li class="nav-item" role="presentation">
+          <button class="nav-link" id="enrollment_details-tab" data-bs-toggle="tab" data-bs-target="#enrollment_details" type="button" role="tab">Enrollment Details</button>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="enrollment_details-tab" data-bs-toggle="tab" data-bs-target="#enrollment_details"
-            type="button" role="tab">Enrollment Details</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab3-tab" data-bs-toggle="tab" data-bs-target="#tab3" type="button"
+          <button class="nav-link" id="facility-other-dtls-tab" data-bs-toggle="tab" data-bs-target="#facility_other_dtls_tab" type="button"
             role="tab">Facilities & Other Detais</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab4-tab" data-bs-toggle="tab" data-bs-target="#tab4" type="button"
+          <button class="nav-link" id="vocational-tab" data-bs-toggle="tab" data-bs-target="#vocational_tab" type="button"
             role="tab">Vocational Details</button>
         </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab5-tab" data-bs-toggle="tab" data-bs-target="#tab5" type="button"
-            role="tab">Contact Info</button>
+        </li>
+          <li class="nav-item" role="presentation">
+          <button class="nav-link" id="contact_info_tab-tab" data-bs-toggle="tab" data-bs-target="#contact_info_tab" type="button" role="tab">Contact Info</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab6-tab" data-bs-toggle="tab" data-bs-target="#tab6" type="button"
+          <button class="nav-link" id="bank-dtls-tab" data-bs-toggle="tab" data-bs-target="#bank_dtls_tab" type="button"
             role="tab">Bank Details</button>
         </li>
       </ul>
@@ -532,7 +529,7 @@ $guardian_qualification = $guardian_qualification_master;
           </form>
         </div>
         <!-- TAB 3: FACILITY AND OTHER DETAILS START BY AZIZA-->
-        <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
+        <div class="tab-pane fade" id="facility-other-dtls-tab" role="tabpanel" aria-labelledby="facility_other_dtls_tab">
 
           @php
           $val = $data['facility'] ?? [];
@@ -988,14 +985,14 @@ $guardian_qualification = $guardian_qualification_master;
               <button class="btn btn-secondary me-2" type="button" data-bs-toggle="tab"
                 data-bs-target="#tab2">Previous</button>
 
-              <button class="btn btn-success" type="button" id="save_facility_and_other_dtls">Next</button>
+              <button class="btn btn-success" type="button" id="save_facility_and_other_dtls">Save & Next</button>
             </div>
 
           </form>
         </div>
         <!-- TAB 3: FACILITY AND OTHER DETAILS END BY AZIZA-->
         <!-- TAB 4: VOCATIONAL DETAILS START BY AZIZA-->
-        <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
+        <div class="tab-pane fade" id="vocational-tab" role="tabpanel" aria-labelledby="vocational_tab">
           <form id="stu_vocational_dtls_form">
             @csrf
 
@@ -1141,7 +1138,7 @@ $guardian_qualification = $guardian_qualification_master;
             <!-- Navigation Buttons -->
             <div class="form-actions text-end mt-3">
               <button class="btn btn-secondary me-2" data-bs-toggle="tab" data-bs-target="#tab3" type="button">Previous</button>
-              <button class="btn btn-success" data-bs-toggle="tab" id="save_vocational_btn" data-bs-target="#tab5" type="button">Next</button>
+              <button class="btn btn-success" data-bs-toggle="tab" id="save_vocational_btn" data-bs-target="#tab5" type="button">Save & Next</button>
             </div>
 
           </form>
@@ -1162,77 +1159,274 @@ $guardian_qualification = $guardian_qualification_master;
 @push('scripts')
 <script src="{{ asset('assets/js/common.js') }}"></script>
 <script>
+  $(document).ready(function() {
+      $('.select2').select2({
+          width: '100%' // Tells JS to fill the container we defined in CSS
+      });
+    $("form").on("submit", function(e) {
+    e.preventDefault(); // Stop page refresh always
+});
+
+  });
 
   document.addEventListener("DOMContentLoaded", function () {
-    let input = document.getElementById("aadhaar_child");
+      let aadhaar_child = document.getElementById("aadhaar_child");
 
-    input.addEventListener("input", function () {
-      this.value = this.value.replace(/[^0-9]/g, "").slice(0, 12);
-    });
+      aadhaar_child.addEventListener("input", function () {
+          this.value = this.value.replace(/[^0-9]/g, "").slice(0, 12);
+      });
   });
-  $(function () {
+  // ====================================
+      document.getElementById('bpl_beneficiary').addEventListener('change', function () {
+      let aay = document.getElementById('aay_section');
+      let bplNumber = document.getElementById('bpl_numberID');
+      
+      if (this.value == '1' || this.value.toLowerCase() === 'yes') {
+          aay.style.display = 'block';
+          bplNumber.style.display = 'block';
+      } else {
+          aay.style.display = 'none';
+          document.getElementById('antyodaya_anna_yojana').value = '';
 
-    function clearInlineErrors() {
-      $('.is-invalid').removeClass('is-invalid');
-      $('.invalid-feedback.js-dynamic').remove();
-    }
+          bplNumber.style.display = 'none';
+          document.getElementById('bpl_number').value = '';
+      }
+  });
+  // ======================================
 
-    function getCsrfToken() {
-      return $('meta[name="csrf-token"]').attr('content') || '';
-    }
+  document.getElementById('cwsn').addEventListener('change', function () {
+      let impairment = document.getElementById('impairment');
+      let dis_percentage = document.getElementById('disability');
+      if (this.value == '1' || this.value.toLowerCase() === 'yes') {
+          impairment.style.display = 'block';
+          dis_percentage.style.display = 'block';
+      } else {
+          impairment.style.display = 'none';
+          dis_percentage.style.display = 'none';
+          document.getElementById('type_of_impairment').value = '';
+          document.getElementById('disability_percentage').value = '';
+      }
+  });
 
-    $('#basic_info_save_btn').off('click').on('click', function () {
+  // =======================================================================
+  document.getElementById('out_of_school').addEventListener('change', function () {
+      let mainstreamed_sec = document.getElementById('mainstreamed_section');
+
+      if (this.value == '1' || this.value.toLowerCase() === 'yes') {
+          mainstreamed_sec.style.display = 'block';
+
+      } else {
+          mainstreamed_sec.style.display = 'none';
+
+          document.getElementById('mainstreamed').value = '';
+      }
+  });
+
+  // =========================================================================
+      $('#admission_status_prev').on('change', function () {
+            let selected = $(this).val();
+            let showValue = "1";
+
+            if (selected === showValue) {
+              $('#prev_class_studied_appeared_exam').show();
+              $('#no_of_days_attended_section').show();
+              $('#previous_class_studied').show();
+              $('#previous_section_section').show();
+              $('#previous_roll_no_section').show();
+              $('#previous_stream_section').show();
+            } else {
+              $('#prev_class_studied_appeared_exam').hide();
+              $('#no_of_days_attended_section').hide();
+              $('#previous_class_studied').hide();
+              $('#previous_section_section').hide();
+              $('#previous_roll_no_section').hide();
+              $('#previous_stream_section').hide();
+              // clear selection
+              $('#prev_class_appeared_exam').val('');
+              $('#no_of_days_attended').val('');  
+              $('#previous_class').val('');  
+              $('#class_section').val('');  
+              $('#previous_student_roll_no').val('');  
+              $('#student_stream').val('');  
+            }
+        });
+
+        $('#prev_class_appeared_exam').on('change', function () {
+          let value = $(this).val();
+
+          if (value === "1") {
+              $('#previous_class_studied_result_examination').show();
+              $('#percentage_of_overall_marks_section').show();
+          } else {
+              $('#previous_class_studied_result_examination').hide();
+              $('#percentage_of_overall_marks_section').hide();
+
+              // Clear fields
+              $('#previous_class_result_examination').val('');
+              $('#percentage_of_overall_marks').val('');
+          }
+        });
+
+
+
+
+    // ================================
+  $(function() {
+
+      function clearInlineErrors() {
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback.js-dynamic').remove();
+      }
+
+      function getCsrfToken() {
+        return $('meta[name="csrf-token"]').attr('content') || '';
+      }
+
+
+      // ==================================
+      // Student Basic  Details Save 
+      $('#basic_info_save_btn').off('click').on('click', function () {
+        var $btn = $(this);
+        var $basicForm = $('#basic_info_of_student');
+        var $enrollForm = $('#student_enrollment_details'); // must exist (see blade change)
+
+        clearInlineErrors();
+
+        $btn.prop('disabled', true).text('Saving...');
+
+        // Start with FormData from basic info form
+        var formData = new FormData($basicForm[0]);
+
+      
+
+        // Debug: list entries (optional, safe to remove in production)
+        console.log("------ MERGED FORM DATA ------");
+        for (let pair of formData.entries()) {
+          console.log(pair[0] + ':', pair[1]);
+        }
+        console.log("------ END MERGED FORM DATA ------");
+
+        $.ajax({
+          url: "{{ route('student.store_student_entry_basic_details') }}",
+
+          type: "POST",
+          data: formData,
+          processData: false,
+          contentType: false,
+          dataType: 'json',
+          headers: {
+            'X-CSRF-TOKEN': getCsrfToken(),
+            'Accept': 'application/json'
+          },
+          // timeout: 20000,
+
+          beforeSend: function() {
+          console.log('Sending merged AJAX to {{ route("student.store_student_entry_basic_details") }}');
+          },
+
+          success: function (res, textStatus, jqXHR) {
+            console.log("AJAX success", res);
+
+            if (res && res.success) {
+              if (window.toastr) {
+                toastr.success(res.message || 'Saved successfully');
+              } else {
+                alert(res.message || 'Saved successfully');
+              }
+
+              // Move to enrollment details tab after successful save
+              var $nextTabBtn = $('#enrollment_details-tab');
+              if ($nextTabBtn.length) {
+                $nextTabBtn.tab('show');
+              }
+            } else {
+              console.warn('Unexpected body', res);
+              alert(res.message || 'Saved but unexpected response. Check console.');
+            }
+
+            $btn.prop('disabled', false).text('Next');
+          },
+
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.error("AJAX error. Status:", jqXHR.status, errorThrown);
+
+            clearInlineErrors();
+
+            if (jqXHR.status === 422) {
+              var resp = jqXHR.responseJSON || {};
+              var errors = resp.errors || {};
+
+              $.each(errors, function(field, messages) {
+                var selector = '[name="'+field+'"]';
+                var $el = $(selector);
+
+                if (!$el.length) {
+                  var alt = field.replace(/\.(\w+)/g, '[$1]');
+                  $el = $('[name="'+alt+'"]');
+                }
+
+                if ($el.length) {
+                  $el.addClass('is-invalid');
+                  var $group = $el.closest('.input-group');
+                  var messageHtml = '<div class="invalid-feedback d-block js-dynamic">' + (messages[0] || '') + '</div>';
+
+                  if ($group.length) {
+                    $group.after(messageHtml);
+                  } else {
+                    $el.after(messageHtml);
+                  }
+                } else {
+                  console.warn('Field not found in DOM for error:', field, messages);
+                }
+              });
+
+              var $first = $('.is-invalid').first();
+              if ($first.length) {
+                $('html, body').animate({ scrollTop: $first.offset().top - 90 }, 400);
+                $first.focus();
+              }
+            } else if (jqXHR.status === 419) {
+              alert('Session expired (419). Please reload the page and try again.');
+            } else {
+              alert('Something went wrong. See console & network tab for details.');
+            }
+
+            $btn.prop('disabled', false).text('Next');
+          },
+
+          complete: function() {
+            console.log('AJAX complete');
+          }
+        });
+      });
+
+
+     // ==================================
+      // Student Enrollment Details Save 
+    $('#enrollment_details_save_btn').off('click').on('click', function () {
       var $btn = $(this);
-      var $basicForm = $('#basic_info_of_student');
-      var $enrollForm = $('#enrollment_details_form'); // must exist (see blade change)
+      var $enrollForm = $('#student_enrollment_details');
 
       clearInlineErrors();
 
       $btn.prop('disabled', true).text('Saving...');
 
-      // Start with FormData from basic info form
-      var formData = new FormData($basicForm[0]);
+      // Build FormData only from enrollment form
+      var formData = new FormData($enrollForm[0]);
 
-      // If enrollment form exists, append its fields to the same FormData
-      if ($enrollForm.length) {
-        // Use native elements to include file inputs correctly and match browser behavior.
-        // We'll append each input/select/textarea that has a name and is not disabled.
-        $enrollForm.find('input, select, textarea').each(function () {
-          var el = this;
-          var $el = $(el);
-          var name = $el.attr('name');
+      // Ensure a single CSRF token (optional, but avoids duplicate _token entries)
+      formData.delete('_token');
+      formData.append('_token', getCsrfToken());
 
-          if (!name || $el.prop('disabled')) return;
-
-          // For checkboxes/radios: only append if checked
-          if (el.type === 'checkbox' || el.type === 'radio') {
-            if (!el.checked) return;
-          }
-
-          // For file inputs: append all files
-          if (el.type === 'file') {
-            var files = el.files;
-            for (var i = 0; i < files.length; i++) {
-              // Append multiple files using same field name (as browser does)
-              formData.append(name, files[i]);
-            }
-          } else {
-            // Normal inputs/selects/textareas: append value.
-            // Note: if name already exists, FormData.append will create a second entry.
-            formData.append(name, $el.val());
-          }
-        });
-      }
-
-      // Debug: list entries (optional, safe to remove in production)
-      console.log("------ MERGED FORM DATA ------");
+      // Debug logging (optional)
+      console.log("------ ENROLLMENT FORM DATA ------");
       for (let pair of formData.entries()) {
         console.log(pair[0] + ':', pair[1]);
       }
-      console.log("------ END MERGED FORM DATA ------");
+      console.log("------ END ENROLLMENT FORM DATA ------");
 
       $.ajax({
-        url: "{{ route('student.store') }}",
+        url: "{{ route('student.store_enrollment_details') }}",
         type: "POST",
         data: formData,
         processData: false,
@@ -1242,38 +1436,28 @@ $guardian_qualification = $guardian_qualification_master;
           'X-CSRF-TOKEN': getCsrfToken(),
           'Accept': 'application/json'
         },
-        timeout: 20000,
+        // timeout: 20000,
 
         beforeSend: function () {
-          console.log('Sending merged AJAX to {{ route("student.store") }}');
+          console.log('Sending enrollment AJAX to {{ route("student.store_enrollment_details") }}');
         },
 
-        success: function (res, textStatus, jqXHR) {
-          console.log("AJAX success", res);
-
+        success: function (res) {
           if (res && res.success) {
-            if (window.toastr) {
-              toastr.success(res.message || 'Saved successfully');
-            } else {
-              alert(res.message || 'Saved successfully');
-            }
+            if (window.toastr) toastr.success(res.message || 'Enrollment saved.');
+            else alert(res.message || 'Enrollment saved.');
 
-            // Move to enrollment details tab after successful save
-            var $nextTabBtn = $('#enrollment_details-tab');
-            if ($nextTabBtn.length) {
-              $nextTabBtn.tab('show');
-            }
+            // If you want to switch tabs programmatically after save, do it here:
+            // $('#someNextTabButton').tab('show');
           } else {
             console.warn('Unexpected body', res);
-            alert(res.message || 'Saved but unexpected response. Check console.');
+            alert(res.message || 'Saved but unexpected response.');
           }
 
           $btn.prop('disabled', false).text('Next');
         },
 
-        error: function (jqXHR, textStatus, errorThrown) {
-          console.error("AJAX error. Status:", jqXHR.status, errorThrown);
-
+        error: function (jqXHR) {
           clearInlineErrors();
 
           if (jqXHR.status === 422) {
@@ -1283,24 +1467,17 @@ $guardian_qualification = $guardian_qualification_master;
             $.each(errors, function (field, messages) {
               var selector = '[name="' + field + '"]';
               var $el = $(selector);
-
               if (!$el.length) {
                 var alt = field.replace(/\.(\w+)/g, '[$1]');
                 $el = $('[name="' + alt + '"]');
               }
-
               if ($el.length) {
                 $el.addClass('is-invalid');
                 var $group = $el.closest('.input-group');
                 var messageHtml = '<div class="invalid-feedback d-block js-dynamic">' + (messages[0] || '') + '</div>';
-
-                if ($group.length) {
-                  $group.after(messageHtml);
-                } else {
-                  $el.after(messageHtml);
-                }
+                if ($group.length) $group.after(messageHtml); else $el.after(messageHtml);
               } else {
-                console.warn('Field not found in DOM for error:', field, messages);
+                console.warn('Field not found for error:', field, messages);
               }
             });
 
@@ -1319,14 +1496,114 @@ $guardian_qualification = $guardian_qualification_master;
         },
 
         complete: function () {
-          console.log('AJAX complete');
+          console.log('Enrollment AJAX complete');
         }
       });
     });
 
-    // Keep your clickable date-group behavior unchanged
-    const dobGroup = document.getElementById('dobGroup');
-    const dobField = document.getElementById('dobField');
+    // ================================
+   // Student Contact Details Save 
+   (function($) {
+    function clearInlineErrors() {
+      $('.is-invalid').removeClass('is-invalid');
+      $('.invalid-feedback.js-dynamic').remove();
+    }
+    function getCsrfToken() {
+      return $('meta[name="csrf-token"]').attr('content') || '';
+    }
+
+    $('#contact_info_save_btn').off('click').on('click', function () {
+      var $btn = $(this);
+      var $form = $('#contact_info_of_student_and_guardian');
+
+      clearInlineErrors();
+      $btn.prop('disabled', true).text('Saving...');
+
+      var formData = new FormData($form[0]);
+
+      // ensure single _token
+      formData.delete('_token');
+      formData.append('_token', getCsrfToken());
+
+      console.log("------ CONTACT FORM DATA ------");
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ':', pair[1]);
+      }
+      console.log("------ END CONTACT FORM DATA ------");
+
+      $.ajax({
+        url: "{{ route('student.store_student_entry_contact_details') }}", // fixed
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        headers: {
+          'X-CSRF-TOKEN': getCsrfToken(),
+          'Accept': 'application/json'
+        },
+        // timeout: 20000,
+        beforeSend: function () {
+          console.log('Sending contact AJAX to {{ route("student.store_student_entry_contact_details") }}');
+        },
+        success: function (res) {
+          if (res && res.success) {
+            if (window.toastr) toastr.success(res.message || 'Contact info saved.');
+            else alert(res.message || 'Contact info saved.');
+            // maybe move to next tab or reset
+          } else {
+            console.warn('Unexpected body', res);
+            alert(res.message || 'Saved but unexpected response.');
+          }
+          $btn.prop('disabled', false).text('Next');
+        },
+        error: function (jqXHR) {
+          clearInlineErrors();
+
+          if (jqXHR.status === 422) {
+            var resp = jqXHR.responseJSON || {};
+            var errors = resp.errors || {};
+            $.each(errors, function (field, messages) {
+              var selector = '[name="' + field + '"]';
+              var $el = $(selector);
+              if (!$el.length) {
+                var alt = field.replace(/\.(\w+)/g, '[$1]');
+                $el = $('[name="' + alt + '"]');
+              }
+              if ($el.length) {
+                $el.addClass('is-invalid');
+                var $group = $el.closest('.input-group');
+                var messageHtml = '<div class="invalid-feedback d-block js-dynamic">' + (messages[0] || '') + '</div>';
+                if ($group.length) $group.after(messageHtml); else $el.after(messageHtml);
+              } else {
+                console.warn('Field not found for error:', field, messages);
+              }
+            });
+
+            var $first = $('.is-invalid').first();
+            if ($first.length) {
+              $('html, body').animate({ scrollTop: $first.offset().top - 90 }, 400);
+              $first.focus();
+            }
+          } else if (jqXHR.status === 419) {
+            alert('Session expired (419). Please reload the page and try again.');
+          } else {
+            alert('Something went wrong. See console & network tab for details.');
+          }
+
+          $btn.prop('disabled', false).text('Next');
+        },
+        complete: function () {
+          console.log('Contact AJAX complete');
+        }
+      });
+    });
+  })(jQuery);
+
+    // ----------------------------------------
+      // Keep your clickable date-group behavior unchanged
+      const dobGroup = document.getElementById('dobGroup');
+      const dobField = document.getElementById('dobField');
     if (dobGroup && dobField) {
       dobGroup.addEventListener('click', () => {
         if (typeof dobField.showPicker === 'function') {
@@ -1336,7 +1613,6 @@ $guardian_qualification = $guardian_qualification_master;
         }
       });
     }
-
   });
 </script>
 {{-- FACILITIES AND OTHER DETAILS OF THE STUDENT Aziza Start --}}
@@ -1538,18 +1814,29 @@ $guardian_qualification = $guardian_qualification_master;
   });
 
   $("#save_facility_and_other_dtls").on("click", function () {
+    let $btn = $(this);
+    $btn.prop('disabled', true).text('Saving...');
     let url = "{{ route('hoi.student.facility') }}";
+    if (!validateRequiredFields("#student_facility_other_dtls_form")) {
+      return;
+    }
+
     if (validateRequiredFields("#student_facility_other_dtls_form")) {
       sendRequest(url, "POST", "#student_facility_other_dtls_form")
         .then(res => {
             if (res && res.status) {
                 alert(res.message);
-                document.querySelector('[data-bs-target="#tab4"]').click();
+                document.querySelector('[data-bs-target="#vocational_tab"]').click();
+                $btn.prop('disabled', false).text('Next');
             }
         })
         .catch(err => {
             console.error("Error saving vocational details:", err);
-    });
+      });
+    }
+    else
+    {
+      $btn.prop('disabled', false).text('Save & Next');
     }
   });
 // {{-- FACILITIES AND OTHER DETAILS OF THE STUDENT Aziza End --}}
@@ -1632,20 +1919,28 @@ $guardian_qualification = $guardian_qualification_master;
     }
   });
   $("#save_vocational_btn").on("click", function (e) {
+    let $btn = $(this);
+    $btn.prop('disabled', true).text('Saving...');
     let url = "{{ route('save.vocational.details') }}"; // Add route in web.php
+    if (!validateRequiredFields("#stu_vocational_dtls_form")) {
+      return;
+    }
     if (validateRequiredFields("#stu_vocational_dtls_form")) {
-    sendRequest(url, "POST", "#stu_vocational_dtls_form")
-        .then(res => {
-            if (res && res.status) {
-                alert(res.message);
-                document.querySelector('[data-bs-target="#tab5"]').click();
-
-            }
-        })
-        .catch(err => {
-            console.error("Error saving vocational details:", err);
-    });
-  }
+      sendRequest(url, "POST", "#stu_vocational_dtls_form")
+          .then(res => {
+              if (res && res.status) {
+                  alert(res.message);
+                  document.querySelector('[data-bs-target="#bank_dtls_tab"]').click();
+                  $btn.prop('disabled', false).text('Next');
+              }
+          })
+          .catch(err => {
+              console.error("Error saving vocational details:", err);
+      });
+    }
+    else {
+      $btn.prop('disabled', false).text('Save & Next');
+    }
 });
 // {{--Vocational DETAILS OF THE STUDENT Aziza End --}}
 </script>
@@ -1670,7 +1965,5 @@ $guardian_qualification = $guardian_qualification_master;
   });
 </script>
 {{--RESUME AND NEW ENTRY BY AZIZA  --}}
-
-
 @endpush
 @endsection
