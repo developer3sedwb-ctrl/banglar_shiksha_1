@@ -33,6 +33,10 @@ class StudentEnrollmentInfo extends Model
         'academic_year',
         'medium_code_fk',
         'admission_type_code_fk',
+        // System
+        'entry_ip',
+        'update_ip',
+        'deleted_at',
         'created_by',
         'updated_by',
     ];

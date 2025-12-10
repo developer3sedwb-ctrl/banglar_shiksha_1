@@ -43,8 +43,14 @@ class StudentInfo extends Model
         'stu_height_in_cms',
         'stu_weight_in_kgs',
         'guardian_qualification',
+        'cur_stream_code_fk',
+        'entry_ip',
+        'update_ip',
+        'deleted_at',
         'created_by',
         'updated_by',
+
+        
     ];
 
     // cast types where appropriate
@@ -68,7 +74,10 @@ class StudentInfo extends Model
         'stu_height_in_cms' => 'integer',
         'stu_weight_in_kgs' => 'integer',
         'guardian_qualification' => 'integer',
-        'created_by' => 'integer',
-        'updated_by' => 'integer',
+        'entry_ip',
+        'update_ip',
+        'deleted_at',
+        'created_by',
+        'updated_by',
     ];
 }

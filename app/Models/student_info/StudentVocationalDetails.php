@@ -42,8 +42,8 @@ class StudentVocationalDetails extends Model
         'vocational_nsqf_level_code_fk',
         'vocational_placement_status_code_fk',
         'vocational_salary_offered',
-
         'status',
+        // System
         'entry_ip',
         'update_ip',
         'created_by',
