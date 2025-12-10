@@ -27,7 +27,7 @@ class BsLanguageMasterSeeder extends Seeder
         foreach ($languages as $language) {
             DB::table('bs_language_master')->insert([
                 'name' => $language['name'],
-                'status' => $language['status'],
+                'status' => 1,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);

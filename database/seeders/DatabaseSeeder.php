@@ -98,7 +98,12 @@ class DatabaseSeeder extends Seeder
             // BsNameAndCodeCentralScholershipsMaster::class,
             // BsVocationalTradeSectorMaster::class,
             // BsVocationalJobRoleMaster::class,
-            BankCodeNameMasterSeeder::class,
+            // BankCodeNameMasterSeeder::class,
+            // BsLanguageMasterSeeder::class,
+            // BsParliamentaryMasterSeeder::class,
+            // BsDistrictAssemblyMasterSeeder::class,
+            // BsBoardCouncilClassMappingMasterSeeder::class,
+            BsPanchayatMasterSeeder::class,
 
 
 

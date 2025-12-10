@@ -20,33 +20,33 @@ return new class extends Migration
             $table->char('ac_year', 4);
 
             // LOCATION FOREIGN KEYS
-            $table->unsignedSmallInteger('state_code_fk')->nullable();
-            $table->unsignedSmallInteger('district_code_fk')->nullable();
-            $table->unsignedSmallInteger('block_munc_corp_code_fk')->nullable();
-            $table->unsignedSmallInteger('circle_code_fk')->nullable();
-            $table->unsignedSmallInteger('cluster_code_fk')->nullable();
-            $table->unsignedBigInteger('gs_ward_code_fk')->nullable();
-            $table->unsignedBigInteger('panchayat_code_fk')->nullable();
-            $table->unsignedInteger('assembly_constituency_code_fk')->nullable();
-            $table->unsignedSmallInteger('parliamentary_constituency_code_fk')->nullable();
-            $table->unsignedSmallInteger('city_code_fk')->nullable();
-            $table->unsignedSmallInteger('rurb_code_fk')->nullable();
+            $table->unsignedSmallInteger('state_code_fk');
+            $table->unsignedSmallInteger('district_code_fk');
+            $table->unsignedSmallInteger('block_munc_corp_code_fk');
+            $table->unsignedSmallInteger('circle_code_fk');
+            $table->unsignedSmallInteger('cluster_code_fk');
+            $table->unsignedBigInteger('gs_ward_code_fk');
+            $table->unsignedBigInteger('panchayat_code_fk');
+            $table->unsignedInteger('assembly_constituency_code_fk');
+            $table->unsignedSmallInteger('parliamentary_constituency_code_fk');
+            $table->unsignedSmallInteger('city_code_fk');
+            $table->unsignedSmallInteger('rurb_code_fk');
 
             // SCHOOL ATTRIBUTES
-            $table->unsignedSmallInteger('school_category_code_fk')->nullable();
-            $table->unsignedSmallInteger('school_management_code_fk')->nullable();
-            $table->unsignedSmallInteger('school_type_code_fk')->nullable();
-            $table->unsignedSmallInteger('low_class_code_fk')->nullable();
-            $table->unsignedSmallInteger('high_class_code_fk')->nullable();
+            $table->unsignedSmallInteger('school_category_code_fk');
+            $table->unsignedSmallInteger('school_management_code_fk');
+            $table->unsignedSmallInteger('school_type_code_fk');
+            $table->unsignedSmallInteger('low_class_code_fk');
+            $table->unsignedSmallInteger('high_class_code_fk');
 
             // MEDIUMS & LANGUAGES
-            $table->unsignedSmallInteger('medium_code_fk1')->nullable();
-            $table->unsignedSmallInteger('medium_code_fk2')->nullable();
-            $table->unsignedSmallInteger('medium_code_fk3')->nullable();
-            $table->unsignedSmallInteger('medium_code_fk4')->nullable();
-            $table->unsignedSmallInteger('language_code_fk1')->nullable();
-            $table->unsignedSmallInteger('language_code_fk2')->nullable();
-            $table->unsignedSmallInteger('language_code_fk3')->nullable();
+            $table->unsignedSmallInteger('medium_code_fk1');
+            $table->unsignedSmallInteger('medium_code_fk2');
+            $table->unsignedSmallInteger('medium_code_fk3');
+            $table->unsignedSmallInteger('medium_code_fk4');
+            $table->unsignedSmallInteger('language_code_fk1');
+            $table->unsignedSmallInteger('language_code_fk2');
+            $table->unsignedSmallInteger('language_code_fk3');
 
             // GEO COORDINATES
             $table->decimal('latdeg', 10, 2)->default(0);
@@ -113,7 +113,6 @@ return new class extends Migration
 
             $table->unsignedSmallInteger('noc_upload_status')->nullable();
             $table->smallInteger('status')->default(1);
-
             // Timestamps + soft delete
             $table->timestamps();
             $table->softDeletes();
@@ -131,7 +130,6 @@ return new class extends Migration
             $table->foreign('circle_code_fk')->references('id')->on('bs_circle_master');
             $table->foreign('cluster_code_fk')->references('id')->on('bs_cluster_master');
             $table->foreign('subdiv_code_fk')->references('id')->on('bs_subdivision_master');
-            $table->foreign('edu_district_code_fk')->references('id')->on('bs_edu_district_master');
 
             // Geo-political mappings
             $table->foreign('gs_ward_code_fk')->references('id')->on('bs_gs_ward_master');
@@ -142,8 +140,8 @@ return new class extends Migration
             $table->foreign('village_code_fk')->references('id')->on('bs_village_master');
 
             // School Structure
-            $table->foreign('school_category_code_fk')->references('id')->on('bs_school_category_master');
-            $table->foreign('school_management_code_fk')->references('id')->on('bs_school_management_master');
+            $table->foreign('school_category_code_fk')->references('id')->on('bs_school_category_type_master');
+            $table->foreign('school_management_code_fk')->references('id')->on('bs_management_master');
             $table->foreign('school_type_code_fk')->references('id')->on('bs_school_type_master');
 
             $table->foreign('low_class_code_fk')->references('id')->on('bs_class_master');
