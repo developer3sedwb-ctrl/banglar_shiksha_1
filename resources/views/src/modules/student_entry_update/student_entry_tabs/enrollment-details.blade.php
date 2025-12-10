@@ -308,3 +308,62 @@
 
             </form>
           </div>
+
+
+<script>
+$(document).ready(function() {
+function toggleStreamField(value) {
+    value = (value || '').toString().toLowerCase();
+    // alert(value);
+
+    // Treat both numeric and roman codes as XI / XII
+    const isHigherSecondary =
+        value === '11' || value === '12' || value === 'xi' || value === 'xii';
+
+    if (isHigherSecondary) {
+        $('#cur_stream_wrapper').show();
+    } else {
+        $('#cur_stream_wrapper').hide();
+        $('#cur_stream_code').val('');  // clear if not XI/XII
+    }
+}
+
+// Run when user changes Present Class
+$('#present_class').on('change', function () {
+    toggleStreamField($(this).val());
+});
+
+// IMPORTANT: also run once for the value loaded from DB
+toggleStreamField($('#present_class').val());
+});
+
+
+
+ function togglePrevFields(value) {
+        value = (value || '').toString().toLowerCase();
+
+        if (value === '1' || value === 'yes') {
+            $('#prev_class_studied_appeared_exam').show();
+            $('#no_of_days_attended_section').show();
+            $('#previous_class_studied').show();
+            $('#previous_section_section').show();
+            $('#previous_roll_no_section').show();
+            $('#previous_stream_section').show();
+        } else {
+            $('#prev_class_studied_appeared_exam').hide();
+            $('#no_of_days_attended_section').hide();
+            $('#previous_class_studied').hide();
+            $('#previous_section_section').hide();
+            $('#previous_roll_no_section').hide();
+            $('#previous_stream_section').hide();
+
+            // clear selection
+            $('#prev_class_appeared_exam').val('');
+            $('#no_of_days_attended').val('');  
+            $('#previous_class').val('');  
+            $('#class_section').val('');  
+            $('#previous_student_roll_no').val('');  
+            $('#student_stream').val(''); 
+        }
+    }
+</script>

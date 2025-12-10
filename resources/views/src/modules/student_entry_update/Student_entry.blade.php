@@ -13,8 +13,8 @@
     $student_bank = $data['student_bank_details'] ?? [];
 @endphp
 
-@dump($student_bank)
-@php
+  <!-- @dump($student_bank) -->
+  @php
     $dropdowns = config('student');
 
     $gender_master = DB::table('bs_gender_master')->pluck('name', 'id')->toArray();
@@ -178,12 +178,8 @@
 
     <!-- CARD WITH TABS -->
      <div class="card card-full">
-            <!-- ================================Student Previous Entry Delete====================================== -->
 
 
-
-
-      <!-- ========================================================================================== -->
       <div class="card-header d-flex align-items-center justify-content-between border-bottom">
         @php
             $current = $data['current_step'] ?? 1;
@@ -270,37 +266,37 @@
 
 
 
-<!-- ==========================DELETE PREVIOUS STUDENT ENTRY MODAL============================== -->
-<div class="modal fade" id="delete_previous_student_entry" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content shadow-lg">
-            
-            <button type="button" class="btn-close position-absolute end-0 m-2"
-                data-bs-dismiss="modal" aria-label="Close"></button>
+  <!-- ==========================DELETE PREVIOUS STUDENT ENTRY MODAL============================== -->
+  <div class="modal fade" id="delete_previous_student_entry" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content shadow-lg">
+              
+              <button type="button" class="btn-close position-absolute end-0 m-2"
+                  data-bs-dismiss="modal" aria-label="Close"></button>
 
-            <div class="text-center p-3">
-                <img src="{{ asset('images/delete_student.png') }}"
-                     width="80" height="80" alt="Icon">
-                <h5 class="fw-bold mt-2">
-                Are you sure you want to proceed?
-                </h5>
-                <h3 class="text-muted small"> The previous entry will be permanently deleted.</h3>
-            </div>
+              <div class="text-center p-3">
+                  <img src="{{ asset('images/delete_student.png') }}"
+                      width="80" height="80" alt="Icon">
+                  <h5 class="fw-bold mt-2">
+                  Are you sure you want to proceed?
+                  </h5>
+                  <h3 class="text-muted small"> The previous entry will be permanently deleted.</h3>
+              </div>
 
-            <div class="modal-footer">
-               <button type="button" class="btn btn-danger" id="confirmDeleteEntry">
-                    <i class="bx bx-trash me-1"></i> Delete Previous Entry
-                </button>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="confirmDeleteEntry">
+                      <i class="bx bx-trash me-1"></i> Delete Previous Entry
+                  </button>
 
-                <button type="button" class="btn btn-outline-secondary"
-                    data-bs-dismiss="modal">
-                    <i class="bx bx-x-circle me-1"></i> Cancel
-                </button>
-            </div>
+                  <button type="button" class="btn btn-outline-secondary"
+                      data-bs-dismiss="modal">
+                      <i class="bx bx-x-circle me-1"></i> Cancel
+                  </button>
+              </div>
 
-        </div>
-    </div>
-</div>
+          </div>
+      </div>
+  </div>
 
 @endsection
 
@@ -313,33 +309,11 @@
 <script src="{{ asset('assets/js/common.js') }}"></script>
 <script>
   $(document).ready(function() {
-function toggleStreamField(value) {
-    value = (value || '').toString().toLowerCase();
-    // alert(value);
-
-    // Treat both numeric and roman codes as XI / XII
-    const isHigherSecondary =
-        value === '11' || value === '12' || value === 'xi' || value === 'xii';
-
-    if (isHigherSecondary) {
-        $('#cur_stream_wrapper').show();
-    } else {
-        $('#cur_stream_wrapper').hide();
-        $('#cur_stream_code').val('');  // clear if not XI/XII
-    }
-}
-
-// Run when user changes Present Class
-$('#present_class').on('change', function () {
-    toggleStreamField($(this).val());
-});
-
-// 👇 IMPORTANT: also run once for the value loaded from DB
-toggleStreamField($('#present_class').val());
 
 
 
-    // ===================================
+
+  // =============Store Bank Details======================
 
   $.ajaxSetup({
         headers: {
@@ -391,264 +365,39 @@ toggleStreamField($('#present_class').val());
         });
     });
 
-    // ==========================================
-$(function () {
-  // when bank changes -> request branches
-  $('#bank_name').on('change', function () {
-    var bankId = $(this).val();
-    $('#ifsc').val('');
-    $('#branch_name').html('<option value="">Loading...</option>');
+  // ==========================================
 
-    if (!bankId) {
-      $('#branch_name').html('<option value="">-Please Select-</option>');
-      return;
-    }
 
-    $.ajax({
-      url: '/get-branches',
-      type: 'GET',
-      data: { bank_id: bankId },
-      success: function (res) {
-        // res may be { branches: [...] } or [...] — normalize to an array
-        var branches = [];
-        if (Array.isArray(res)) {
-          branches = res;
-        } else if (res && Array.isArray(res.branches)) {
-          branches = res.branches;
-        } else if (res && res.data && Array.isArray(res.data)) {
-          // in case of resource-wrapped response
-          branches = res.data;
-        }
 
-        $('#branch_name').empty().append('<option value="">-Please Select-</option>');
 
-        if (!branches.length) {
-          $('#branch_name').append('<option value="">No branches found</option>');
-          return;
-        }
-
-        // branches expected format: [{id, name, branch_ifsc}, ...] or [{id, name}]
-        branches.forEach(function (b) {
-          var id = (b.id !== undefined) ? b.id : '';
-          var name = (b.name !== undefined) ? b.name : (b.branch_name || '');
-          var ifsc = (b.branch_ifsc !== undefined) ? String(b.branch_ifsc).trim() : '';
-          // Make sure id is used as option value
-          $('#branch_name').append(
-            '<option value="' + id + '" data-ifsc="' + ifsc + '">' + name + '</option>'
-          );
-        });
-
-        // optional: if only one real branch, auto-select it
-        var realOpts = $('#branch_name').find('option').filter(function () {
-          return $(this).val() !== '';
-        });
-        if (realOpts.length === 1) {
-          $('#branch_name').val(realOpts.val()).trigger('change');
-        }
-      },
-      error: function (xhr, status, err) {
-        console.error('Failed to load branches', status, err);
-        $('#branch_name').html('<option value="">Error loading</option>');
-      }
+  // =============================
+    $('.select2').select2({
+        width: '100%' // Tells JS to fill the container we defined in CSS
     });
-  });
-
-  // when branch selected -> fill IFSC (fast path from data-ifsc)
-  $('#branch_name').on('change', function () {
-    var raw = $(this).val();
-
-    // fast path: read data-ifsc from selected option (no AJAX)
-    var ifscFromData = $(this).find('option:selected').data('ifsc');
-    if (ifscFromData) {
-      $('#ifsc').val(String(ifscFromData).trim());
-      return;
-    }
-
-    // validate branch id before sending to server
-    if (!raw || raw === '' || isNaN(parseInt(raw, 10))) {
-      console.warn('Invalid branch id selected:', raw);
-      $('#ifsc').val('');
-      return;
-    }
-
-    var branchId = parseInt(raw, 10);
-    $('#ifsc').val('Loading...');
-
-    $.ajax({
-      url: '/get-ifsc',
-      type: 'GET',
-      data: { branch_id: branchId },
-      success: function (res) {
-        // res expected { ifsc: '...' }
-        var ifsc = (res && (res.ifsc !== undefined)) ? res.ifsc : (res.branch_ifsc || '');
-        $('#ifsc').val(ifsc ? String(ifsc).trim() : '');
-      },
-      error: function () {
-        $('#ifsc').val('');
-      }
-    });
-  });
-});
 
 
-
-    // =============================
-      $('.select2').select2({
-          width: '100%' // Tells JS to fill the container we defined in CSS
-      });
     $("form").on("submit", function(e) {
     e.preventDefault(); // Stop page refresh always
-});
+    });
 
   });
 
-  document.addEventListener("DOMContentLoaded", function () {
-      let aadhaar_child = document.getElementById("aadhaar_child");
-
-      aadhaar_child.addEventListener("input", function () {
-          this.value = this.value.replace(/[^0-9]/g, "").slice(0, 12);
-      });
-  });
+ 
   // ====================================
    
 
-document.addEventListener('DOMContentLoaded', function () {
 
-    const bplSelect   = document.getElementById('bpl_beneficiary');
-    const aaySection  = document.getElementById('aay_section');
-    const bplNumberID = document.getElementById('bpl_numberID');
-    const aayInput    = document.getElementById('antyodaya_anna_yojana');
-    const bplInput    = document.getElementById('bpl_number');
-
-    function toggleFields() {
-
-        if (!bplSelect) return;
-        let value = bplSelect.value;
-        if (value === "1" || value.toLowerCase() === "yes") {
-
-            if (aaySection) aaySection.style.display = "block";
-            if (bplNumberID) bplNumberID.style.display = "block";
-
-        } else {
-
-            if (aaySection) aaySection.style.display = "none";
-            if (aayInput)   aayInput.value = "";
-
-            if (bplNumberID) bplNumberID.style.display = "none";
-            if (bplInput)    bplInput.value = "";
-        }
-    }
-
-    toggleFields();
-    bplSelect.addEventListener("change", toggleFields);
-
-});
 
 
   // ======================================
 
- document.addEventListener('DOMContentLoaded', function () {
 
-    const cwsnSelect   = document.getElementById('cwsn');
-    const impairment   = document.getElementById('impairment');
-    const disPercent   = document.getElementById('disability');
-    const impairmentVal = document.getElementById('type_of_impairment');
-    const percentVal    = document.getElementById('disability_percentage');
-
-    function toggleCWSNFields() {
-
-        if (!cwsnSelect) return;
-
-        let value = cwsnSelect.value;
-
-        // YES = 1 (or "yes")
-        if (value === '1' || value.toLowerCase() === 'yes') {
-
-            if (impairment) impairment.style.display = 'block';
-            if (disPercent) disPercent.style.display = 'block';
-
-        } else {
-
-            // Hide sections
-            if (impairment) impairment.style.display = 'none';
-            if (disPercent) disPercent.style.display = 'none';
-
-            // Reset values
-            if (impairmentVal) impairmentVal.value = '';
-            if (percentVal) percentVal.value = '';
-        }
-    }
-
-    // Run on page load (important for edit mode)
-    toggleCWSNFields();
-
-    // Run on change
-    cwsnSelect.addEventListener('change', toggleCWSNFields);
-});
   // =======================================================================
-  document.addEventListener('DOMContentLoaded', function () {
 
-    const outOfSchool     = document.getElementById('out_of_school');
-    const mainstreamedSec = document.getElementById('mainstreamed_section');
-    const mainstreamedVal = document.getElementById('mainstreamed');
-
-    function toggleMainstreamed() {
-
-        if (!outOfSchool) return;
-
-        let value = outOfSchool.value;
-
-        // If YES (1 or "yes")
-        if (value === '1' || value.toLowerCase() === 'yes') {
-
-            if (mainstreamedSec) mainstreamedSec.style.display = 'block';
-
-        } else {
-
-            if (mainstreamedSec) mainstreamedSec.style.display = 'none';
-
-            // reset selected value
-            if (mainstreamedVal) mainstreamedVal.value = '';
-        }
-    }
-
-    // Run when page loads (important for edit mode)
-    toggleMainstreamed();
-
-    // Run whenever user changes Out of School field
-    outOfSchool.addEventListener('change', toggleMainstreamed);
-
-});
   // =========================================================================
 $(document).ready(function () {
 
-    function togglePrevFields(value) {
-        value = (value || '').toString().toLowerCase();
-
-        if (value === '1' || value === 'yes') {
-            $('#prev_class_studied_appeared_exam').show();
-            $('#no_of_days_attended_section').show();
-            $('#previous_class_studied').show();
-            $('#previous_section_section').show();
-            $('#previous_roll_no_section').show();
-            $('#previous_stream_section').show();
-        } else {
-            $('#prev_class_studied_appeared_exam').hide();
-            $('#no_of_days_attended_section').hide();
-            $('#previous_class_studied').hide();
-            $('#previous_section_section').hide();
-            $('#previous_roll_no_section').hide();
-            $('#previous_stream_section').hide();
-
-            // clear selection
-            $('#prev_class_appeared_exam').val('');
-            $('#no_of_days_attended').val('');  
-            $('#previous_class').val('');  
-            $('#class_section').val('');  
-            $('#previous_student_roll_no').val('');  
-            $('#student_stream').val(''); 
-        }
-    }
+   
 
     // Run when user changes the dropdown
     $('#admission_status_prev').on('change', function () {

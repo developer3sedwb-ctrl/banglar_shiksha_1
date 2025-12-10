@@ -86,3 +86,104 @@
 
             </form>
           </div>
+
+          <script>
+
+            $(function () {
+  // when bank changes -> request branches
+  $('#bank_name').on('change', function () {
+    var bankId = $(this).val();
+    $('#ifsc').val('');
+    $('#branch_name').html('<option value="">Loading...</option>');
+
+    if (!bankId) {
+      $('#branch_name').html('<option value="">-Please Select-</option>');
+      return;
+    }
+
+    $.ajax({
+      url: '/get-branches',
+      type: 'GET',
+      data: { bank_id: bankId },
+      success: function (res) {
+        // res may be { branches: [...] } or [...] — normalize to an array
+        var branches = [];
+        if (Array.isArray(res)) {
+          branches = res;
+        } else if (res && Array.isArray(res.branches)) {
+          branches = res.branches;
+        } else if (res && res.data && Array.isArray(res.data)) {
+          // in case of resource-wrapped response
+          branches = res.data;
+        }
+
+        $('#branch_name').empty().append('<option value="">-Please Select-</option>');
+
+        if (!branches.length) {
+          $('#branch_name').append('<option value="">No branches found</option>');
+          return;
+        }
+
+        // branches expected format: [{id, name, branch_ifsc}, ...] or [{id, name}]
+        branches.forEach(function (b) {
+          var id = (b.id !== undefined) ? b.id : '';
+          var name = (b.name !== undefined) ? b.name : (b.branch_name || '');
+          var ifsc = (b.branch_ifsc !== undefined) ? String(b.branch_ifsc).trim() : '';
+          // Make sure id is used as option value
+          $('#branch_name').append(
+            '<option value="' + id + '" data-ifsc="' + ifsc + '">' + name + '</option>'
+          );
+        });
+
+        // optional: if only one real branch, auto-select it
+        var realOpts = $('#branch_name').find('option').filter(function () {
+          return $(this).val() !== '';
+        });
+        if (realOpts.length === 1) {
+          $('#branch_name').val(realOpts.val()).trigger('change');
+        }
+      },
+      error: function (xhr, status, err) {
+        console.error('Failed to load branches', status, err);
+        $('#branch_name').html('<option value="">Error loading</option>');
+      }
+    });
+  });
+
+  // when branch selected -> fill IFSC (fast path from data-ifsc)
+  $('#branch_name').on('change', function () {
+    var raw = $(this).val();
+
+    // fast path: read data-ifsc from selected option (no AJAX)
+    var ifscFromData = $(this).find('option:selected').data('ifsc');
+    if (ifscFromData) {
+      $('#ifsc').val(String(ifscFromData).trim());
+      return;
+    }
+
+    // validate branch id before sending to server
+    if (!raw || raw === '' || isNaN(parseInt(raw, 10))) {
+      console.warn('Invalid branch id selected:', raw);
+      $('#ifsc').val('');
+      return;
+    }
+
+    var branchId = parseInt(raw, 10);
+    $('#ifsc').val('Loading...');
+
+    $.ajax({
+      url: '/get-ifsc',
+      type: 'GET',
+      data: { branch_id: branchId },
+      success: function (res) {
+        // res expected { ifsc: '...' }
+        var ifsc = (res && (res.ifsc !== undefined)) ? res.ifsc : (res.branch_ifsc || '');
+        $('#ifsc').val(ifsc ? String(ifsc).trim() : '');
+      },
+      error: function () {
+        $('#ifsc').val('');
+      }
+    });
+  });
+});
+          </script>

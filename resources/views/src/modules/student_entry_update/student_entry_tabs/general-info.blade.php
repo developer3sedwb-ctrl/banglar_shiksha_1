@@ -425,3 +425,125 @@
               </div>
             </form>
           </div>
+
+
+          <script>
+
+             document.addEventListener("DOMContentLoaded", function () {
+      let aadhaar_child = document.getElementById("aadhaar_child");
+
+      aadhaar_child.addEventListener("input", function () {
+          this.value = this.value.replace(/[^0-9]/g, "").slice(0, 12);
+      });
+  });
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    const bplSelect   = document.getElementById('bpl_beneficiary');
+    const aaySection  = document.getElementById('aay_section');
+    const bplNumberID = document.getElementById('bpl_numberID');
+    const aayInput    = document.getElementById('antyodaya_anna_yojana');
+    const bplInput    = document.getElementById('bpl_number');
+
+    function toggleFields() {
+
+        if (!bplSelect) return;
+        let value = bplSelect.value;
+        if (value === "1" || value.toLowerCase() === "yes") {
+
+            if (aaySection) aaySection.style.display = "block";
+            if (bplNumberID) bplNumberID.style.display = "block";
+
+        } else {
+
+            if (aaySection) aaySection.style.display = "none";
+            if (aayInput)   aayInput.value = "";
+
+            if (bplNumberID) bplNumberID.style.display = "none";
+            if (bplInput)    bplInput.value = "";
+        }
+    }
+
+    toggleFields();
+    bplSelect.addEventListener("change", toggleFields);
+
+});
+
+
+
+ document.addEventListener('DOMContentLoaded', function () {
+
+    const cwsnSelect   = document.getElementById('cwsn');
+    const impairment   = document.getElementById('impairment');
+    const disPercent   = document.getElementById('disability');
+    const impairmentVal = document.getElementById('type_of_impairment');
+    const percentVal    = document.getElementById('disability_percentage');
+
+    function toggleCWSNFields() {
+
+        if (!cwsnSelect) return;
+
+        let value = cwsnSelect.value;
+
+        // YES = 1 (or "yes")
+        if (value === '1' || value.toLowerCase() === 'yes') {
+
+            if (impairment) impairment.style.display = 'block';
+            if (disPercent) disPercent.style.display = 'block';
+
+        } else {
+
+            // Hide sections
+            if (impairment) impairment.style.display = 'none';
+            if (disPercent) disPercent.style.display = 'none';
+
+            // Reset values
+            if (impairmentVal) impairmentVal.value = '';
+            if (percentVal) percentVal.value = '';
+        }
+    }
+
+    // Run on page load (important for edit mode)
+    toggleCWSNFields();
+
+    // Run on change
+    cwsnSelect.addEventListener('change', toggleCWSNFields);
+});
+
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    const outOfSchool     = document.getElementById('out_of_school');
+    const mainstreamedSec = document.getElementById('mainstreamed_section');
+    const mainstreamedVal = document.getElementById('mainstreamed');
+
+    function toggleMainstreamed() {
+
+        if (!outOfSchool) return;
+
+        let value = outOfSchool.value;
+
+        // If YES (1 or "yes")
+        if (value === '1' || value.toLowerCase() === 'yes') {
+
+            if (mainstreamedSec) mainstreamedSec.style.display = 'block';
+
+        } else {
+
+            if (mainstreamedSec) mainstreamedSec.style.display = 'none';
+
+            // reset selected value
+            if (mainstreamedVal) mainstreamedVal.value = '';
+        }
+    }
+
+    // Run when page loads (important for edit mode)
+    toggleMainstreamed();
+
+    // Run whenever user changes Out of School field
+    outOfSchool.addEventListener('change', toggleMainstreamed);
+
+});
+          </script>
