@@ -8,9 +8,10 @@
 @php
     $basic = $data['basic_info'] ?? [];
     $enrollment_info = $data['enrollment_info'] ?? [];
+    $student_contact_info = $data['student_contact'] ?? [];
 @endphp
 
-<!-- @dump($enrollment_info) -->
+@dump($student_contact_info)
 @php
     $dropdowns = config('student');
 
@@ -1626,15 +1627,18 @@
                     <label class="form-label small">Select Country</label>
                     <select name="student_country" id= "student_country" class="form-select">
                           <option value="">-Please Select-</option>
-                          @foreach($bs_country_master ?? [] as $val => $label)
-                          <option value="{{ $val }}">{{ $label }}</option>
-                          @endforeach
+                            @foreach($bs_country_master ?? [] as $val => $label)
+                            <option value="{{ $val }}"
+                                {{ ($student_contact_info['stu_country_code'] ?? '') == $val ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
+                            @endforeach
                       </select>
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label small">Address</label>
-                    <input name="student_address" type="text" class="form-control" placeholder="Enter Address">
+                    <input name="student_address" type="text" class="form-control" placeholder="Enter Address"   value="{{ old('stu_contact_address', $student_contact_info['stu_contact_address'] ?? '') }}">
                   </div>
 
                 
@@ -1644,8 +1648,11 @@
                       <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
                     <select name="student_district" id= "student_district"  class="select2 form-select2">
                           <option value="">-Please Select-</option>
-                          @foreach($district_master ?? [] as $val => $label)
-                          <option value="{{ $val }}">{{ $label }}</option>
+                           @foreach($district_master ?? [] as $val => $label)
+                            <option value="{{ $val }}"
+                                {{ ($student_contact_info['stu_contact_district'] ?? '') == $val ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
                           @endforeach
                       </select>
                     </div>
@@ -1653,13 +1660,14 @@
 
                   <div class="mb-3">
                     <label class="form-label small">Panchayat</label>
-                    <input name="student_panchayat" type="text" class="form-control" placeholder="Enter Panchayat / Ward">
+                    <input name="student_panchayat" type="text" class="form-control" placeholder="Enter Panchayat / Ward"   value="{{ old('stu_contact_panchayat', $student_contact_info['stu_contact_panchayat'] ?? '') }}">
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label small">Police Station</label>
-                    <input name="student_police_station" type="text" class="form-control" placeholder="Police station">
+                    <input name="student_police_station" type="text" class="form-control" placeholder="Enter Plice Station"   value="{{ old('stu_police_station', $student_contact_info['stu_police_station'] ?? '') }}">
                   </div>
+
                   <div class="mb-3">
                     <label class="form-label small">Mobile Number (Student / Parent / Guardian)</label>
                   <input name="student_mobile"
@@ -1668,6 +1676,7 @@
                     inputmode="numeric"
                     class="form-control"
                     placeholder="Mobile number"
+                     value="{{ old('stu_mobile_no', $student_contact_info['stu_mobile_no'] ?? '') }}"
                     oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                     required>
                   </div>
@@ -1681,7 +1690,10 @@
                     <select name="student_state" id= "student_state"  class="select2 form-select2">
                           <option value="">-Please Select-</option>
                           @foreach($state_master ?? [] as $val => $label)
-                          <option value="{{ $val }}">{{ $label }}</option>
+                            <option value="{{ $val }}"
+                                {{ ($student_contact_info['stu_state_code'] ?? '') == $val ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
                           @endforeach
                       </select>
                     </div>
@@ -1690,7 +1702,7 @@
 
                   <div class="mb-3">
                     <label class="form-label small">Habitation / Locality</label>
-                    <input name="student_locality" type="text" class="form-control" placeholder="Habitation / Locality">
+                    <input name="student_locality" type="text" class="form-control" placeholder="Habitation / Locality"  value="{{ old('stu_contact_habitation', $student_contact_info['stu_contact_habitation'] ?? '') }}">
                   </div>
 
                   <div class="mb-3" id="student_block_section">
@@ -1700,7 +1712,10 @@
                     <select name="student_block" id= "student_block"  class="select2 form-select2">
                           <option value="">-Please Select-</option>
                           @foreach($block_munc_corp_master ?? [] as $val => $label)
-                          <option value="{{ $val }}">{{ $label }}</option>
+                            <option value="{{ $val }}"
+                                {{ ($student_contact_info['stu_contact_block'] ?? '') == $val ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
                           @endforeach
                       </select>
                     </div>
@@ -1708,7 +1723,7 @@
 
                   <div class="mb-3">
                     <label class="form-label small">Post Office</label>
-                    <input name="student_post_office" type="text" class="form-control" placeholder="Post office">
+                    <input name="student_post_office" type="text" class="form-control" placeholder="Post office" value="{{ old('stu_post_office', $student_contact_info['stu_post_office'] ?? '') }}">
                   </div>
 
                   <div class="mb-3">
@@ -1720,12 +1735,14 @@
                     class="form-control"
                     placeholder="Pin Code"
                     oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                    required>
+                    required
+                    value="{{ old('stu_pin_code', $student_contact_info['stu_pin_code'] ?? '') }}"
+                    >
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label small">Contact email id (Student/Parent/Guardian)</label>
-                    <input name="student_email" type="email" class="form-control" placeholder="Email">
+                    <input name="student_email" type="email" class="form-control" placeholder="Email" value="{{ old('stu_email', $student_contact_info['stu_email'] ?? '') }}">
                   </div>
                 </div>
               </div>
@@ -1746,15 +1763,18 @@
                     <label class="form-label small">Select Country</label>
                     <select name="guardian_country" id= "guardian_country" class="form-select">
                           <option value="">-Please Select-</option>
-                          @foreach($bs_country_master ?? [] as $val => $label)
-                          <option value="{{ $val }}">{{ $label }}</option>
+                         @foreach($bs_country_master ?? [] as $val => $label)
+                            <option value="{{ $val }}"
+                                {{ ($student_contact_info['guardian_country_code'] ?? '') == $val ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
                           @endforeach
                       </select>
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label small">Address</label>
-                    <input name="guardian_address" type="text" class="form-control" placeholder="Guardian address">
+                    <input name="guardian_address" type="text" class="form-control" placeholder="Guardian address" value="{{ old('guardian_contact_address', $student_contact_info['guardian_contact_address'] ?? '') }}"> 
                   </div>
 
                 
@@ -1767,7 +1787,10 @@
                     <select name="guardian_district" id= "guardian_district"  class="select2 form-select2">
                           <option value="">-Please Select-</option>
                           @foreach($district_master ?? [] as $val => $label)
-                          <option value="{{ $val }}">{{ $label }}</option>
+                            <option value="{{ $val }}"
+                                {{ ($student_contact_info['guardian_contact_district'] ?? '') == $val ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
                           @endforeach
                       </select>
                     </div>
@@ -1775,12 +1798,12 @@
 
                   <div class="mb-3">
                     <label class="form-label small">Panchayat</label>
-                    <input name="guardian_panchayat" type="text" class="form-control" placeholder="Panchayat / Ward">
+                    <input name="guardian_panchayat" type="text" class="form-control" placeholder="Panchayat / Ward" value="{{ old('guardian_contact_panchayat', $student_contact_info['guardian_contact_panchayat'] ?? '') }}" >
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label small">Police Station</label>
-                    <input name="guardian_police_station" type="text" class="form-control" placeholder="Police station">
+                    <input name="guardian_police_station" type="text" class="form-control" placeholder="Police station"  value="{{ old('guardian_police_station', $student_contact_info['guardian_police_station'] ?? '') }}">
                   </div>
 
                   <div class="mb-3">
@@ -1792,7 +1815,9 @@
                     class="form-control"
                     placeholder="Mobile number"
                     oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                    required>
+                    required
+                    value="{{ old('guardian_mobile_no', $student_contact_info['guardian_mobile_no'] ?? '') }}"
+                    >
                   </div>
                 </div>
 
@@ -1804,7 +1829,10 @@
                         <select name="guardian_state" id= "guardian_state"  class="select2  form-select2">
                           <option value="">-Please Select-</option>
                           @foreach($state_master ?? [] as $val => $label)
-                          <option value="{{ $val }}">{{ $label }}</option>
+                            <option value="{{ $val }}"
+                                {{ ($student_contact_info['guardian_state_code'] ?? '') == $val ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
                           @endforeach
                         </select>
                       </div>
@@ -1812,7 +1840,7 @@
 
                   <div class="mb-3">
                     <label class="form-label small">Habitation / Locality</label>
-                    <input name="guardian_locality" type="text" class="form-control" placeholder="Habitation / Locality">
+                    <input name="guardian_locality" type="text" class="form-control" placeholder="Habitation / Locality" value="{{ old('guardian_contact_habitation', $student_contact_info['guardian_contact_habitation'] ?? '') }}">
                   </div>
 
                   <div class="mb-3" id="guardian_block_section">
@@ -1822,7 +1850,10 @@
                     <select name="guardian_block" id= "guardian_block" class="select2 form-select2">
                           <option value="">-Please Select-</option>
                           @foreach($block_munc_corp_master ?? [] as $val => $label)
-                          <option value="{{ $val }}">{{ $label }}</option>
+                            <option value="{{ $val }}"
+                                {{ ($student_contact_info['guardian_contact_block'] ?? '') == $val ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
                           @endforeach
                       </select>
                     </div>
@@ -1830,7 +1861,7 @@
                   
                   <div class="mb-3">
                     <label class="form-label small">Post Office</label>
-                    <input name="guardian_post_office" type="text" class="form-control" placeholder="Post office">
+                    <input name="guardian_post_office" type="text" class="form-control" placeholder="Post office" value="{{ old('guardian_post_office', $student_contact_info['guardian_post_office'] ?? '') }}">
                   </div>
 
                   <div class="mb-3">
@@ -1842,12 +1873,14 @@
                     class="form-control"
                     placeholder="Pin Code"
                     oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                    required>
+                    required
+                    value="{{ old('guardian_pin_code', $student_contact_info['guardian_pin_code'] ?? '') }}"
+                    >
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label small">Contact email id (Guardian)</label>
-                    <input name="guardian_email" type="email" class="form-control" placeholder="Email">
+                    <input name="guardian_email" type="email" class="form-control" placeholder="Email" value="{{ old('guardian_email', $student_contact_info['guardian_email'] ?? '') }}">
                   </div>
                 </div>
               </div>

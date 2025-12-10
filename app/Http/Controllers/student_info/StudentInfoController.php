@@ -469,6 +469,7 @@ class StudentInfoController extends Controller
                 'school_id_fk' => 1,
                 'created_by'   => $userId,
                 'updated_by'   => $userId,
+                
             ];
 
             $data = [
@@ -505,8 +506,7 @@ class StudentInfoController extends Controller
                 'school_id_fk'              => $inputMeta['school_id_fk'],
                 // 'entry_ip'                  => $inputMeta['entry_ip'],
                 // 'update_ip'                 => $inputMeta['update_ip'],
-                'created_by'                => $inputMeta['created_by'],
-                'updated_by'                => $inputMeta['updated_by'],
+             
 
             ];
     
@@ -810,6 +810,46 @@ class StudentInfoController extends Controller
                 ];
             } else {
                 $data['vocational'] = null;
+            }
+      
+
+
+            
+            // 5 . ==================== Contact Details ========================================
+
+            $student_contact = StudentContactInfo::where('school_id_fk', $schoolId)->first();
+
+            if ($student_contact) {
+                $data['student_contact'] = [
+                'stu_country_code'     => $student_contact->stu_country_code_fk,
+                'stu_contact_address'     => $student_contact->stu_contact_address,
+                'stu_contact_district'    => $student_contact->stu_contact_district,
+                'stu_contact_panchayat'   => $student_contact->stu_contact_panchayat,
+                'stu_police_station'      => $student_contact->stu_police_station,
+                'stu_mobile_no'           => $student_contact->stu_mobile_no,
+                'stu_state_code'       => $student_contact->stu_state_code_fk,
+                'stu_contact_habitation'  => $student_contact->stu_contact_habitation,
+                'stu_contact_block'       => $student_contact->stu_contact_block,
+                'stu_post_office'         => $student_contact->stu_post_office,
+                'stu_pin_code'            => $student_contact->stu_pin_code,
+                'stu_email'               => $student_contact->stu_email,
+
+                // ---- Guardian contact fields ----
+                'guardian_country_code'    => $student_contact->guardian_country_code_fk,
+                'guardian_contact_address'    => $student_contact->guardian_contact_address,
+                'guardian_contact_district'   => $student_contact->guardian_contact_district,
+                'guardian_contact_panchayat'  => $student_contact->guardian_contact_panchayat,
+                'guardian_police_station'     => $student_contact->guardian_police_station,
+                'guardian_mobile_no'          => $student_contact->guardian_mobile_no,
+                'guardian_state_code'      => $student_contact->guardian_state_code_fk,
+                'guardian_contact_habitation' => $student_contact->guardian_contact_habitation,
+                'guardian_contact_block'      => $student_contact->guardian_contact_block,
+                'guardian_post_office'        => $student_contact->guardian_post_office,
+                'guardian_pin_code'           => $student_contact->guardian_pin_code,
+                'guardian_email'              => $student_contact->guardian_email,
+                ];
+            } else {
+                $data['student_contact'] = null;
             }
       
             return view('src.modules.student_entry_update.student_entry', compact('data'));
