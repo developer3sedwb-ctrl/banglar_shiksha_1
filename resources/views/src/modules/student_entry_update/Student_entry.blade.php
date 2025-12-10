@@ -298,6 +298,30 @@
       </div>
   </div>
 
+
+
+  <div class="modal fade" id="previewModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Preview</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body" id="previewModalBody">
+        <!-- JS will fill this -->
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 @endsection
 
 @section('styles')
@@ -1166,7 +1190,96 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
             }
         });
 });
+    const studentData = @json($data);
+    
+    document.getElementById('previewBtn').addEventListener('click', function () {
+        let html = '';
 
+        // ===== Basic Info =====
+        if (studentData.basic_info) {
+            html += `
+                <h6>Basic Details</h6>
+                <table class="table table-sm">
+                    <tr><th>Name</th><td>${studentData.basic_info.student_name ?? ''}</td></tr>
+                    <tr><th>Name (Aadhaar)</th><td>${studentData.basic_info.student_name_as_per_aadhaar ?? ''}</td></tr>
+                    <tr><th>Gender</th><td>${studentData.basic_info.gender ?? ''}</td></tr>
+                    <tr><th>DOB</th><td>${studentData.basic_info.dob ?? ''}</td></tr>
+                    <tr><th>Father</th><td>${studentData.basic_info.father_name ?? ''}</td></tr>
+                    <tr><th>Mother</th><td>${studentData.basic_info.mother_name ?? ''}</td></tr>
+                </table>
+                <hr>
+            `;
+        }
+
+        // ===== Enrollment Info =====
+        if (studentData.enrollment_info) {
+            html += `
+                <h6>Enrollment Details</h6>
+                <table class="table table-sm">
+                    <tr><th>Admission No</th><td>${studentData.enrollment_info.admission_no ?? ''}</td></tr>
+                    <tr><th>Current Class</th><td>${studentData.enrollment_info.cur_class_code_fk ?? ''}</td></tr>
+                    <tr><th>Section</th><td>${studentData.enrollment_info.cur_section_code_fk ?? ''}</td></tr>
+                    <tr><th>Roll No</th><td>${studentData.enrollment_info.cur_roll_number ?? ''}</td></tr>
+                    <tr><th>Admission Date</th><td>${studentData.enrollment_info.admission_date ?? ''}</td></tr>
+                </table>
+                <hr>
+            `;
+        }
+
+        // ===== Vocational Details =====
+        if (studentData.vocational) {
+            html += `
+                <h6>Vocational Details</h6>
+                <table class="table table-sm">
+                    <tr><th>Exposure</th><td>${studentData.vocational.exposure ?? ''}</td></tr>
+                    <tr><th>Undertook Course</th><td>${studentData.vocational.undertook ?? ''}</td></tr>
+                    <tr><th>Trade / Sector</th><td>${studentData.vocational.trade_sector ?? ''}</td></tr>
+                    <tr><th>Job Role</th><td>${studentData.vocational.job_role ?? ''}</td></tr>
+                    <tr><th>NSQF Level</th><td>${studentData.vocational.nsqf_level ?? ''}</td></tr>
+                    <tr><th>Employment Status</th><td>${studentData.vocational.employment_status ?? ''}</td></tr>
+                    <tr><th>Salary Offered</th><td>${studentData.vocational.salary_offered ?? ''}</td></tr>
+                </table>
+                <hr>
+            `;
+        }
+
+        // ===== Contact Details =====
+        if (studentData.student_contact) {
+            html += `
+                <h6>Contact Details (Student)</h6>
+                <table class="table table-sm">
+                    <tr><th>Address</th><td>${studentData.student_contact.stu_contact_address ?? ''}</td></tr>
+                    <tr><th>District</th><td>${studentData.student_contact.stu_contact_district ?? ''}</td></tr>
+                    <tr><th>Block</th><td>${studentData.student_contact.stu_contact_block ?? ''}</td></tr>
+                    <tr><th>Mobile</th><td>${studentData.student_contact.stu_mobile_no ?? ''}</td></tr>
+                    <tr><th>Email</th><td>${studentData.student_contact.stu_email ?? ''}</td></tr>
+                </table>
+                <hr>
+            `;
+        }
+
+        // ===== Bank Details =====
+        if (studentData.student_bank_details) {
+            html += `
+                <h6>Bank Details</h6>
+                <table class="table table-sm">
+                    <tr><th>Bank ID</th><td>${studentData.student_bank_details.bank_id_fk ?? ''}</td></tr>
+                    <tr><th>Branch ID</th><td>${studentData.student_bank_details.branch_id_fk ?? ''}</td></tr>
+                    <tr><th>IFSC</th><td>${studentData.student_bank_details.bank_ifsc ?? ''}</td></tr>
+                    <tr><th>Account No</th><td>${studentData.student_bank_details.stu_bank_acc_no ?? ''}</td></tr>
+                </table>
+            `;
+        }
+
+        if (!html) {
+            html = '<p>No data found for preview.</p>';
+        }
+
+        document.getElementById('previewModalBody').innerHTML = html;
+
+        const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+        modal.show();
+    });
 </script>
 
 @endpush

@@ -44,35 +44,11 @@
           </div>
 
 
-        <div class="modal fade" id="previewModal" tabindex="-1">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-
-                <div class="modal-header">
-                    <h5 class="modal-title">Preview</h5>
-                    <button type="button" id="student_form_preview" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body">
-                    <!-- Whatever you want to preview -->
-                    <p>This is your preview content.</p>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Final Submit</button>
-                </div>
-
-                </div>
-            </div>
-        </div>
+      
 
     <script>
 
-    document.getElementById('previewBtn').addEventListener('click', function () {
-        let modal = new bootstrap.Modal(document.getElementById('previewModal'));
-        modal.show();
-    });
+  
     </script>
 
 

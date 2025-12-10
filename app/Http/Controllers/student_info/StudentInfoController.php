@@ -1094,4 +1094,10 @@ class StudentInfoController extends Controller
             StudentEntryMaster::Create($masterData);
         });
     }
+
+
+
+    public function fetchStudentFinalSubmitPreviewDetails(){
+
+    }
 }
