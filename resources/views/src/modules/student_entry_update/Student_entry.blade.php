@@ -9,9 +9,11 @@
     $basic = $data['basic_info'] ?? [];
     $enrollment_info = $data['enrollment_info'] ?? [];
     $student_contact_info = $data['student_contact'] ?? [];
+
+    $student_bank = $data['student_bank_details'] ?? [];
 @endphp
 
-@dump($student_contact_info)
+@dump($student_bank)
 @php
     $dropdowns = config('student');
 
@@ -244,9 +246,9 @@
             </li>
               {{-- STEP 7 --}}
             <li class="nav-item" role="presentation">
-                <button class="nav-link {{ $current >= 6 ? '' : '' }}"
-                    id="bank_dtls-tab" data-bs-toggle="tab"
-                    data-bs-target="#bank_dtls_tab" type="button" role="tab">
+                <button class="nav-link {{ $current >= 7 ? '' : '' }}"
+                    id="additional_dtls" data-bs-toggle="tab"
+                    data-bs-target="#additional_dtls_tab" type="button" role="tab">
                     Additional Details
                 </button>
             </li>
@@ -937,22 +939,22 @@
                   </div>
 
                   <div class="mb-3" id="cur_stream_wrapper" style="display:none;">
-    <label class="form-label small">
-        Academic Stream opted by student (For Higher Secondary Classes only)
-    </label>
-    <div class="input-group">
-        <span class="input-group-text"><i class="bx bx-calendar"></i></span>
-        <select name="cur_stream_code" id="cur_stream_code" class="form-select">
-            <option value="">-Please Select-</option>
-            @foreach($stream_master ?? [] as $val => $label)
-                <option value="{{ $val }}"
-                    {{ ($enrollment_info['cur_stream_code'] ?? '') == $val ? 'selected' : '' }}>
-                    {{ $label }}
-                </option>
-            @endforeach
-        </select>
-    </div>
-</div>
+                    <label class="form-label small">
+                        Academic Stream opted by student (For Higher Secondary Classes only)
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bx bx-calendar"></i></span>
+                        <select name="cur_stream_code" id="cur_stream_code" class="form-select">
+                            <option value="">-Please Select-</option>
+                            @foreach($stream_master ?? [] as $val => $label)
+                                <option value="{{ $val }}"
+                                    {{ ($enrollment_info['cur_stream_code'] ?? '') == $val ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                  </div>
 
 
                   <!-- Present Roll No -->
@@ -971,7 +973,7 @@
                       <span class="input-group-text"><i class="bx bx-transfer-alt"></i></span> 
                           <select name="admission_type" id="admission_type" class="form-select" >
                           <option value="">-Please Select-</option>
-                             @foreach($admission_type_master ?? [] as $val => $label)
+                              @foreach($admission_type_master ?? [] as $val => $label)
                             <option value="{{ $val }}"
                                 {{ ($enrollment_info['admission_type_code_fk'] ?? '') == $val ? 'selected' : '' }}>
                                 {{ $label }}
@@ -1914,7 +1916,10 @@
                                       <select name="bank_name" id="bank_name" class="form-select select2">
                                           <option value="">-Please Select-</option>
                                           @foreach($bank_code_name_master ?? [] as $val => $label)
-                                              <option value="{{ $val }}">{{ $label }}</option>
+                                            <option value="{{ $val }}"
+                                                {{ ($student_bank['bank_id_fk'] ?? '') == $val ? 'selected' : '' }}>
+                                                {{ $label }}
+                                            </option>
                                           @endforeach
                                       </select>
                                   </div>
@@ -1926,10 +1931,13 @@
                                   <div class="input-group">
                                       <span class="input-group-text"><i class="bx bx-spreadsheet"></i></span>
                                       <select name="branch_name" id="branch_name" class="form-select select2">
-                                          <option value="">-Please Select-</option>
-                                          @foreach($bank_branch_master ?? [] as $val => $label)
-                                              <option value="{{ $val }}">{{ $label }}</option>
-                                          @endforeach
+                                        <option value="">-Please Select-</option>
+                                      @foreach($bank_branch_master ?? [] as $val => $label)
+                                        <option value="{{ $val }}"
+                                            {{ ($student_bank['branch_id_fk'] ?? '') == $val ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
+                                      @endforeach
                                       </select>
                                   </div>
                               </div>
@@ -1937,7 +1945,7 @@
                               <!-- IFSC -->
                               <div class="mb-3">
                                   <label class="form-label small">IFSC</label>
-                                  <input name="ifsc" id="ifsc" type="text" class="form-control" placeholder="IFSC code">
+                                  <input name="ifsc" id="ifsc" type="text" class="form-control" placeholder="IFSC code" value="{{ old('bank_ifsc', $student_bank['bank_ifsc'] ?? '') }}">
                               </div>
 
                           </div>
@@ -1948,14 +1956,14 @@
                               <!-- Account Number -->
                               <div class="mb-3">
                                   <label class="form-label small">Account Number</label>
-                                  <input name="account_number" type="text" class="form-control" placeholder="Account number">
+                                  <input name="account_number" type="text" class="form-control" placeholder="Account number" value="{{ old('stu_bank_acc_no', $student_bank['stu_bank_acc_no'] ?? '') }}">
                               </div>
 
 
                               <!-- Confirm Account Number -->
                               <div class="mb-3">
                                   <label class="form-label small">Confirm Account Number</label>
-                                  <input name="confirm_account_number" type="text" class="form-control" placeholder="Re-enter account number">
+                                  <input name="confirm_account_number" type="text" class="form-control" placeholder="Re-enter account number" value="{{ old('stu_bank_acc_no', $student_bank['stu_bank_acc_no'] ?? '') }}">
                               </div>
 
                           </div>
@@ -1967,7 +1975,7 @@
                           </button>
 
                           <button class="btn btn-success" type="submit">
-                              Save Details
+                              Next
                           </button>
                       </div>
 

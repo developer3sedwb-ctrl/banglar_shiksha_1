@@ -597,7 +597,7 @@ class StudentInfoController extends Controller
         // -----------------------------
         // Update Step Tracker
         // -----------------------------
-        $this->finalizeStudentEntry($schoolId, $userId);
+        // $this->finalizeStudentEntry($schoolId, $userId);
         StudentEntryDraftTracker::updateOrCreate(
             [
                 'school_id_fk' => $schoolId,
@@ -850,6 +850,24 @@ class StudentInfoController extends Controller
                 ];
             } else {
                 $data['student_contact'] = null;
+            }
+
+
+
+             // 5 . ==================== Contact Details ========================================
+
+            $student_bank_details = EntryStudentBankInfo::where('school_id_fk', $schoolId)->first();
+
+            if ($student_bank_details) {
+                $data['student_bank_details'] = [
+                'bank_id_fk'      => $student_bank_details -> bank_id_fk,
+                'branch_id_fk'    => $student_bank_details -> branch_id_fk,
+                'bank_ifsc'       => $student_bank_details -> bank_ifsc,
+                'stu_bank_acc_no' => $student_bank_details -> stu_bank_acc_no,
+          
+                ];
+            } else {
+                $data['student_bank_details'] = null;
             }
       
             return view('src.modules.student_entry_update.student_entry', compact('data'));
