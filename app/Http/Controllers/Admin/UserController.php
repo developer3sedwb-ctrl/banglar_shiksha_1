@@ -138,7 +138,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'phone' => 'nullable|string|max:20',
-            'dise_code' => 'nullable|string|size:11|regex:/^[0-9]{11}$/',
+            'dise_code' => 'nullable|string|min:2|max:11|regex:/^[0-9]+$/',
             'department' => 'nullable|string|max:255',
             'designation' => 'nullable|string|max:255',
             'password' => [
@@ -150,8 +150,9 @@ class UserController extends Controller
             'role' => 'required|string|exists:roles,name'
         ], [
             'password.regex' => 'The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
-            'dise_code.size' => 'The DISE code must be exactly 11 digits.',
-            'dise_code.regex' => 'The DISE code must contain only numbers.',
+            'dise_code.min' => 'DISE code must be at least 2 digits.',
+            'dise_code.max' => 'DISE code cannot exceed 11 digits.',
+            'dise_code.regex' => 'DISE code must contain only numbers (0-9).',
             'role.required' => 'Please select a role for the user.'
         ]);
 

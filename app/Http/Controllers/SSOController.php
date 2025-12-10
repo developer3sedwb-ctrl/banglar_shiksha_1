@@ -210,6 +210,7 @@ class SSOController extends Controller
         Log::info('Central logout callback received', [
             'session_token' => $request->get('session_token'),
             'user_id' => $request->get('user_id'),
+            'dise_code' => $request->get('dise_code'),
             'logout_reason' => $request->get('logout_reason'),
             'ip' => $request->ip()
         ]);
@@ -230,7 +231,9 @@ class SSOController extends Controller
             ], 400);
         }
 
-        DB::table('sessions')->where('user_id', $request->get('user_id'))->delete();
+        $user = User::where('dise_code', $request->get('dise_code'))->first();
+
+        DB::table('sessions')->where('user_id', $user->id)->delete();
         Log::info('User session deleted from database', ['user_id' => $request->get('user_id')]);
 
         $sessionToken = $request->input('session_token');
@@ -328,6 +331,7 @@ class SSOController extends Controller
         Log::info('Central logout callback received', [
             'session_token' => $request->get('session_token'),
             'user_id' => $request->get('user_id'),
+            'dise_code' => $request->get('dise_code'),
             'logout_reason' => $request->get('logout_reason'),
             'ip' => $request->ip()
         ]);
@@ -350,6 +354,7 @@ class SSOController extends Controller
 
         $sessionToken = $request->input('session_token');
         $userId = $request->input('user_id');
+        $dise_code = $request->input('dise_code');
         $timestamp = $request->input('timestamp');
         $signature = $request->input('signature');
         $logoutReason = $request->input('logout_reason', 'central_logout');
