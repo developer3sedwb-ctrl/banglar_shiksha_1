@@ -37,10 +37,14 @@ class StoreEnrollmentRequest extends FormRequest
             'student_stream'  => 'required_if:admission_status_prev,1|nullable|integer|exists:bs_stream_master,id',
             'previous_student_roll_no' => 'required_if:admission_status_prev,1|nullable|string|max:10',
 
+   
+
+
             // -------------------------
             // Present / Current Year
             // -------------------------
             'present_class'   => 'required|integer|exists:bs_class_master,id',
+            'cur_stream_code' => 'required_if:present_class,11,12|nullable|string|max:10',
             'accademic_year'  => 'required|integer|min:2000|max:2100', // adjust range if needed
             'present_section' => 'required|integer|exists:bs_school_classwise_section,id',
             'school_medium'   => 'required|integer|exists:bs_school_medium,id',
