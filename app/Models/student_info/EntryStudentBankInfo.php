@@ -16,8 +16,8 @@ class EntryStudentBankInfo extends Model
         'branch_id_fk',
         'bank_ifsc',
         'stu_bank_acc_no',
-
         'status',
+        // System
         'entry_ip',
         'update_ip',
         'created_at',

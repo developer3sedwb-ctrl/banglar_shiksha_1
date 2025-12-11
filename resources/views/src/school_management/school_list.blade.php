@@ -47,7 +47,7 @@
                 </select>
               </div>
         </div> --}}
-        
+
         {{-- <div class="col-md-3">
               <label class="form-label small">GS / WARD </label>
               <div class="input-group">
@@ -73,7 +73,7 @@
 
             </div>
           </div>
-        
+
           <div class="col-md-3">
               <button type="submit" class="btn btn-success">Search School</button>
           </div>
@@ -83,12 +83,12 @@
       </form>
     </div>
   </div>
-  
+
  <!-- Table card -->
 <div class="card card-full mb-4">
     <div class="custom-header-data-table">
         <span class="fw-semibold">Student List</span>
-        
+
          <div class="btn-group float-end ">
               <button type="button" class="btn btn-success dropdown-toggle btn-export " data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-export"></i> Export</button>
             <ul class="dropdown-menu dropdown-menu-end dropdown-export">
@@ -100,7 +100,7 @@
 
          </div>
     </div>
-    
+
     <div class="card-body">
       <div class="table-responsive">
       <table id="example" class="table table-striped">
@@ -141,7 +141,7 @@
             </tr>
             @endforeach
             @endif
-            
+
         </tbody>
     </table>
       </div>
