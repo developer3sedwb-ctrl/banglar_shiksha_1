@@ -136,9 +136,19 @@
                 </div>
 
                 <!-- Pagination -->
-                <div class="d-flex justify-content-center">
-                    {{ $permissions->withQueryString()->links() }}
-                </div>
+                   @if($permissions->hasPages())
+                    <div class="card-footer bg-white py-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="small text-muted">
+                                Showing {{ $permissions->firstItem() }} to {{ $permissions->lastItem() }} of {{ $permissions->total() }}
+                            </div>
+                            <div>
+                                {{ $permissions->onEachSide(1)->links('pagination::bootstrap-5') }}
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
             </div>
         </div>
     </div>

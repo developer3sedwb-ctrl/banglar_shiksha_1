@@ -95,14 +95,14 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
         [StudentInfoController::class, 'storeStudentContactDetails']
     )->name('student.store_student_entry_contact_details');
 
-Route::post(
-    '/student/bank_details_of_student',
-    [StudentInfoController::class, 'bankDetailsOfStudent']
-)->name('student.bank_details_of_student');
+    Route::post(
+        '/student/bank_details_of_student',
+        [StudentInfoController::class, 'bankDetailsOfStudent']
+    )->name('student.bank_details_of_student');
 
 
-Route::get('/get-branches', [StudentInfoController::class, 'getBranches']);
-Route::get('/get-ifsc', [StudentInfoController::class, 'getIfsc']);
+    Route::get('/get-branches', [StudentInfoController::class, 'getBranches']);
+    Route::get('/get-ifsc', [StudentInfoController::class, 'getIfsc']);
 
 
 
@@ -265,7 +265,7 @@ Route::get('/get-ifsc', [StudentInfoController::class, 'getIfsc']);
         Route::get('/school-class-gender-wise-enrollment', [SiController::class, 'schoolClassGenderWiseEnrollmentReport'])->name('si.school_class_gender_wise_enrollment_report');
     });
     Route::prefix('hoi')->group(function () {
-    // routes/web.php
+        // routes/web.php
         Route::get('/student-entry', [StudentInfoController::class, 'getStudentEntry'])->name('student.entry');
         Route::post('/save-student-facility-and-other-details', [StudentInfoController::class, 'storeStudentFacilityAndOtherDetails'])->name('hoi.student.facility');
         Route::post('/save-student-vocational-details', [StudentInfoController::class, 'saveVocationalDetails'])->name('save.vocational.details');
@@ -279,6 +279,105 @@ Route::get('/get-ifsc', [StudentInfoController::class, 'getIfsc']);
 
     //SI Routes by Aziza Parvin End
 
+
+
+
+
+    // ============ NEW ROUTES ADDED FOR MISSING MENU ITEMS ============
+
+    // Uniform-SCMS - Additional Routes
+    Route::view(
+        '/uniform-scms/uniform-delivery-status-2nd-set',
+        'working-in-progress'
+    )->name('uniform_scms.uniform_delivery_status_2nd_set');
+
+    // Student Entry / Update - Additional Routes
+    Route::view('/student/spa-error', 'working-in-progress')->name('student.spa_error');
+    Route::view('/student/student-mapping-with-avic', 'working-in-progress')->name('student.student_mapping_with_avic');
+    Route::view('/student/update-identity', 'working-in-progress')->name('student.update_identity');
+    Route::view('/student/additional-info', 'working-in-progress')->name('student.additional_info');
+    Route::view('/student/update-section', 'working-in-progress')->name('student.update_section');
+    Route::view('/student/update-polling', 'working-in-progress')->name('student.update_polling');
+    Route::view('/student/bulk-upload', 'working-in-progress')->name('student.bulk_upload');
+
+    // Student Information - All Missing Routes
+    Route::prefix('student-info')->name('student_info.')->group(function () {
+        Route::view('/list-view', 'working-in-progress')->name('list_view');
+        Route::view('/enrollment-report', 'working-in-progress')->name('enrollment_report');
+        Route::view('/medium-wise-report', 'working-in-progress')->name('medium_wise_report');
+        Route::view('/download-info', 'working-in-progress')->name('download_info');
+        Route::view('/incomplete-profile', 'working-in-progress')->name('incomplete_profile');
+        Route::view('/aadhaar-blank', 'working-in-progress')->name('aadhaar_blank');
+        Route::view('/image-upload-status', 'working-in-progress')->name('image_upload_status');
+        Route::view('/graduation-ceremony', 'working-in-progress')->name('graduation_ceremony');
+        Route::view('/download-aadhaar-blank', 'working-in-progress')->name('download_aadhaar_blank');
+        Route::view('/download-bank-details', 'working-in-progress')->name('download_bank_details');
+        Route::view('/bulk-uploaded-list', 'working-in-progress')->name('bulk_uploaded_list');
+    });
+
+    // Student Promotion & Transfer - All Routes
+    Route::prefix('student-promotion')->name('student_promotion.')->group(function () {
+        Route::view('/class-wise-additional-info', 'working-in-progress')->name('class_wise_additional_info');
+        Route::view('/promotion-detention', 'working-in-progress')->name('promotion_detention');
+        Route::view('/promotion-detention-2022-23', 'working-in-progress')->name('promotion_detention_2022_23');
+        Route::view('/update-board-exam-result', 'working-in-progress')->name('update_board_exam_result');
+        Route::view('/senior-students', 'working-in-progress')->name('senior_students');
+        Route::view('/transfer-out', 'working-in-progress')->name('transfer_out');
+        Route::view('/transfer-in', 'working-in-progress')->name('transfer_in');
+        Route::view('/transferred-list', 'working-in-progress')->name('transferred_list');
+    });
+
+    // Student Delete / Deactivate - Additional Routes
+    Route::prefix('student-delete')->name('student_delete.')->group(function () {
+        Route::view('/ex-students', 'working-in-progress')->name('ex_students');
+        Route::view('/deactivation', 'working-in-progress')->name('deactivation');
+        Route::view('/delete', 'working-in-progress')->name('delete');
+    });
+
+    // School Management - Additional Route
+
+
+    // Employee Management - Additional Route
+    Route::prefix('employee')->name('employee.')->group(function () {
+        Route::view('/list', 'working-in-progress')->name('list');
+    });
+
+    // Mission Banglar Shiksha - All Routes
+    Route::prefix('mission')->name('mission.')->group(function () {
+        Route::view('/download-basic-details', 'working-in-progress')->name('download_basic_details');
+        Route::view('/enrolment-certificate', 'working-in-progress')->name('enrolment_certificate');
+        Route::view('/school-basic-details', 'working-in-progress')->name('school_basic_details');
+    });
+
+    // Incentives - All Routes
+    Route::prefix('incentives')->name('incentives.')->group(function () {
+        Route::view('/challan-wise-stock', 'working-in-progress')->name('challan_wise_stock');
+        Route::view('/student-wise-distribution', 'working-in-progress')->name('student_wise_distribution');
+        Route::view('/available-stock', 'working-in-progress')->name('available_stock');
+        Route::view('/stock-received-history', 'working-in-progress')->name('stock_received_history');
+        Route::view('/stock-distribution-history', 'working-in-progress')->name('stock_distribution_history');
+        Route::view('/opening-stock-entry', 'working-in-progress')->name('opening_stock_entry');
+        Route::view('/stock-return-history', 'working-in-progress')->name('stock_return_history');
+    });
+
+    // Download - All Routes
+    Route::prefix('downloads')->name('downloads.')->group(function () {
+        Route::view('/presentation', 'working-in-progress')->name('presentation');
+        Route::view('/training-schedule', 'working-in-progress')->name('training_schedule');
+        Route::view('/school-user-manual', 'working-in-progress')->name('school_user_manual');
+        Route::view('/student-doe', 'working-in-progress')->name('student_doe');
+        Route::view('/student-doe-instruction', 'working-in-progress')->name('student_doe_instruction');
+    });
+
+    // Account Management - All Routes
+    Route::prefix('account')->name('account.')->group(function () {
+        Route::view('/update-contact', 'working-in-progress')->name('update_contact');
+        Route::view('/change-password', 'working-in-progress')->name('change_password');
+    });
+
+    // ALP - Route
+    Route::view('/alp/download', 'working-in-progress')->name('alp.download');
+    // ============ END OF NEW ROUTES ============
 
 
 

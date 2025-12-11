@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use DB;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\{
     CategoryMaster,
@@ -42,12 +42,20 @@ class SchoolManagementController extends Controller
 
         return redirect()->route('school.list', [$district, $management]);
     }
-    public function schoolList($districtid = null, $managementid = null)
+
+
+    public function schoolList(Request $request)
     {
         try {
             $district_id = null;
             $management_id = null;
 
+            // Get parameters from request
+            $districtid = $request->districtid;
+            $managementid = $request->managementid;
+            $per_page = $request->per_page ?? 20; // Default to 20 per page
+
+            // Decrypt district ID if provided
             if (!is_null($districtid) && $districtid !== 'null' && $districtid !== '') {
                 try {
                     $district_id = Crypt::decrypt($districtid);
@@ -56,6 +64,7 @@ class SchoolManagementController extends Controller
                 }
             }
 
+            // Decrypt management ID if provided
             if (!is_null($managementid) && $managementid !== 'null' && $managementid !== '') {
                 try {
                     $management_id = Crypt::decrypt($managementid);
@@ -63,17 +72,53 @@ class SchoolManagementController extends Controller
                     $management_id = null;
                 }
             }
-            $data['districts'] = DistrictMaster::where('status', 1)->orderBy('name')->get();
-            $data['school_managements'] = ManagementMaster::where('status', 1)->orderBy('name')->get();
-            $data['school_list'] = $this->SchoolMapper->getAllSchools($district_id, $management_id);
+
+            // Get filter data
+            $data['districts'] = DistrictMaster::where('status', 1)->select('id', 'name')->orderBy('name')->get();
+            $data['school_managements'] = ManagementMaster::where('status', 1)->select('id', 'name')->orderBy('name')->get();
+
+            // Get paginated school list with eager loading
+            $query = SchoolMaster::with(['district', 'block', 'ward', 'management'])
+                ->where('status', 1);
+
+            // Apply district filter if provided
+            if ($district_id) {
+                $query->where('district_id', $district_id);
+            }
+
+            // Apply management filter if provided
+            if ($management_id) {
+                $query->where('management_id', $management_id);
+            }
+
+            // Apply search if provided
+            if ($request->has('search') && !empty($request->search)) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('school_name', 'LIKE', "%{$search}%")
+                        ->orWhere('schcd', 'LIKE', "%{$search}%")
+                        ->orWhereHas('district', function ($q) use ($search) {
+                            $q->where('name', 'LIKE', "%{$search}%");
+                        });
+                });
+            }
+
+            // Order and paginate
+            $data['school_list'] = $query->orderBy('school_name')
+                ->paginate($per_page)
+                ->withQueryString(); // This preserves all query parameters
 
             return view('src.school_management.school_list', [
                 'data' => $data,
                 'selected_district_id' => $district_id,
                 'selected_management_id' => $management_id,
+                'districtid_param' => $districtid,
+                'managementid_param' => $managementid,
+                'search_param' => $request->search,
+                'per_page' => $per_page,
             ]);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error occurred: '.$e->getMessage());
+            return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
         }
     }
     //added by Aziza Parvin 25-11-2025
@@ -83,16 +128,15 @@ class SchoolManagementController extends Controller
      */
     public function schoolSearch(Request $request, $schcd = null)
     {
-        try{
-        $data       = [];
-        $disecode   = $request->method() === 'POST' ? $request->post('schcd', null) : $schcd;
-        if($disecode){
-            $data = $this->schoolDetails($disecode);
-        }
-        return view('src.school_management.school_search', compact('data', 'disecode'));
-        }
-        catch(\Exception $e){
-            return redirect()->back()->with('error', 'Error occurred: '.$e->getMessage());
+        try {
+            $data       = [];
+            $disecode   = $request->method() === 'POST' ? $request->post('schcd', null) : $schcd;
+            if ($disecode) {
+                $data = $this->schoolDetails($disecode);
+            }
+            return view('src.school_management.school_search', compact('data', 'disecode'));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
         }
     }
 
@@ -101,215 +145,207 @@ class SchoolManagementController extends Controller
      */
     public function schoolDetails($school_id)
     {
-        try{
-        $data = [];
-        if($school_id){
-            $data['school']             = SchoolMaster::with([
-                'district',
-                'block',
-                'ward',
-                'subDivision',
-                'mediums',
-                'classwiseSections'
-            ])->where('schcd', $school_id)->first();//->toArray();
-        }
+        try {
+            $data = [];
+            if ($school_id) {
+                $data['school']             = SchoolMaster::with([
+                    'district',
+                    'block',
+                    'ward',
+                    'subDivision',
+                    'mediums',
+                    'classwiseSections'
+                ])->where('schcd', $school_id)->first(); //->toArray();
+            }
 
-        if(!empty($data['school']) && $data['school']){
-            $data['high_classes']       = config('constants.high_classes');
-            $data['low_classes']        = config('constants.low_classes');
+            if (!empty($data['school']) && $data['school']) {
+                $data['high_classes']       = config('constants.high_classes');
+                $data['low_classes']        = config('constants.low_classes');
 
-            $data['mediums']            = MediumMaster::where('status', 1)->get();
-            $data['school_categories']  = CategoryMaster::where('status', 1)->orderBy('name')->get();
-            $data['school_managements'] = ManagementMaster::where('status', 1)->orderBy('name')->get();
+                $data['mediums']            = MediumMaster::where('status', 1)->get();
+                $data['school_categories']  = CategoryMaster::where('status', 1)->orderBy('name')->get();
+                $data['school_managements'] = ManagementMaster::where('status', 1)->orderBy('name')->get();
 
-            $data['districts']          = DistrictMaster::where('status', 1)->orderBy('name')->get();
-            $data['subDivision']        = SubdivisionMaster::where('district_id', $data['school']->district_code_fk)->get();
-            $data['circles']            = CircleMaster::where('district_id', $data['school']->district_code_fk)->get();
-            $data['clusters']           = ClusterMaster::where('district_id', $data['school']->district_code_fk)->get();
+                $data['districts']          = DistrictMaster::where('status', 1)->orderBy('name')->get();
+                $data['subDivision']        = SubdivisionMaster::where('district_id', $data['school']->district_code_fk)->get();
+                $data['circles']            = CircleMaster::where('district_id', $data['school']->district_code_fk)->get();
+                $data['clusters']           = ClusterMaster::where('district_id', $data['school']->district_code_fk)->get();
 
-            $subcatids = \App\Models\ManagementAndSchoolCategoryTypeMappingMaster::where('management_id', $data['school']->school_management_code_fk)->pluck('school_category_type_id');
-            $data['school_management_category_types'] = \App\Models\SchoolCategoryTypeMaster::whereIn('id',$subcatids)->get();
+                $subcatids = \App\Models\ManagementAndSchoolCategoryTypeMappingMaster::where('management_id', $data['school']->school_management_code_fk)->pluck('school_category_type_id');
+                $data['school_management_category_types'] = \App\Models\SchoolCategoryTypeMaster::whereIn('id', $subcatids)->get();
+            }
 
-
-        }
-
-        return $data;
-        }
-        catch(\Exception $e){
-            return redirect()->back()->with('error', 'Error occurred: '.$e->getMessage());
+            return $data;
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
         }
     }
 
-    public function schoolContactData(Request $request, $districtid = null){
-        try{
-        $newtype        = '';
-        $title          = '';
-        $headertitle    = '';
-        $itemList       = [];
-        $itemWiseCnt    = [];
-        if(!$districtid){
-            $newtype    = 'district';
-            $tbltitle   = 'District List';
-            $itemList   = DistrictMaster::where('status', 1)->orderBy('name')->get();
-        }
-        else{
-            $newtype    = 'circle';
-            $tbltitle   = 'Circle List';
-            $itemList   = CircleMaster::where('district_id', $districtid)->where('status', 1)->orderBy('name')->get();
-        }
+    public function schoolContactData(Request $request, $districtid = null)
+    {
+        try {
+            $newtype        = '';
+            $title          = '';
+            $headertitle    = '';
+            $itemList       = [];
+            $itemWiseCnt    = [];
+            if (!$districtid) {
+                $newtype    = 'district';
+                $tbltitle   = 'District List';
+                $itemList   = DistrictMaster::where('status', 1)->orderBy('name')->get();
+            } else {
+                $newtype    = 'circle';
+                $tbltitle   = 'Circle List';
+                $itemList   = CircleMaster::where('district_id', $districtid)->where('status', 1)->orderBy('name')->get();
+            }
 
-        if(!$districtid){
-            $title          = 'District wise school opening survey progress monitoring report';
-            $itemWiseCnt    = SchoolMaster::select('district_code_fk', DB::raw('COUNT(id) as total'))
-                                            ->groupBy('district_code_fk')
-                                            ->pluck('total', 'district_code_fk');
+            if (!$districtid) {
+                $title          = 'District wise school opening survey progress monitoring report';
+                $itemWiseCnt    = SchoolMaster::select('district_code_fk', DB::raw('COUNT(id) as total'))
+                    ->groupBy('district_code_fk')
+                    ->pluck('total', 'district_code_fk');
 
 
-           $itemWiseCnt = DB::table('bs_school_master as s')
-                            ->join('bs_district_master as d', 'd.id', '=', 's.district_code_fk')
-                            ->select(
-                                'd.id',
-                                'd.name',
-                                DB::raw('SUM(CASE WHEN s.school_category_code_fk = 1 THEN 1 ELSE 0 END) AS total_primary'),
-                                DB::raw('SUM(CASE WHEN s.school_category_code_fk > 1 THEN 1 ELSE 0 END) AS total_secondary')
-                            )
-                            ->whereNull('s.deleted_at')
-                            ->groupBy('d.id', 'd.name')
-                            ->orderBy('d.id')
-                            ->get()
-                            ->keyBy('id')   // <-- makes array indexed by district_id
-                            ->map(function ($item) {
-                                return [
-                                    'id' => $item->id,
-                                    'name' => $item->name,
-                                    'total_primary' => (int)$item->total_primary,
-                                    'total_secondary' => (int)$item->total_secondary,
-                                ];
-                            })
-                            ->toArray();
-            // dd($itemWiseCnt);
-        }
-        else{
-            $districrData   = DistrictMaster::find($districtid);
-            $title          = 'Circle wise school opening survey progress monitoring report of '.ucfirst($districrData->name).' district';
-            $itemWiseCnt    = DB::table('bs_school_master as s')
-                            ->join('bs_district_master as d', 'd.id', '=', 's.circle_code_fk')
-                            ->select(
-                                'd.id',
-                                'd.name',
-                                DB::raw('SUM(CASE WHEN s.school_category_code_fk = 1 THEN 1 ELSE 0 END) AS total_primary'),
-                                DB::raw('SUM(CASE WHEN s.school_category_code_fk > 1 THEN 1 ELSE 0 END) AS total_secondary')
-                            )
-                            ->whereNull('s.deleted_at')
-                            ->groupBy('d.id', 'd.name')
-                            ->orderBy('d.id')
-                            ->get()
-                            ->keyBy('id')   // <-- makes array indexed by district_id
-                            ->map(function ($item) {
-                                return [
-                                    'id' => $item->id,
-                                    'name' => $item->name,
-                                    'total_primary' => (int)$item->total_primary,
-                                    'total_secondary' => (int)$item->total_secondary,
-                                ];
-                            })
-                            ->toArray();
-        }
+                $itemWiseCnt = DB::table('bs_school_master as s')
+                    ->join('bs_district_master as d', 'd.id', '=', 's.district_code_fk')
+                    ->select(
+                        'd.id',
+                        'd.name',
+                        DB::raw('SUM(CASE WHEN s.school_category_code_fk = 1 THEN 1 ELSE 0 END) AS total_primary'),
+                        DB::raw('SUM(CASE WHEN s.school_category_code_fk > 1 THEN 1 ELSE 0 END) AS total_secondary')
+                    )
+                    ->whereNull('s.deleted_at')
+                    ->groupBy('d.id', 'd.name')
+                    ->orderBy('d.id')
+                    ->get()
+                    ->keyBy('id')   // <-- makes array indexed by district_id
+                    ->map(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'name' => $item->name,
+                            'total_primary' => (int)$item->total_primary,
+                            'total_secondary' => (int)$item->total_secondary,
+                        ];
+                    })
+                    ->toArray();
+                // dd($itemWiseCnt);
+            } else {
+                $districrData   = DistrictMaster::find($districtid);
+                $title          = 'Circle wise school opening survey progress monitoring report of ' . ucfirst($districrData->name) . ' district';
+                $itemWiseCnt    = DB::table('bs_school_master as s')
+                    ->join('bs_district_master as d', 'd.id', '=', 's.circle_code_fk')
+                    ->select(
+                        'd.id',
+                        'd.name',
+                        DB::raw('SUM(CASE WHEN s.school_category_code_fk = 1 THEN 1 ELSE 0 END) AS total_primary'),
+                        DB::raw('SUM(CASE WHEN s.school_category_code_fk > 1 THEN 1 ELSE 0 END) AS total_secondary')
+                    )
+                    ->whereNull('s.deleted_at')
+                    ->groupBy('d.id', 'd.name')
+                    ->orderBy('d.id')
+                    ->get()
+                    ->keyBy('id')   // <-- makes array indexed by district_id
+                    ->map(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'name' => $item->name,
+                            'total_primary' => (int)$item->total_primary,
+                            'total_secondary' => (int)$item->total_secondary,
+                        ];
+                    })
+                    ->toArray();
+            }
 
-        return view('src.school_management.school_contact_details', compact(
-            'title',
-            'tbltitle',
-            'districtid',
-            'newtype',
-            'itemList',
-            'itemWiseCnt'
-        ));
-        }
-        catch(\Exception $e){
-            return redirect()->back()->with('error', 'Error occurred: '.$e->getMessage());
+            return view('src.school_management.school_contact_details', compact(
+                'title',
+                'tbltitle',
+                'districtid',
+                'newtype',
+                'itemList',
+                'itemWiseCnt'
+            ));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
         }
     }
 
     public function schoolInfrastructureSurvey(Request $request, $districtid = null)
     {
-        try{
-        $newtype        = '';
-        $title          = '';
-        $headertitle    = '';
-        $itemList       = [];
-        $itemWiseCnt    = [];
-        if(!$districtid){
-            $newtype    = 'district';
-            $tbltitle   = 'District List';
-            $itemList   = DistrictMaster::where('status', 1)->orderBy('name')->get();
-        }
-        else{
-            $newtype    = 'circle';
-            $tbltitle   = 'Circle List';
-            $itemList   = CircleMaster::where('district_id', $districtid)->where('status', 1)->orderBy('name')->get();
-        }
-
-        if(!$districtid){
-            $title          = 'District wise school opening survey progress monitoring report';
+        try {
+            $newtype        = '';
+            $title          = '';
+            $headertitle    = '';
+            $itemList       = [];
             $itemWiseCnt    = [];
-        }
-        else{
-            $districrData   = DistrictMaster::find($districtid);
-            $title          = 'Circle wise school opening survey progress monitoring report of '.ucfirst($districrData->name).' district';
-            $itemWiseCnt    = [];
-        }
+            if (!$districtid) {
+                $newtype    = 'district';
+                $tbltitle   = 'District List';
+                $itemList   = DistrictMaster::where('status', 1)->orderBy('name')->get();
+            } else {
+                $newtype    = 'circle';
+                $tbltitle   = 'Circle List';
+                $itemList   = CircleMaster::where('district_id', $districtid)->where('status', 1)->orderBy('name')->get();
+            }
 
-        return view('src.school_management.school_infrastructure_survey', compact(
-            'title',
-            'tbltitle',
-            'districtid',
-            'newtype',
-            'itemList',
-            'itemWiseCnt'
-        ));
-        }
-        catch(\Exception $e){
-            return redirect()->back()->with('error', 'Error occurred: '.$e->getMessage());
+            if (!$districtid) {
+                $title          = 'District wise school opening survey progress monitoring report';
+                $itemWiseCnt    = [];
+            } else {
+                $districrData   = DistrictMaster::find($districtid);
+                $title          = 'Circle wise school opening survey progress monitoring report of ' . ucfirst($districrData->name) . ' district';
+                $itemWiseCnt    = [];
+            }
+
+            return view('src.school_management.school_infrastructure_survey', compact(
+                'title',
+                'tbltitle',
+                'districtid',
+                'newtype',
+                'itemList',
+                'itemWiseCnt'
+            ));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
         }
     }
 
-    public function schoolContactDataCircle(Request $request, $circleid = null){
-        try{
-        $newtype    = 'school';
-        $title      = 'School wise school opening survey progress monitoring report of BELIATORE circle';
-        $tbltitle   = 'School List';
-        $schoolList = SchoolMaster::with(['school_category'])->where('circle_code_fk', $circleid)->orderBy('school_name')->get();
+    public function schoolContactDataCircle(Request $request, $circleid = null)
+    {
+        try {
+            $newtype    = 'school';
+            $title      = 'School wise school opening survey progress monitoring report of BELIATORE circle';
+            $tbltitle   = 'School List';
+            $schoolList = SchoolMaster::with(['school_category'])->where('circle_code_fk', $circleid)->orderBy('school_name')->get();
 
-        return view('src.school_management.school_infrastructure_survey_school', compact(
-            'title',
-            'tbltitle',
-            'circleid',
-            'newtype',
-            'schoolList'
-        ));
-        }
-        catch(\Exception $e){
-            return redirect()->back()->with('error', 'Error occurred: '.$e->getMessage());
+            return view('src.school_management.school_infrastructure_survey_school', compact(
+                'title',
+                'tbltitle',
+                'circleid',
+                'newtype',
+                'schoolList'
+            ));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
         }
     }
 
-    public function schoolInfrastructureSurveyCircle(Request $request, $circleid = null){
-        try{
-        $newtype    = 'school';
-        $title      = 'School wise school opening survey progress monitoring report of BELIATORE circle';
-        $tbltitle   = 'School List';
-        $schoolList = [];
+    public function schoolInfrastructureSurveyCircle(Request $request, $circleid = null)
+    {
+        try {
+            $newtype    = 'school';
+            $title      = 'School wise school opening survey progress monitoring report of BELIATORE circle';
+            $tbltitle   = 'School List';
+            $schoolList = [];
 
-        return view('src.school_management.school_infrastructure_survey_school', compact(
-            'title',
-            'tbltitle',
-            'circleid',
-            'newtype',
-            'schoolList'
-        ));
-        }
-        catch(\Exception $e){
-            return redirect()->back()->with('error', 'Error occurred: '.$e->getMessage());
+            return view('src.school_management.school_infrastructure_survey_school', compact(
+                'title',
+                'tbltitle',
+                'circleid',
+                'newtype',
+                'schoolList'
+            ));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
         }
     }
 
@@ -318,29 +354,28 @@ class SchoolManagementController extends Controller
 
     public function schoolAddFrm()
     {
-        try{
-        $data = [];
-        $data['high_classes']           = config('constants.high_classes');
-        $data['districts']              = DistrictMaster::where('status', 1)->orderBy('name')->get();
-        $data['school_categories']      = CategoryMaster::where('status', 1)->orderBy('name')->get();
-        $data['school_managements']     = ManagementMaster::where('status', 1)->orderBy('name')->get();
-        $data['mediums']                = MediumMaster::where('status', 1)->get();
+        try {
+            $data = [];
+            $data['high_classes']           = config('constants.high_classes');
+            $data['districts']              = DistrictMaster::where('status', 1)->orderBy('name')->get();
+            $data['school_categories']      = CategoryMaster::where('status', 1)->orderBy('name')->get();
+            $data['school_managements']     = ManagementMaster::where('status', 1)->orderBy('name')->get();
+            $data['mediums']                = MediumMaster::where('status', 1)->get();
 
-        return view('src.school_management.school_add', compact('data'));
-        }
-        catch(\Exception $e){
-            return redirect()->back()->with('error', 'Error occurred: '.$e->getMessage());
+            return view('src.school_management.school_add', compact('data'));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
         }
     }
 
     /**
-    * Show Add School page
-    */
+     * Show Add School page
+     */
     public function schoolAdd(Request $request)
     {
         // dd('here', $request->all());
 
-        try{
+        try {
             // 1. VALIDATION
             // ---------------------------
             $validated = $request->validate([
@@ -352,8 +387,8 @@ class SchoolManagementController extends Controller
                 'high_class'                => 'required|integer',
                 'low_class'                 => 'required|integer',
 
-                'school_uniform_status'     => "required|integer",//uniform_status
-                'school_student_lock_status'=> 'required|integer',//school_status
+                'school_uniform_status'     => "required|integer", //uniform_status
+                'school_student_lock_status' => 'required|integer', //school_status
 
                 'school_type'               => 'required',
                 'school_category_type'      => 'required|integer|exists:bs_school_category_type_master,id',
@@ -443,19 +478,16 @@ class SchoolManagementController extends Controller
             // ---------------------------
             // 6. SUCCESS RESPONSE
             // ---------------------------
-            return redirect()->back()->with('success', 'School added successfully. Dise Code : '.$validated['school_dise_code']);
-
-
-        }
-        catch(\Exception $e){
-            dd('Error occurred: '.$e->getMessage());
-            return redirect()->back()->with('error', 'Error occurred: '.$e->getMessage());
+            return redirect()->back()->with('success', 'School added successfully. Dise Code : ' . $validated['school_dise_code']);
+        } catch (\Exception $e) {
+            dd('Error occurred: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
         }
     }
 
     public function schoolUpdate(Request $request)
     {
-        try{
+        try {
             // 1. VALIDATION
             // ---------------------------
             $validated = $request->validate([
@@ -468,7 +500,7 @@ class SchoolManagementController extends Controller
                 'low_class'                 => 'required|integer',
 
                 'school_uniform_status'     => "required|integer",
-                'school_student_lock_status'=> 'required|integer',
+                'school_student_lock_status' => 'required|integer',
 
                 'school_type'               => 'required',
                 'school_category_type'      => 'required|integer|exists:bs_school_category_type_master,id',
@@ -512,7 +544,7 @@ class SchoolManagementController extends Controller
 
             $school_details = SchoolMaster::where('schcd', $request->post('school_dise_code'))->first();
 
-            if(!$school_details){
+            if (!$school_details) {
                 return redirect()->back()->with('error', 'Error occurred: School details not found.');
             }
 
@@ -546,26 +578,22 @@ class SchoolManagementController extends Controller
 
 
             return redirect()->route('school.search', $request->post('school_dise_code'))
-                 ->with('success', 'School updated successfully.');
-
-
-        }
-        catch(\Exception $e){
-            return redirect()->back()->with('error', 'Error occurred: '.$e->getMessage());
+                ->with('success', 'School updated successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
         }
     }
 
     //Added by Aziza Parvin 24-11-2025 Start
     public function schoolDetailsBySchoolId($id)
     {
-        try{
+        try {
             $school_id = decrypt($id);
             // dd($school_id);
             $data = $this->SchoolMapper->getSchoolDetailsById($school_id);
-            return view('src.school_management.school_details',compact('data'));
-        }
-        catch(\Exception $e){
-            return redirect()->back()->with('error', 'Error occurred: '.$e->getMessage());
+            return view('src.school_management.school_details', compact('data'));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
         }
     }
     //Added by Aziza Parvin 24-11-2025 End
