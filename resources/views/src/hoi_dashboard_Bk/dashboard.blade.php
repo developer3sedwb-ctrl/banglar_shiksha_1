@@ -12,7 +12,7 @@
                     <div class="col-sm-7">
                         <div class="card-body pb-5 institution-details">
                             <p class="text-secondary mb-2 d-block">Head of Institution</p>
-                            <h4 class="text-primary mb-2"><strong>ADHATA HIGH SCHOOL (H.S)</strong></h4>
+                            <h4 class="text-primary mb-2"><strong>ADHATeeA HIGH SCHOOL (H.S)</strong></h4>
                             <p class="mb-0 fw-semibold text-dark">SCHOOL CODE 19110101614</p>
                         </div>
                     </div>
@@ -48,7 +48,7 @@
                             <i class="bx bx-desktop text-primary"></i>
                         </div>
                     </div>
-                    <h3 class="card-title mb-2 fw-semibold">SMS</h3>
+                    <h3 class="card-title mb-2 fw-semibold">SM23S</h3>
                     <a href="javascript:;" class="btn btn-sm btn-outline-primary mt-2">View More</a>
                 </div>
             </div>

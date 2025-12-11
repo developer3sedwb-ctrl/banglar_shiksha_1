@@ -222,6 +222,28 @@
                       </select>
                     </div>
                   </div>
+
+
+                  <div class="mb-3">
+    <label class="form-label small">Upload Student Photo</label>
+    <div class="input-group">
+        <span class="input-group-text"><i class="bx bx-image"></i></span>
+        <input 
+            type="file" 
+            name="student_photo" 
+            id="student_photo" 
+            class="form-control"
+            accept="image/*">
+    </div>
+
+    <!-- Preview section -->
+    <div class="mt-2">
+        <img id="photo_preview" 
+             src="{{ isset($basic['student_photo']) ? asset('uploads/students/'.$basic['student_photo']) : '' }}" 
+             style="max-width:150px; display: {{ isset($basic['student_photo']) ? 'block' : 'none' }}; border:1px solid #ccc; padding: 4px;">
+    </div>
+</div>
+
                 </div>
 
                 <div class="col-md-6">
@@ -546,4 +568,26 @@
     outOfSchool.addEventListener('change', toggleMainstreamed);
 
 });
+
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const inputPhoto = document.getElementById('student_photo');
+    const previewImg = document.getElementById('photo_preview');
+
+    if (inputPhoto) {
+        inputPhoto.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                previewImg.src = URL.createObjectURL(file);
+                previewImg.style.display = 'block';
+            }
+        });
+    }
+
+});
+
+
           </script>

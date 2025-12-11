@@ -33,7 +33,7 @@
                             <div class="card-body pb-5 institution-details">
                                 <p class="text-secondary mb-2 d-block">Head of Institution</p>
                                 <h4 class="text-primary mb-2"><strong>ADHATA HIGH SCHOOL (H.S)</strong></h4>
-                                <p class="mb-0 fw-semibold text-dark">SCHOOL CODE 19110101614</p>
+                                <p class="mb-0 fw-semibold text-dark">DISE CODE 19110101614</p>
                             </div>
                         </div>
                         <div class="col-sm-5 text-center text-sm-left">
@@ -52,7 +52,7 @@
                                 <i class="bx bxs-school text-success"></i>
                             </div>
                         </div>
-                        <h3 class="card-title mb-2 fw-semibold">SCHOOL INFORMATION</h3>
+                        <h3 class="card-title mb-2 fw-semibold">SCHOOL INFO</h3>
                         <a href="javascript:;" class="btn btn-sm btn-outline-primary mt-2">View More</a>
                     </div>
                 </div>
@@ -310,59 +310,98 @@
                 </div>
             </div>
 
-            <div class="col-12 col-md-12 col-xxl-4">
+         
+            <div class="col-12 col-md-12 col-xl-4">
                 <h5 class="fw-bold mb-3">Geolocation Search</h5>
                 <div class="card">
                     <div class="card-body">
-                        <div class="card-title d-flex align-items-start justify-content-between">
-                            <div class="avatar lt-green">
-                                <i class="bx bx-map text-success"></i>
+                        <div id="map" class="map"></div>
+                        <!-- DMS INPUTS -->
+                        <div class="col-12 mt-3">
+                            <label class="form-label fw-semibold text-uppercase small">Latitude (DMS)</label>
+                            <div class="input-group mb-3">
+                                <input type="text" id="lat_deg" class="form-control" placeholder="°" value="22">
+                                <input type="text" id="lat_min" class="form-control" placeholder="′" value="31">
+                                <input type="text" id="lat_sec" class="form-control" placeholder="″" value="12.00">
+                                <select id="lat_dir" class="form-select input-group-text">
+                                    <option value="N" selected>N</option>
+                                    <option value="S">S</option>
+                                </select>
                             </div>
+
+                            <label class="form-label fw-semibold text-uppercase small">Longitude (DMS)</label>
+                            <div class="input-group mb-3">
+                                <input type="text" id="lon_deg" class="form-control" placeholder="°" value="88">
+                                <input type="text" id="lon_min" class="form-control" placeholder="′" value="18">
+                                <input type="text" id="lon_sec" class="form-control" placeholder="″" value="36.00">
+                                <select id="lon_dir" class="form-select input-group-text">
+                                    <option value="E" selected>E</option>
+                                    <option value="W">W</option>
+                                </select>
+                            </div>
+
+                            <div id="dec-output" class="mt-3 small text-muted"></div>
                         </div>
-                        <h3 class="card-title mb-0 fw-semibold">Location Details</h3>
-                        <div class="col-12 mt-4">
-                            <label class="form-label fw-semibold text-uppercase small">Latitude</label>
-                            <input type="text" id="latitude" class="form-control form-control-lg mb-3"
-                                value="22.52" placeholder="Enter latitude">
-                            <label class="form-label fw-semibold text-uppercase small">Longitude</label>
-                            <input type="text" id="longitude" class="form-control form-control-lg" value="88.31"
-                                placeholder="Enter longitude">
-                            <button class="btn btn-primary mt-4" onclick="updateMap()">Show on Map</button>
-                        </div>
+
                     </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="col-12 col-md-12 col-xxl-12 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <div id="map" class="map"></div>
                 </div>
             </div>
         </div>
     </div>
+
 @endsection
 @push('scripts')
     <script src="{{ asset('Leaflet_map/leaflet.js') }}"></script>
     <script>
+    document.addEventListener('DOMContentLoaded', function () {
         // Force Leaflet to use local marker icons
         L.Icon.Default.mergeOptions({
-            iconUrl: '{{ asset('Leaflet_map/images/marker-icon.png') }}',
-            iconRetinaUrl: '{{ asset('Leaflet_map/images/marker-icon-2x.png') }}',
-            shadowUrl: '{{ asset('Leaflet_map/images/marker-shadow.png') }}'
+            iconUrl: '{{ asset("Leaflet_map/images/marker-icon.png") }}',
+            iconRetinaUrl: '{{ asset("Leaflet_map/images/marker-icon-2x.png") }}',
+            shadowUrl: '{{ asset("Leaflet_map/images/marker-shadow.png") }}'
         });
 
-        // ￼ Initial coordinates
-        var lat = parseFloat(document.getElementById('latitude').value);
-        var lng = parseFloat(document.getElementById('longitude').value);
+        // helper: convert DMS to decimal degrees
+        function dmsToDecimal(deg, min, sec, dir) {
+            deg = parseFloat(deg) || 0;
+            min = parseFloat(min) || 0;
+            sec = parseFloat(sec) || 0;
+            var dec = Math.abs(deg) + (min / 60) + (sec / 3600);
+            if (dir === 'S' || dir === 'W') dec = -dec;
+            return dec;
+        }
+
+        // read DMS inputs and return [lat, lng]
+        function readDmsInputs() {
+            var lat_deg = document.getElementById('lat_deg').value;
+            var lat_min = document.getElementById('lat_min').value;
+            var lat_sec = document.getElementById('lat_sec').value;
+            var lat_dir = document.getElementById('lat_dir').value;
+
+            var lon_deg = document.getElementById('lon_deg').value;
+            var lon_min = document.getElementById('lon_min').value;
+            var lon_sec = document.getElementById('lon_sec').value;
+            var lon_dir = document.getElementById('lon_dir').value;
+
+            var lat = dmsToDecimal(lat_deg, lat_min, lat_sec, lat_dir);
+            var lng = dmsToDecimal(lon_deg, lon_min, lon_sec, lon_dir);
+
+            return [lat, lng];
+        }
+
+        // Show decimal in the dec-output div
+        function showDecimal(lat, lng) {
+            var out = document.getElementById('dec-output');
+            // out.innerHTML = 'Decimal: <strong>' + lat.toFixed(6) + ', ' + lng.toFixed(6) + '</strong>';
+        }
+
+        // try to get initial coordinates from DMS inputs (fallback to 0,0)
+        var coords = readDmsInputs();
+        var initialLat = isFinite(coords[0]) ? coords[0] : 0;
+        var initialLng = isFinite(coords[1]) ? coords[1] : 0;
 
         // Initialize map (no zoom buttons or attribution)
-        var map = L.map('map', {
-            zoomControl: false,
-            attributionControl: false
-        }).setView([lat, lng], 13);
+        var map = L.map('map', { zoomControl: false, attributionControl: false }).setView([initialLat, initialLng], 13);
 
         // Add map tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -370,33 +409,50 @@
             attribution: ''
         }).addTo(map);
 
-        // Create explicit icon (this guarantees it works)
+        // explicit icon
         var myIcon = L.icon({
-            iconUrl: '{{ asset('Leaflet_map/images/marker-icon.png') }}',
-            iconRetinaUrl: '{{ asset('Leaflet_map/images/marker-icon-2x.png') }}',
-            shadowUrl: '{{ asset('Leaflet_map/images/marker-shadow.png') }}',
+            iconUrl: '{{ asset("Leaflet_map/images/marker-icon.png") }}',
+            iconRetinaUrl: '{{ asset("Leaflet_map/images/marker-icon-2x.png") }}',
+            shadowUrl: '{{ asset("Leaflet_map/images/marker-shadow.png") }}',
             iconSize: [25, 41],
             iconAnchor: [12, 41],
             popupAnchor: [1, -34],
             shadowSize: [41, 41]
         });
 
-        // Add marker using the explicit icon
-        var marker = L.marker([lat, lng], {
-            icon: myIcon
-        }).addTo(map);
+        // add marker
+        var marker = L.marker([initialLat, initialLng], { icon: myIcon }).addTo(map);
 
-        // Update map function
+        // initial decimal output
+        showDecimal(initialLat, initialLng);
+
+        // updateMap reads the DMS fields and moves marker + center
         function updateMap() {
-            var newLat = parseFloat(document.getElementById('latitude').value);
-            var newLng = parseFloat(document.getElementById('longitude').value);
+            var newCoords = readDmsInputs();
+            var newLat = newCoords[0];
+            var newLng = newCoords[1];
 
-            if (!isNaN(newLat) && !isNaN(newLng)) {
-                marker.setLatLng([newLat, newLng]);
-                map.setView([newLat, newLng], 13);
-            } else {
-                alert("Please enter valid coordinates");
+            if (!isFinite(newLat) || !isFinite(newLng)) {
+                alert('Please enter valid DMS coordinates.');
+                return;
             }
+            marker.setLatLng([newLat, newLng]);
+            map.setView([newLat, newLng], 13);
+            showDecimal(newLat, newLng);
         }
+
+        // wire inputs to update automatically on change
+        var inputs = ['lat_deg','lat_min','lat_sec','lat_dir','lon_deg','lon_min','lon_sec','lon_dir'];
+        inputs.forEach(function(id){
+            var el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('change', updateMap);
+                el.addEventListener('input', function(){ /*update while typing if desired*/ });
+            }
+        });
+
+        // optional: expose updateMap globally if you want a button to call it elsewhere
+        window.updateMap = updateMap;
+    });
     </script>
 @endpush

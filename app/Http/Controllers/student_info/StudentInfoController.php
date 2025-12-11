@@ -895,19 +895,31 @@ class StudentInfoController extends Controller
                 'status' => 0,
                 'deleted_at' => now()
             ];
-            // Soft delete + deactivate Facility records
+
+            StudentInfo::where('school_id_fk', $schoolId)
+                ->update($updateData);
+
+            StudentEnrollmentInfo::where('school_id_fk', $schoolId)
+                ->update($updateData);
+        
             StudentFacilityAndOtherDetails::where('school_id_fk', $schoolId)
                 ->update($updateData);
 
-            // Soft delete + deactivate Vocational records
             StudentVocationalDetails::where('school_id_fk', $schoolId)
                 ->update($updateData);
-            StudentInfo::where('school_id_fk', $schoolId)
-                ->update($updateData);
-            StudentEnrollmentInfo::where('school_id_fk', $schoolId)
+
+
+            StudentContactInfo::where('school_id_fk', $schoolId)
                 ->update($updateData);
 
-            // Soft delete + deactivate Draft Tracker
+
+            EntryStudentBankInfo::where('school_id_fk', $schoolId)
+                ->update($updateData);
+
+           
+
+
+
             StudentEntryDraftTracker::where('school_id_fk', $schoolId)
                 ->update($updateData);
 
