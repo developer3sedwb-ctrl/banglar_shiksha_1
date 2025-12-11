@@ -3,9 +3,10 @@
 namespace App\Models\student_info;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class StudentInfo extends Model
 {
+      use SoftDeletes;
     protected $table = 'bs_student_general_info_temp';
     protected $primaryKey = 'id';
     public $timestamps = true; // created_at/updated_at

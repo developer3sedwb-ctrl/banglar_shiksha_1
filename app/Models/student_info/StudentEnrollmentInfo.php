@@ -3,11 +3,11 @@
 namespace App\Models\student_info;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class StudentEnrollmentInfo extends Model
 {
 
-    // use SoftDeletes; 
+    use SoftDeletes; 
 
     protected $table = 'bs_student_enrollment_details_temp';
     protected $primaryKey = 'id';

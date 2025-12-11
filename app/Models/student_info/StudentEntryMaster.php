@@ -3,9 +3,10 @@
 namespace App\Models\student_info;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class StudentEntryMaster extends Model
 {
+        use SoftDeletes;
     protected $table = 'bs_student_master';
 
     // Composite primary key
