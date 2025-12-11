@@ -158,7 +158,7 @@ return new class extends Migration
             $table->foreign('language_code_fk3')->references('id')->on('bs_language_master');
 
             // Affiliation Boards & Exam Names
-            $table->foreign('sch_cat_type_code_fk')->references('id')->on('bs_school_category_type_master');
+            $table->foreign('sch_cat_type_code_fk')->references('id')->on('bs_udise_school_type_master');
             $table->foreign('secondary_affiliation_board_code_fk')->references('id')->on('bs_board_master');
             $table->foreign('council_affiliation_board_code_fk')->references('id')->on('bs_board_master');
             $table->foreign('secondary_exam_name_fk')->references('id')->on('bs_exam_master');
@@ -174,3 +174,7 @@ return new class extends Migration
         Schema::dropIfExists('bs_school_master');
     }
 };
+
+// bs_type_master
+// bs_school_category_type_master
+// bs_category_master

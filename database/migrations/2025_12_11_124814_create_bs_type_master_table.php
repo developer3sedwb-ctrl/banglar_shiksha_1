@@ -11,18 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bs_district_parliamentary_master', function (Blueprint $table) {
+        Schema::create('bs_type_master', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('district_code_fk');
-            $table->foreign('district_code_fk')->references('id')->on('bs_district_master')->onDelete('cascade');
-            $table->unsignedInteger('parliamentary_code_fk');
-            $table->foreign('parliamentary_code_fk')->references('id')->on('bs_parliamentary_master')->onDelete('cascade');
+            $table->string('name', 100);
             $table->smallInteger('status')->default(1)->comment('1 = active');
             // Audit fields
             $table->timestamps();
             
             $table->softDeletes();
             // Indexes
+            $table->index(['status', 'name']);
         });
     }
 
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bs_district_parliamentary_master');
+        Schema::dropIfExists('bs_type_master');
     }
 };

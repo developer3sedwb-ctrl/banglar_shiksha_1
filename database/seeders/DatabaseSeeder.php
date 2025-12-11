@@ -103,7 +103,7 @@ class DatabaseSeeder extends Seeder
             // BsParliamentaryMasterSeeder::class,
             // BsDistrictAssemblyMasterSeeder::class,
             // BsBoardCouncilClassMappingMasterSeeder::class,
-            BsPanchayatMasterSeeder::class,
+            BsUdiseSchoolTypeMasterSeeder::class,
 
 
 
