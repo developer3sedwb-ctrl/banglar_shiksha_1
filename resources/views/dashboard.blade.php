@@ -312,7 +312,7 @@
 
          
             <div class="col-12 col-md-12 col-xl-4">
-                <h5 class="fw-bold mb-3">Geolocation Search</h5>
+                <h5 class="fw-bold mb-3">Location</h5>
                 <div class="card">
                     <div class="card-body">
                         <div id="map" class="map"></div>
@@ -340,7 +340,7 @@
                                 </select>
                             </div>
 
-                            <div id="dec-output" class="mt-3 small text-muted"></div>
+                  
                         </div>
 
                     </div>
