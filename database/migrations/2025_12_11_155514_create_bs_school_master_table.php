@@ -117,7 +117,6 @@ return new class extends Migration
             // timestamps & deletes
             $table->timestamps();
             $table->softDeletes();
-            $table->primary(['id', 'school_code_pk']);
         });
         // -----------------------------------------------------------
         // FOREIGN KEY DEFINITIONS (ALL POSSIBLE FK COLUMNS)
