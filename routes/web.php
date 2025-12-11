@@ -70,36 +70,23 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
 
         
 
-     
-    Route::post('/student/store_student_entry_basic_details', 
-        [StudentInfoController::class, 'StoreStudentEntryStoreBasicDetails']
-    )->name('student.store_student_entry_basic_details');
 
-Route::post(
-    '/student/store_enrollment_details',
-    [StudentInfoController::class, 'storeEnrollmentDetails']
-)->name('student.store_enrollment_details');
-
-
-
-Route::post(
-    '/student/store_student_entry_contact_details',
-    [StudentInfoController::class, 'storeStudentContactDetails']
-)->name('student.store_student_entry_contact_details');
-
-Route::post(
-    '/student/bank_details_of_student',
-    [StudentInfoController::class, 'bankDetailsOfStudent']
-)->name('student.bank_details_of_student');
+   Route::prefix('hoi')->group(function () 
+   {
+    // routes/web.php
+        Route::get('/student-entry', [StudentInfoController::class, 'getStudentEntry'])->name('student.entry');
+        Route::post('/save-student-facility-and-other-details', [StudentInfoController::class, 'storeStudentFacilityAndOtherDetails'])->name('hoi.student.facility');
+        Route::post('/save-student-vocational-details',[StudentInfoController::class, 'saveVocationalDetails'])->name('save.vocational.details');
+        Route::delete('/student-entry/reset', [StudentInfoController::class, 'resetEntry'])->name('student.entry.reset');
+        Route::get('/get-branches', [StudentInfoController::class, 'getBranches']);
+        Route::get('/get-ifsc', [StudentInfoController::class, 'getIfsc']);
+        Route::post('/student/store_student_entry_basic_details', [StudentInfoController::class, 'StoreStudentEntryStoreBasicDetails'])->name('student.store_student_entry_basic_details');
+        Route::post('/student/store_enrollment_details',[StudentInfoController::class, 'storeEnrollmentDetails'])->name('student.store_enrollment_details');
+        Route::post('/student/store_student_entry_contact_details',[StudentInfoController::class, 'storeStudentContactDetails'])->name('student.store_student_entry_contact_details');
+        Route::post( '/student/bank_details_of_student', [StudentInfoController::class, 'bankDetailsOfStudent'])->name('student.bank_details_of_student');
+    });
 
 
-Route::get('/get-branches', [StudentInfoController::class, 'getBranches']);
-Route::get('/get-ifsc', [StudentInfoController::class, 'getIfsc']);
-
-
-
-//      Route::post('/student/basic/store', [StudentInfoController::class, 'storeBasic'])->name('student.basic.store');
-// Route::post('/student/enrollment/store', [StudentInfoController::class, 'storeEnrollment'])->name('student.enrollment.store');
 
      
     Route::view('/student-edit', 'src.modules.student_entry_update.Student_edit')
@@ -252,14 +239,7 @@ Route::get('/get-ifsc', [StudentInfoController::class, 'getIfsc']);
         Route::get('/total-teacher', [SiController::class, 'totalTeacher'])->name('si.total_teacher');
         Route::get('/school-class-gender-wise-enrollment', [SiController::class, 'schoolClassGenderWiseEnrollmentReport'])->name('si.school_class_gender_wise_enrollment_report');
     });
-    Route::prefix('hoi')->group(function () {
-    // routes/web.php
-        Route::get('/student-entry', [StudentInfoController::class, 'getStudentEntry'])->name('student.entry');
-        Route::post('/save-student-facility-and-other-details', [StudentInfoController::class, 'storeStudentFacilityAndOtherDetails'])->name('hoi.student.facility');
-        Route::post('/save-student-vocational-details',[StudentInfoController::class, 'saveVocationalDetails'])->name('save.vocational.details');
-        Route::delete('/student-entry/reset', [StudentInfoController::class, 'resetEntry'])->name('student.entry.reset');
-
-        });
+ 
 
     // Route::get('/test-error', function () {
     //     // wrong SQL to trigger QueryException
