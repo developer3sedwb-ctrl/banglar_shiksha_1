@@ -12,8 +12,6 @@ return new class extends Migration
 
             // PRIMARY KEY
             $table->unsignedBigInteger('id')->autoIncrement();
-            $table->unsignedBigInteger('school_code_pk');
-
             // BASIC DETAILS
             $table->char('schcd', 11);
             $table->string('school_name', 100);

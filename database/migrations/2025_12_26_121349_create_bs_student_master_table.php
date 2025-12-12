@@ -14,10 +14,10 @@ return new class extends Migration
         DB::statement("
             CREATE TABLE bs_student_master (
                 id BIGINT GENERATED ALWAYS AS IDENTITY,
-                state_code_fk INT NOT NULL,
+                state_code_fk INT NULL,
                 district_code_fk INT NOT NULL,
                 subdivision_code_fk INT,
-                block_munc_code_fk INT NOT NULL,
+                block_munc_code_fk INT NULL,
                 circle_code_fk INT NOT NULL,
                 gs_ward_code_fk INT,
                 academic_year SMALLINT NOT NULL,
@@ -60,7 +60,7 @@ return new class extends Migration
                 stu_contact_other_district VARCHAR(50),
                 stu_contact_panchayat VARCHAR(100),
                 stu_police_station VARCHAR(100),
-                stu_mobile_no BIGINT,
+                stu_mobile_no CHAR(10),
                 stu_state_code_fk SMALLINT,
                 stu_contact_habitation VARCHAR(300),
                 stu_contact_block SMALLINT,
@@ -81,16 +81,16 @@ return new class extends Migration
                 guardian_post_office VARCHAR(300),
                 guardian_police_station VARCHAR(100),
                 guardian_pin_code CHAR(6),
-                guardian_mobile_no BIGINT,
+                guardian_mobile_no CHAR(10),
                 guardian_email VARCHAR(100),
                 admission_no VARCHAR(100),
                 admission_date DATE,
-                status_pre_year SMALLINT,
+                status_pre_year CHAR(4),
                 prev_class_appeared_exam SMALLINT,
                 prev_class_exam_result SMALLINT,
                 prev_class_marks_percent DECIMAL(10,2),
                 attendention_pre_year SMALLINT,
-                pre_roll_number SMALLINT,
+                pre_roll_number INT,
                 pre_class_code_fk SMALLINT,
                 pre_section_code_fk SMALLINT,
                 pre_stream_code_fk SMALLINT,
@@ -167,10 +167,10 @@ return new class extends Migration
         // ---------------------------------------------------
         Schema::table('bs_student_master', function (Blueprint $table) {
             $table->foreign('district_code_fk')->references('id')->on('bs_district_master');
-            $table->foreign('subdivision_code_fk')->references('id')->on('bs_subdivision_master');
-            $table->foreign('block_munc_code_fk')->references('id')->on('bs_block_munc_corp_master');
+            // $table->foreign('subdivision_code_fk')->references('id')->on('bs_subdivision_master');
+            // $table->foreign('block_munc_code_fk')->references('id')->on('bs_block_munc_corp_master');
             $table->foreign('circle_code_fk')->references('id')->on('bs_circle_master');
-            $table->foreign('gs_ward_code_fk')->references('id')->on('bs_gs_ward_master');
+            // $table->foreign('gs_ward_code_fk')->references('id')->on('bs_gs_ward_master');
 
             $table->foreign('school_code_fk')->references('id')->on('bs_school_master');
             $table->foreign('gender_code_fk')->references('id')->on('bs_gender_master');
@@ -195,7 +195,7 @@ return new class extends Migration
 
             $table->foreign('guardian_contact_district')->references('id')->on('bs_district_master');
             $table->foreign('guardian_contact_block')->references('id')->on('bs_block_munc_corp_master');
-            $table->foreign('status_pre_year')->references('id')->on('bs_previous_schooling_type_master');
+            // $table->foreign('status_pre_year')->references('id')->on('bs_previous_schooling_type_master');
             $table->foreign('pre_class_code_fk')->references('id')->on('bs_class_master');
             $table->foreign('pre_section_code_fk')->references('id')->on('bs_class_section_master');
             $table->foreign('pre_stream_code_fk')->references('id')->on('bs_stream_master');
@@ -207,7 +207,7 @@ return new class extends Migration
             $table->foreign('medium_code_fk')->references('id')->on('bs_medium_master');
             $table->foreign('admission_type_code_fk')->references('id')->on('bs_admission_type_master');
             // $table->foreign('booth_code_fk')->references('id')->on('bs_booth_master');
-            $table->foreign('assembly_code_fk')->references('id')->on('bs_assembly_master');
+            // $table->foreign('assembly_code_fk')->references('id')->on('bs_assembly_master');
         });
     }
 
