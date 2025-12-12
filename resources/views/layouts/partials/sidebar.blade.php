@@ -118,7 +118,7 @@
 
         <!-- Student Entry / Update -->
         @canany(['view entry', 'create entry', 'edit entry', 'view profile', 'edit profile', 'download profile', 'update
-            basic', 'update aadhar', 'manage mapping', 'update identity', 'manage additional', 'update section', 'bulk
+            basic', 'update deactivation', 'update aadhar', 'manage mapping', 'update identity', 'manage additional', 'update section', 'bulk
             upload', 'update polling'])
             <li class="menu-item {{ request()->routeIs('student.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -147,6 +147,14 @@
                         <li class="menu-item {{ request()->routeIs('student.update_basic_details') ? 'active' : '' }}">
                             <a href="{{ route('student.update_basic_details') }}" class="menu-link">
                                 <div>Update Student Basic Details</div>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('update deactivation')
+                        <li class="menu-item {{ request()->routeIs('student.deactivelist') ? 'active' : '' }}">
+                            <a href="{{ route('student.deactivelist') }}" class="menu-link">
+                                <div>Student for Deactivation</div>
                             </a>
                         </li>
                     @endcan

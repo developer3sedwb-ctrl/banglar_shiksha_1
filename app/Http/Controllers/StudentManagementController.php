@@ -21,13 +21,16 @@ class StudentManagementController extends Controller
 
     public function studentDeactiveList(Request $request)
     {
-        $data['student_deactive_list']   = StudentMaster::whereNotNull('deleted_at')->get();
-        $data['total']          = StudentMaster::whereNotNull('deleted_at')->count('student_code');
-                    // ->where('district_code_fk', 23)
-                    // ->where('school_code_fk', 53887)
-                    // ->whereIn('academic_year', ['2023'])
+        $student_code = $request->student_code ?? null;
+        $request->method() == 'POST' ? 
+            $data['student_details']   = StudentMaster::where('student_code',$request->student_code)->get() 
+            : [];
+                
+        $data['student_deactive_list']   = StudentMaster::limit(100)->get();
+        $data['total']          = StudentMaster::count('student_code');
 
         return view('src.student_management.student_list', [
+                'student_code' => $student_code,
                 'data' => $data
             ]);
     }

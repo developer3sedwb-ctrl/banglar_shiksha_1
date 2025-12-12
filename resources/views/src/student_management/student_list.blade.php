@@ -13,7 +13,7 @@
  <!-- Student Search panel -->
  <div class="card card-full mb-4">
     <div class="card-header fw-semibold custom-header-data-table">Student Search</div>
-    <form method="POST" action="{{ route('student.deactiveSearchList') }}" novalidate>
+    <form method="POST" action="{{ route('student.deactivelist') }}" novalidate>
       @csrf
       <div class="card-body">
           <div class="row form-row-gap">
@@ -22,7 +22,7 @@
                       <label class="form-label small">Search Student DISE Code <span class="text-danger">*</span></label>
                       <div class="input-group">
                           <span class="input-group-text"><i class="bx bx-user"></i></span>
-                          <input name="student_code" type="text" class="form-control" placeholder="Student DISE Code" value=""  required>
+                          <input name="student_code" type="text" class="form-control" placeholder="Student DISE Code" value="{{$student_code}}"  required>
                       </div>
                   </div>
               </div>
@@ -41,6 +41,7 @@
 
   
  <!-- Table card -->
+ @if(!empty($data['student_details']))
 <div class="card card-full mb-4">
     <div class="custom-header-data-table">
         <span class="fw-semibold">Deactivated Student Details</span>
@@ -48,7 +49,11 @@
     
     <div class="card-body">
       <div class="table-responsive">
-      <table id="example" class="table table-striped">
+        @if(count($data['student_details']) == 0)
+        <h5>Student Not Found</h5>
+        @else
+
+      <table id="studentdata" class="table table-striped">
         <thead>
             <tr>
                 <th class="text-center">SL No.</th>
@@ -65,8 +70,8 @@
             </tr>
         </thead>
         <tbody>
-          @if(!empty($data['student_deactive_list']))
-            @foreach($data['student_deactive_list'] as $key=>$student)
+          
+            @foreach($data['student_details'] as $key=>$student)
               <tr>
                 <td class="text-center">{{$key+1}}</td>
                 <td>{{$student->student_code}}</td>
@@ -77,6 +82,9 @@
                 <td>{{$student->cur_section_code_fk}}</td>
                 <td>{{$student->cur_roll_number}}</td>
                 <td>
+                  {{$student->status == 1 ? 'Active' : 'Deactivated'}}
+                </td>
+                <td>
                   <select>
                       <option value="">- Please Select -</option>
                   </select>
@@ -86,16 +94,21 @@
                 </td>
               </tr>
             @endforeach
-          @endif            
+          
         </tbody>
       </table>
+        @endif
       </div>
     </div>
   </div>
 </div>
+@endif
 
 
  <!-- Table card -->
+
+
+
 <div class="card card-full mb-4">
     <div class="custom-header-data-table">
         <span class="fw-semibold">Deactivated Student List</span>
@@ -129,7 +142,7 @@
                 <td>{{$student->cur_class_code_fk}}</td>
                 <td>{{$student->cur_section_code_fk}}</td>
                 <td>{{$student->cur_roll_number}}</td>
-                <td>--</td>
+                <td class="text-center">{{$key+1}}</td>
               </tr>
             @endforeach
           @endif            
@@ -168,6 +181,11 @@
 
 <script>
   $(document).ready(function() {
+      $('#studentdata').DataTable({
+        paging: false,   // Disable pagination
+        searching: false, // (optional) enable/disable search
+        info: false      // Disable “showing X of Y entries”
+    });
     let table = $('#example').DataTable({
       ordering: true,
       dom: '<"row mb-3"<"col-sm-6"l><"col-sm-6 text-end"f>>' +

@@ -178,8 +178,8 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
     // Route::get('/submodules/{module}/create', [ModuleController::class, 'submoduleCreate'])->name('submodules.create');
 
 
-    Route::get('/student-list/deactive', [StudentManagementController::class, 'studentDeactiveList'])->name('student.deactivelist');
-    Route::post('/student-list/deactive', [StudentManagementController::class, 'studentDeactiveSearchList'])->name('student.deactiveSearchList');
+    Route::match(['get', 'post'], '/student-list/deactive', [StudentManagementController::class, 'studentDeactiveList'])->name('student.deactivelist');
+    //Route::post('/student-list/deactive', [StudentManagementController::class, 'studentDeactiveSearchList'])->name('student.deactiveSearchList');
 
     Route::get('/add-school', [SchoolManagementController::class, 'schoolAddFrm'])->name('school.addfrm');
     Route::get('/school-add', [SchoolManagementController::class, 'schoolAddFrm'])->name('school.addform');
