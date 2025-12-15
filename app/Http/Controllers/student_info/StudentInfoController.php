@@ -173,7 +173,7 @@ class StudentInfoController extends Controller
                     'admission_date'            => $request->admission_date_present,
 
                     'admission_type_code_fk'    => $request->admission_type,
-                    'cur_stream_code_fk'    => $request-> cur_stream_code,
+                    'cur_stream_code_fk'=> $request->cur_stream_code,
 
                     // meta
                     'school_id_fk'              => $inputMeta['school_id_fk'],
@@ -467,8 +467,10 @@ class StudentInfoController extends Controller
 
             $inputMeta = [
                 'school_id_fk' => 1,
-                'created_by'   => 1,
-                'updated_by'   => $userId,
+                'entry_ip'            => request()->ip(),
+                'update_ip'           => request()->ip(),
+                'created_by'          => auth()->id() ?? 1,
+                'updated_by'          => auth()->id() ?? 1,
                 
             ];
 
@@ -504,9 +506,10 @@ class StudentInfoController extends Controller
 
                 // System fields
                 'school_id_fk'              => $inputMeta['school_id_fk'],
-                // 'entry_ip'                  => $inputMeta['entry_ip'],
-                // 'update_ip'                 => $inputMeta['update_ip'],
-             
+                'entry_ip'                  => $inputMeta['entry_ip'],
+                'update_ip'                 => $inputMeta['update_ip'],
+                 'created_by'   => $inputMeta['created_by'],
+                 'updated_by'   => $inputMeta['updated_by'],
 
             ];
     

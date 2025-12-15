@@ -213,7 +213,7 @@
                       <span class="input-group-text"><i class="bx bx-layout"></i></span>
                         <select name="present_section" id="present_section" class="form-select">
                           <option value="">-Please Select-</option>
-                             @foreach($school_classwise_section ?? [] as $val => $label)
+                             @foreach($class_section_master ?? [] as $val => $label)
                             <option value="{{ $val }}"
                                 {{ ($enrollment_info['cur_section_code_fk'] ?? '') == $val ? 'selected' : '' }}>
                                 {{ $label }}

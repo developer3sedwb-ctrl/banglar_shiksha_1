@@ -41,7 +41,7 @@
 
     $bs_stream_master = DB::table('bs_stream_master')->pluck('name', 'id')->toArray(); 
     $bs_school_medium = DB::table('bs_school_medium')->pluck('id', 'id')->toArray();
-    $bs_school_classwise_section = DB::table('bs_school_classwise_section')->pluck('id', 'id')->toArray();  
+    $bs_school_classwise_section = DB::table('bs_school_classwise_section')->pluck('class_code_fk', 'id')->toArray();  
 
     $bs_admission_type_master = DB::table('bs_admission_type_master')->pluck('name', 'id')->toArray(); 
       //========END=========Enrollmnent==================== 
@@ -747,7 +747,7 @@ $(document).ready(function () {
               if (window.toastr) toastr.success(res.message || 'Contact info saved.');
               else alert(res.message || 'Contact info saved.');
               document.querySelector('[data-bs-target="#bank_dtls_tab"]').click();
-              document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 4} }));
+              document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 5} }));
               // maybe move to next tab or reset
             } else {
               console.warn('Unexpected body', res);
@@ -1129,7 +1129,7 @@ $(document).ready(function () {
               if (res && res.status) {
                   alert(res.message);
                   document.querySelector('[data-bs-target="#contact_info_tab"]').click();
-                    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 5 } }));
+                    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 4 } }));
                   $btn.prop('disabled', false).text('Save & Next');
               }
           })
@@ -1699,7 +1699,9 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
             case 3: $('#save_facility_and_other_dtls').focus(); break;
             case 4: $('#save_vocational_btn').focus(); break;
             case 5: $('#contact_info_save_btn').focus(); break;
-            case 6: $('#bank_details_of_student').find('button[type="submit"]').focus(); break;
+            case 6: $('#bank_details_of_student').focus(); break;
+            // case 7: $('#additional_details').find('button[type="submit"]').focus(); break;
+
             default: break;
           }
           return false;

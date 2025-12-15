@@ -51,28 +51,34 @@ class StoreUserRequestStudentContactInfo extends FormRequest
             'guardian_email'         => 'nullable|email|max:100',
 
             // ---------- System Fields ----------
-            // 'created_by'             => 'required|integer',
+            'created_by'             => 'required|integer',
             'updated_by'             => 'nullable|integer',
         ];
     }
 
-    protected function prepareForValidation()
-    {
-        // Cast incoming int-like fields
-        $intFields = [
-            'student_country', 'student_district', 'student_state',
-            'student_block', 'address_equal',
+protected function prepareForValidation()
+{
+    $this->merge([
+        'created_by' => auth()->id() ?? 1,
+        'updated_by' => auth()->id() ?? 1,
+    ]);
 
-            'guardian_country', 'guardian_state',
-            'guardian_district', 'guardian_block',
+    // Cast incoming int-like fields
+    $intFields = [
+        'student_country', 'student_district', 'student_state',
+        'student_block',
 
-            'created_by', 'updated_by'
-        ];
+        'guardian_country', 'guardian_state',
+        'guardian_district', 'guardian_block',
 
-        foreach ($intFields as $field) {
-            if ($this->filled($field)) {
-                $this->merge([$field => (int) $this->{$field}]);
-            }
+        'created_by', 'updated_by'
+    ];
+
+    foreach ($intFields as $field) {
+        if ($this->filled($field)) {
+            $this->merge([$field => (int) $this->{$field}]);
         }
     }
+}
+
 }
