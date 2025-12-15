@@ -24,8 +24,7 @@ class StoreUserRequestStudentContactInfo extends FormRequest
             'student_district'       => 'required|integer|exists:bs_district_master,id',
             'student_panchayat'      => 'required|string|max:100',
             'student_police_station' => 'required|string|max:100',
-         'student_mobile' => 'nullable|digits:10',
-
+            'student_mobile' => 'nullable|digits:10',
             'student_state'          => 'required|integer|exists:bs_state_master,id',
             'student_locality'       => 'required|string|max:300',
             'student_block'          => 'required|integer|exists:bs_block_munc_corp_master,id',
