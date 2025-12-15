@@ -84,6 +84,7 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
         Route::post('/student/store_enrollment_details',[StudentInfoController::class, 'storeEnrollmentDetails'])->name('student.store_enrollment_details');
         Route::post('/student/store_student_entry_contact_details',[StudentInfoController::class, 'storeStudentContactDetails'])->name('student.store_student_entry_contact_details');
         Route::post( '/student/bank_details_of_student', [StudentInfoController::class, 'bankDetailsOfStudent'])->name('student.bank_details_of_student');
+        Route::post( '/student/student_additional_details', [StudentInfoController::class, 'StudentAdditionalDetails'])->name('student.student_additional_details');
     });
 
 
