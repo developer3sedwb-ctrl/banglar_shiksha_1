@@ -31,7 +31,9 @@
                     <div class="d-flex align-items-center row">
                         <div class="col-sm-7">
                             <div class="card-body pb-5 institution-details">
-                                <p class="text-secondary mb-2 d-block">Head of Institution</p>
+                                <p class="text-secondary heading_dashboard mb-2 d-block">
+                                    <strong>Head of Institution</strong>
+                                </p>
                                 <h4 class="text-primary mb-2"><strong>ADHATA HIGH SCHOOL (H.S)</strong></h4>
                                 <p class="mb-0 fw-semibold text-dark">DISE CODE 19110101614</p>
                             </div>
@@ -352,6 +354,7 @@
 @endsection
 @push('scripts')
     <script src="{{ asset('Leaflet_map/leaflet.js') }}"></script>
+    
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Force Leaflet to use local marker icons

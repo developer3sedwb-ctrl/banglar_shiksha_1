@@ -467,7 +467,7 @@ class StudentInfoController extends Controller
 
             $inputMeta = [
                 'school_id_fk' => 1,
-                'created_by'   => $userId,
+                'created_by'   => 1,
                 'updated_by'   => $userId,
                 
             ];
