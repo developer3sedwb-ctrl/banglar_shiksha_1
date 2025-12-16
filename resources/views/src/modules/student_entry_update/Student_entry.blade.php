@@ -1032,7 +1032,6 @@ $(document).ready(function () {
             }
         })
         .catch(err => {
-              $btn.prop('disabled', false).text('Save & Next');
             console.error("Error saving vocational details:", err);
       });
     }
@@ -1139,7 +1138,6 @@ $(document).ready(function () {
               }
           })
           .catch(err => {
-              $btn.prop('disabled', false).text('Save & Next');
               console.error("Error saving vocational details:", err);
       });
     }

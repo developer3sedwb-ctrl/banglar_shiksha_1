@@ -210,6 +210,7 @@ class SSOController extends Controller
         Log::info('Central logout callback received', [
             'session_token' => $request->get('session_token'),
             'user_id' => $request->get('user_id'),
+            'dise_code' => $request->get('dise_code'),
             'logout_reason' => $request->get('logout_reason'),
             'ip' => $request->ip()
         ]);
@@ -230,7 +231,9 @@ class SSOController extends Controller
             ], 400);
         }
 
-        DB::table('sessions')->where('user_id', $request->get('user_id'))->delete();
+        $user = User::where('dise_code', $request->get('dise_code'))->first();
+
+        DB::table('sessions')->where('user_id', $user->id)->delete();
         Log::info('User session deleted from database', ['user_id' => $request->get('user_id')]);
 
         $sessionToken = $request->input('session_token');
@@ -277,6 +280,7 @@ class SSOController extends Controller
 
             $payload = [
                 'user_id' => $user->id,
+                'user_email' => $user->email,
                 'session_token' => $sessionToken,
                 'app_id' => $appId,
                 'timestamp' => $timestamp,
@@ -327,6 +331,7 @@ class SSOController extends Controller
         Log::info('Central logout callback received', [
             'session_token' => $request->get('session_token'),
             'user_id' => $request->get('user_id'),
+            'dise_code' => $request->get('dise_code'),
             'logout_reason' => $request->get('logout_reason'),
             'ip' => $request->ip()
         ]);
@@ -349,6 +354,7 @@ class SSOController extends Controller
 
         $sessionToken = $request->input('session_token');
         $userId = $request->input('user_id');
+        $dise_code = $request->input('dise_code');
         $timestamp = $request->input('timestamp');
         $signature = $request->input('signature');
         $logoutReason = $request->input('logout_reason', 'central_logout');
@@ -525,4 +531,207 @@ class SSOController extends Controller
             ? redirect()->route('sso.login')->with('error', $error)
             : redirect()->route('sso.login');
     }
+
+
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+
+        $user = auth()->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Current password is incorrect'
+            ], 422);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password changed successfully'
+        ]);
+    }
+
+
+     /**
+     * Update phone number to UDIN (Unique Digital Identity Number)
+     */
+    public function updatePhoneUdin(Request $request)
+    {
+        try {
+            // Get authenticated user
+            $user = Auth::user();
+
+            // Validate request data
+            $validator = Validator::make($request->all(), [
+                'aadhaar_number' => 'required|digits:12',
+                'phone_number' => 'required|digits:10|regex:/^[6-9]\d{9}$/',
+            ], [
+                'aadhaar_number.required' => 'Aadhaar number is required',
+                'aadhaar_number.digits' => 'Aadhaar number must be 12 digits',
+                'phone_number.required' => 'Phone number is required',
+                'phone_number.digits' => 'Phone number must be 10 digits',
+                'phone_number.regex' => 'Phone number must start with 6,7,8, or 9',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Verify that the Aadhaar number belongs to the logged-in user
+            if ($user->aadhaar_number != $request->aadhaar_number) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aadhaar number does not match your registered Aadhaar'
+                ], 403);
+            }
+
+            // Verify phone number is different from current one
+            if ($user->phone_number == $request->phone_number) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Phone number is already registered'
+                ], 422);
+            }
+
+            // Here you would integrate with the actual UDIN API
+            // This is a sample implementation - replace with actual UDIN API call
+
+            $udinApiResponse = $this->callUdinApi($request->aadhaar_number, $request->phone_number);
+
+            if (!$udinApiResponse['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'UDIN API Error: ' . $udinApiResponse['message']
+                ], 400);
+            }
+
+            // Update user's phone number in database
+            $user->phone_number = $request->phone_number;
+            $user->phone_verified_at = now(); // Mark as verified
+            $user->udin_updated_at = now(); // Track when UDIN was updated
+            $user->save();
+
+            // Log the update
+            Log::info('UDIN phone update successful', [
+                'user_id' => $user->id,
+                'aadhaar' => substr($request->aadhaar_number, 0, 4) . 'XXXX' . substr($request->aadhaar_number, -4),
+                'phone' => substr($request->phone_number, 0, 2) . 'XXXXXX' . substr($request->phone_number, -2),
+                'udin_reference' => $udinApiResponse['reference_id'] ?? null
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Phone number successfully updated in UDIN',
+                'data' => [
+                    'phone_number' => substr($request->phone_number, 0, 2) . 'XXXXXX' . substr($request->phone_number, -2),
+                    'reference_id' => $udinApiResponse['reference_id'] ?? null,
+                    'updated_at' => now()->format('d-m-Y H:i:s')
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('UDIN phone update failed', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating phone number. Please try again later.'
+            ], 500);
+        }
+    }
+
+
+     /**
+     * Mock/sample method to call UDIN API
+     * Replace this with actual UDIN API integration
+     */
+    private function callUdinApi($aadhaarNumber, $phoneNumber)
+    {
+        try {
+            // ============================================
+            // REPLACE THIS WITH ACTUAL UDIN API INTEGRATION
+            // ============================================
+
+            // Example of actual API call (commented out)
+            /*
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . config('services.udin.api_key'),
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+            ])->post(config('services.udin.endpoint') . '/update-phone', [
+                'aadhaar_number' => $aadhaarNumber,
+                'mobile_number' => $phoneNumber,
+                'request_id' => 'WBED_' . time() . '_' . Auth::id(),
+                'timestamp' => now()->toIso8601String()
+            ]);
+
+            if ($response->successful()) {
+                return [
+                    'success' => true,
+                    'reference_id' => $response->json()['reference_id'],
+                    'message' => 'Phone number updated successfully in UDIN'
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'message' => $response->json()['message'] ?? 'UDIN API request failed'
+                ];
+            }
+            */
+
+            // ============================================
+            // SAMPLE SUCCESS RESPONSE (FOR TESTING)
+            // ============================================
+            // Uncomment the code above and remove this section for production
+
+            // Simulate API delay
+            sleep(2);
+
+            // Generate mock reference ID
+            $referenceId = 'UDIN_WB_' . date('YmdHis') . '_' . strtoupper(substr(md5($aadhaarNumber), 0, 8));
+
+            return [
+                'success' => true,
+                'reference_id' => $referenceId,
+                'message' => 'Phone number updated successfully in UDIN system'
+            ];
+
+            // ============================================
+            // SAMPLE ERROR RESPONSE (FOR TESTING ERRORS)
+            // ============================================
+            /*
+            return [
+                'success' => false,
+                'message' => 'Aadhaar number not found in UDIN database'
+            ];
+            */
+
+        } catch (\Exception $e) {
+            Log::error('UDIN API call failed', [
+                'error' => $e->getMessage(),
+                'aadhaar' => substr($aadhaarNumber, 0, 4) . 'XXXX' . substr($aadhaarNumber, -4)
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'UDIN service temporarily unavailable. Please try again later.'
+            ];
+        }
+    }
+
 }

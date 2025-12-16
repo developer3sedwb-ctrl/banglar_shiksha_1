@@ -3,6 +3,9 @@
 @section('title', 'School Details')
 
 @section('content')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
 <div class="container-fluid full-width-content">
 
   <!-- PAGE HEADING -->
@@ -81,6 +84,22 @@
                             <input type="text" class="form-control" value="{{ $data['school']->district->name}}" readonly>
                         </div> 
                     </div>
+
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label small">Sub-Division <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bx bx-book"></i></span>
+                            <select name="sub_division" class="form-select" required>
+                                <option value="">-Please Select-</option>
+                                @forEach($data['subDivision'] as $subDivision)
+                                    <option value="{{ $subDivision['id'] }}" @selected($data['school']->subdiv_code_fk == $subDivision['id'])>
+                                        {{ $subDivision['name'] }}
+                                    </option>
+                                @endforEach
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="col-md-4 mb-2">
                         <label class="form-label small">Block/Municipality/Corporation <span class="text-danger">*</span></label>
                         <div class="input-group">
@@ -93,7 +112,7 @@
                         <label class="form-label small">Circle <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bx bx-book"></i></span>
-                            <select name="circle_id" class="form-select" required>
+                            <select name="circle_id" class="select2 form-select2" required>
                                 <option value="">-Please Select-</option>
                                 @foreach($data['circles'] as $circle)
                                     <option value="{{ $circle->id }}"  @selected($data['school']->circle_code_fk == $circle->id)>
@@ -108,7 +127,7 @@
                         <label class="form-label small">Cluster <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bx bx-book"></i></span>
-                            <select name="cluster_id" class="form-select" required>
+                            <select name="cluster_id" class="select2 form-select2" required>
                                 <option value="">-Please Select-</option>
                                 @foreach($data['clusters'] as $cluster)
                                     <option value="{{ $cluster->id }}" @selected($data['school']->cluster_code_fk == $cluster->id)>
@@ -145,7 +164,7 @@
                         <label class="form-label small">Management <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bx bx-book"></i></span>
-                            <select name="school_management" class="form-select" required onchange="getSchoolCategoryTypes()">
+                            <select name="school_management" class="select2 form-select2" required onchange="getSchoolCategoryTypes()">
                             <option value="">-Please Select-</option>
                             @foreach($data['school_managements'] as $management)
                                 <option value="{{ $management->id }}" @selected($data['school']->school_management_code_fk == $management->id)>
@@ -160,7 +179,7 @@
                         <label class="form-label small">School Catagory Type <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bx bx-book"></i></span>
-                            <select name="sch_cat_type_code_fk" class="form-select" required>
+                            <select name="sch_cat_type_code_fk" class="select2 form-select2" required>
                                 <option value="">-Please Select-</option>
                                 @forEach($data['school_management_category_types'] as $categoryType)
                                     <option value="{{ $categoryType->id }}" @selected($data['school']->sch_cat_type_code_fk == $categoryType->id)>
@@ -185,7 +204,7 @@
                         </div>
                     </div>
                     <div class="col-md-4 mb-2">
-                        <label class="form-label small">School Category 5556 <span class="text-danger">*</span></label>
+                        <label class="form-label small">School Category <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bx bx-book"></i></span>
                             <select name="school_category_type" class="form-select" required>
@@ -245,20 +264,6 @@
                     </div>
 
                     <div class="col-md-4 mb-2">
-                        <label class="form-label small">Sub-Division <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bx bx-book"></i></span>
-                            <select name="sub_division" class="form-select" required>
-                                <option value="">-Please Select-</option>
-                                @forEach($data['subDivision'] as $subDivision)
-                                    <option value="{{ $subDivision['id'] }}" @selected($data['school']->subdiv_code_fk == $subDivision['id'])>
-                                        {{ $subDivision['name'] }}
-                                    </option>
-                                @endforEach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-2">
                         <label class="form-label small">Student Lock/Unlock <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bx bx-book"></i></span>
@@ -292,7 +297,7 @@
                         <label class="form-label small">Medium <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bx bx-book"></i></span>
-                            <select name="school_mediums[]" class="form-select" required multiple>
+                            <select name="school_mediums[]" class="select2 form-select2" required multiple>
                             <option value="">-Please Select-</option>
                             @foreach($data['mediums'] as $medium)
                                 <option value="{{ $medium->id }}" @selected(in_array($medium->id, $data['school']->mediums->pluck('id')->toArray()))>
@@ -469,12 +474,20 @@
         clusterSelect.innerHTML = '';
         subdivisionSelect.innerHTML = '';
 
-        const option = document.createElement('option');
-        option.value = "";
-        option.textContent = "-Please Select-";
-        blockSelect.appendChild(option);
-        circleSelect.appendChild(option);
-        clusterSelect.appendChild(option);
+        const optionBlock = document.createElement('option');
+        optionBlock.value = "";
+        optionBlock.textContent = "-Please Select-";
+        const optionCircle = document.createElement('option');
+        optionCircle.value = "";
+        optionCircle.textContent = "-Please Select-";
+        const optionCluster = document.createElement('option');
+        optionCluster.value = "";
+        optionCluster.textContent = "-Please Select-";
+
+        blockSelect.appendChild(optionBlock);
+        circleSelect.appendChild(optionCircle);
+        clusterSelect.appendChild(optionCluster);
+
 
         if (selectedDistrictId) {
             fetch(`/api/blocks/${selectedDistrictId}`)
@@ -538,5 +551,49 @@
 
         }
     }
+
+    // Custom validation for form submission
+    function validateForm() {
+        let isValid = true;
+        const requiredFields = document.querySelectorAll('[required]');
+        
+        requiredFields.forEach(field => {
+            const value = field.value.trim();
+            
+            if (field.type === 'select-multiple') {
+                // For multiple selects, check if at least one option is selected
+                if (field.selectedOptions.length === 0) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            } else if (!value) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            alert('Please fill in all required fields');
+        }
+        return isValid;
+    }
+
+    $(document).ready(function() {
+        $('.select2').select2({
+            width: '100%' // Tells JS to fill the container we defined in CSS
+        });
+
+        // Validate form on submit
+        $('form').on('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    });
 </script>
 @endpush
