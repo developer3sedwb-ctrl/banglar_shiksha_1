@@ -78,12 +78,12 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
         ->name('student.store');
 
 
-   Route::prefix('hoi')->group(function ()
-   {
-    // routes/web.php
+    Route::prefix('hoi')->group(function () {
+        // routes/web.php
         Route::get('/student-entry', [StudentInfoController::class, 'getStudentEntry'])->name('student.entry');
+        Route::get('/student-edit', [StudentInfoController::class, 'getStudentEditDetailsByStudentCode'])->name('student.edit');
         Route::post('/save-student-facility-and-other-details', [StudentInfoController::class, 'storeStudentFacilityAndOtherDetails'])->name('hoi.student.facility');
-        Route::post('/save-student-vocational-details',[StudentInfoController::class, 'saveVocationalDetails'])->name('save.vocational.details');
+        Route::post('/save-student-vocational-details', [StudentInfoController::class, 'saveVocationalDetails'])->name('save.vocational.details');
         Route::delete('/student-entry/reset', [StudentInfoController::class, 'resetEntry'])->name('student.entry.reset');
         Route::get('/get-branches', [StudentInfoController::class, 'getBranches']);
         Route::get('/get-ifsc', [StudentInfoController::class, 'getIfsc']);
@@ -91,13 +91,17 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
         Route::post('/student/store_enrollment_details',[StudentInfoController::class, 'storeEnrollmentDetails'])->name('student.store_enrollment_details');
         Route::post('/student/store_student_entry_contact_details',[StudentInfoController::class, 'storeStudentContactDetails'])->name('student.store_student_entry_contact_details');
         Route::post( '/student/bank_details_of_student', [StudentInfoController::class, 'bankDetailsOfStudent'])->name('student.bank_details_of_student');
+        Route::post( '/student/student_additional_details', [StudentInfoController::class, 'StudentAdditionalDetails'])->name('student.student_additional_details');
+
+
+        Route::get('/get_studet_details_by_stu_code', [StudentInfoController::class, 'StudentDetailsByStudentCode']);
     });
 
 
 
-
-    Route::view('/student-edit', 'src.modules.student_entry_update.Student_edit')
-        ->name('student.edit');
+     
+    // Route::view('/student-edit', 'src.modules.student_entry_update.Student_edit')
+    //     ->name('student.edit');
 
     Route::view('/student-basic-details-update', 'src.modules.student_entry_update.Student_update_basic_details')
         ->name('student.update_basic_details');
@@ -113,6 +117,29 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
     // routes/web.php
     Route::view('/student-list', 'src.modules.student_information.student_list')
         ->name('student_list.list');
+
+    // Route::get('/student-list', [StudentInfoController::class, 'studentList'])->name('student_list.list');
+
+
+    Route::group(['prefix' => 'students', 'as' => 'students.'], function () {
+        // Main student list with filters
+        Route::get('/list', [StudentInfoController::class, 'studentList'])->name('list');
+
+        // AJAX routes for dynamic dropdowns
+        Route::get('/blocks-by-district', [StudentInfoController::class, 'getBlocksByDistrict'])->name('blocks.by.district');
+        Route::get('/schools-by-filters', [StudentInfoController::class, 'getSchoolsByFilters'])->name('schools.by.filters');
+
+        // Individual student operations
+        Route::get('/{id}/view', [StudentInfoController::class, 'view'])->name('view');
+        Route::get('/{id}/edit', [StudentInfoController::class, 'edit'])->name('edit');
+        Route::put('/{id}/update', [StudentInfoController::class, 'update'])->name('update');
+        Route::delete('/{id}/delete', [StudentInfoController::class, 'destroy'])->name('delete');
+        Route::post('/bulk-actions', [StudentInfoController::class, 'bulkActions'])->name('bulk.actions');
+    });
+
+    // AJAX routes for dynamic loading
+    Route::get('/get-blocks', [StudentInfoController::class, 'getBlocksByDistrict'])->name('get.blocks');
+    Route::get('/get-schools', [StudentInfoController::class, 'getSchoolsByFilters'])->name('get.schools');
 
     Route::view('/enrollment-report', 'src.modules.student_information.enrollment_report')
         ->name('enrollment_report.report');

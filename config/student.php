@@ -53,6 +53,15 @@ return [
         11 => 'OTHERS',
     ],
 
+
+    
+    'additional_current_class_academic_details' => [
+        3 => 'Detained/Repeater/Not Passed',
+        1  => 'Promoted/Passed',
+        2  => 'Promoted/Passed with grace',
+        4  => ' Promoted/Passed without Examination',
+    ],
+
     'yes_no' => [
         1 => 'Yes',
         2 => 'No',

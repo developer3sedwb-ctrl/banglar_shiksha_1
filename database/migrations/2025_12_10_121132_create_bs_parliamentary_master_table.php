@@ -11,9 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bs_exam_name_master', function (Blueprint $table) {
+        Schema::create('bs_parliamentary_master', function (Blueprint $table) {
             $table->id();
+            $table->string('name', 100);
+            $table->smallInteger('status')->default(1)->comment('1 = active');
+            // Audit fields
             $table->timestamps();
+            
+            $table->softDeletes();
+            // Indexes
+            $table->index(['status', 'name']); 
         });
     }
 
@@ -22,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bs_exam_name_master');
+        Schema::dropIfExists('bs_parliamentary_master');
     }
 };

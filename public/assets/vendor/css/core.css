@@ -16750,12 +16750,18 @@ html:not(.layout-footer-fixed) .content-wrapper {
         width: 100%;
         border-radius: 10px;
     }
-/* =========Always Down footer and Scroable================== */
+  /* =========Always Stick footer and Scroable================== */
   .app-footer {
       position: fixed !important;
       bottom: 0;
       left: 0;
       width: 100%;
       z-index: 1030;
+  }
+
+  /* =====School Heading=================== */
+
+  .heading_dashboard{
+        font-size: 25px;
   }
 

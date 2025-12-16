@@ -11,122 +11,190 @@
     $student_contact_info = $data['student_contact'] ?? [];
 
     $student_bank = $data['student_bank_details'] ?? [];
+
+    $additional_info = $data['student_additional_details'] ?? []; 
 @endphp
 
-  <!-- @dump($student_bank) -->
+  <!-- @dump($additional_info) -->
   @php
     $dropdowns = config('student');
 
-        $gender_master = DB::table('bs_gender_master')->pluck('name', 'id')->toArray();
-        $mother_tongue_master = DB::table('bs_mother_tongue_master')->pluck('name', 'id')->toArray();
-        $social_category_master = DB::table('bs_social_category_master')->pluck('name', 'id')->toArray();
+    $gender_master = DB::table('bs_gender_master')->pluck('name', 'id')->toArray();
+    $mother_tongue_master = DB::table('bs_mother_tongue_master')->pluck('name', 'id')->toArray();
+    $social_category_master = DB::table('bs_social_category_master')->pluck('name', 'id')->toArray();
+            
+    $religion_master = DB::table('bs_religion_master')->pluck('name', 'id')->toArray();
+    $nationality_master = DB::table('bs_nationality_master')->pluck('name', 'id')->toArray();
+    $blood_group_master = DB::table('bs_blood_group_master')->pluck('name', 'id')->toArray();  
 
-        $religion_master = DB::table('bs_religion_master')->pluck('name', 'id')->toArray();
-        $nationality_master = DB::table('bs_nationality_master')->pluck('name', 'id')->toArray();
-        $blood_group_master = DB::table('bs_blood_group_master')->pluck('name', 'id')->toArray();
+    $guardian_relationship_master = DB::table('bs_guardian_relationship_master')->pluck('name', 'id')->toArray();
+    $income_master = DB::table('bs_income_master')->pluck('name', 'id')->toArray();
+    $guardian_qualification_master = DB::table('bs_guardian_qualification_master')->pluck('name', 'id')->toArray();  
+    $bs_stu_disability_type_master = DB::table('bs_stu_disability_type_master')->pluck('name', 'id')->toArray();  
+    $bs_child_mainstreamed_master = DB::table('bs_child_mainstreamed_master')->pluck('name', 'id')->toArray();  
 
-        $guardian_relationship_master = DB::table('bs_guardian_relationship_master')->pluck('name', 'id')->toArray();
-        $income_master = DB::table('bs_income_master')->pluck('name', 'id')->toArray();
-        $guardian_qualification_master = DB::table('bs_guardian_qualification_master')->pluck('name', 'id')->toArray();
-        $bs_stu_disability_type_master = DB::table('bs_stu_disability_type_master')->pluck('name', 'id')->toArray();
-        $bs_child_mainstreamed_master = DB::table('bs_child_mainstreamed_master')->pluck('name', 'id')->toArray();
+   //============Start =====Enrollmnent==================== 
 
-        //============Start =====Enrollmnent====================
+    $bs_previous_schooling_type_master = DB::table('bs_previous_schooling_type_master')->pluck('name', 'id')->toArray();  
+    $bs_stu_appeared_master = DB::table('bs_stu_appeared_master')->pluck('name', 'id')->toArray(); 
+    $bs_class_master = DB::table('bs_class_master')->pluck('name', 'id')->toArray(); 
 
-        $bs_previous_schooling_type_master = DB::table('bs_previous_schooling_type_master')
-            ->pluck('name', 'id')
-            ->toArray();
-        $bs_stu_appeared_master = DB::table('bs_stu_appeared_master')->pluck('name', 'id')->toArray();
-        $bs_class_master = DB::table('bs_class_master')->pluck('name', 'id')->toArray();
+    $bs_class_section_master = DB::table('bs_class_section_master')->pluck('name', 'id')->toArray(); 
 
-        $bs_class_section_master = DB::table('bs_class_section_master')->pluck('name', 'id')->toArray();
+    $bs_stream_master = DB::table('bs_stream_master')->pluck('name', 'id')->toArray(); 
+ 
+    //============================================
+    $bs_school_medium = DB::table('bs_school_master as sm')
+    ->join('bs_medium_master as mm', 'mm.id', '=', 'sm.id')
+    ->where('mm.id', 1)
+    ->pluck('mm.name', 'mm.id')
+    ->toArray();
 
-        $bs_stream_master = DB::table('bs_stream_master')->pluck('name', 'id')->toArray();
-        $bs_school_medium = DB::table('bs_school_medium')->pluck('id', 'id')->toArray();
-        $bs_school_classwise_section = DB::table('bs_school_classwise_section')->pluck('id', 'id')->toArray();
+    $bs_school_classwise_section = DB::table('bs_school_classwise_section')->pluck('class_code_fk', 'id')->toArray();  
 
-        $bs_admission_type_master = DB::table('bs_admission_type_master')->pluck('name', 'id')->toArray();
-        //========END=========Enrollmnent====================
+    $bs_admission_type_master = DB::table('bs_admission_type_master')->pluck('name', 'id')->toArray(); 
+      //========END=========Enrollmnent==================== 
 
-        //========Start=========Contact ====================
+        //========Start=========Contact ==================== 
 
-        $bs_country_master = DB::table('bs_country_master')->pluck('name', 'id')->toArray();
-        $state_master = DB::table('bs_state_master')->pluck('name', 'id')->toArray();
-        $district_master = DB::table('bs_district_master')->pluck('name', 'id')->toArray();
-        $block_munc_corp_master = DB::table('bs_block_munc_corp_master')->pluck('name', 'id')->toArray();
 
-        //===========Bank=================
-        $bank_branch_master = DB::table('bs_bank_branch_master')->pluck('name', 'id')->toArray();
-        $bank_code_name_master = DB::table('bs_bank_code_name_master')->pluck('name', 'id')->toArray();
+    $bs_country_master = DB::table('bs_country_master')->pluck('name', 'id')->toArray(); 
+    $state_master = DB::table('bs_state_master')->pluck('name', 'id')->toArray(); 
+    $district_master = DB::table('bs_district_master')->pluck('name', 'id')->toArray(); 
+    $block_munc_corp_master = DB::table('bs_block_munc_corp_master')->pluck('name', 'id')->toArray(); 
 
-        //================================================
+    //===========Bank=================
+    $bank_branch_master = DB::table('bs_bank_branch_master')->pluck('name', 'id')->toArray(); 
+    $bank_code_name_master = DB::table('bs_bank_code_name_master')->pluck('name', 'id')->toArray(); 
 
-        $genders = $gender_master;
-        $mother_tongue = $mother_tongue_master;
+    
+//================================================
+//===============Addtional=================
+  
+    $bs_student_residence_to_school_distance = DB::table('bs_student_residence_to_school_distance')->pluck('name', 'id')->toArray(); 
+  //==============================================
+    $genders = $gender_master;
+    $mother_tongue = $mother_tongue_master;
 
-        $social_category = $social_category_master;
-        $religion = $religion_master;
+    $social_category = $social_category_master;
+    $religion = $religion_master;
 
-        $nationality = $nationality_master;
-        $blood_group = $blood_group_master;
+    $nationality = $nationality_master;
+    $blood_group = $blood_group_master;
 
-        $guardian_relationship = $guardian_relationship_master;
-        $income = $income_master;
+    $guardian_relationship = $guardian_relationship_master;
+    $income = $income_master;
 
-        $guardian_qualification = $guardian_qualification_master;
-        $stu_disability_type_master = $bs_stu_disability_type_master;
+    $guardian_qualification = $guardian_qualification_master;
+    $stu_disability_type_master = $bs_stu_disability_type_master;
 
-        $child_mainstreamed_master = $bs_child_mainstreamed_master;
-        $class_master = $bs_class_master;
+    $child_mainstreamed_master = $bs_child_mainstreamed_master;
+    $class_master = $bs_class_master;
 
-        $school_classwise_section = $bs_school_classwise_section;
+    $school_classwise_section = $bs_school_classwise_section;
 
-        //======Start===========Enrollmnent====================
+ //======Start===========Enrollmnent==================== 
 
-        $previous_schooling_type_master = $bs_previous_schooling_type_master;
-        $stu_appeared_master = $bs_stu_appeared_master;
-        $class_section_master = $bs_class_section_master;
-        $stream_master = $bs_stream_master;
-        $school_medium = $bs_school_medium;
 
-        $admission_type_master = $bs_admission_type_master;
-    @endphp
+    $previous_schooling_type_master = $bs_previous_schooling_type_master;
+    $stu_appeared_master = $bs_stu_appeared_master;
+    $class_section_master = $bs_class_section_master;
+    $stream_master = $bs_stream_master;
+    $school_medium = $bs_school_medium;
 
-    <div class="container-fluid full-width-content">
-        <!-- PAGE HEADING -->
-        <div class="page-header mb-3 d-flex justify-content-between align-items-center">
-            <div class="page-header mb-3">
-                <h4 class="fw-bold"><i class="bx bx-user"></i> Add Student</h4>
-            </div>
-            <div class="d-flex gap-2">
-                {{-- Bulk Upload Button --}}
-                <a href="{{ route('student.bulk.upload') }}" class="btn btn-success">
+    $admission_type_master = $bs_admission_type_master;
+@endphp
 
-                    {{-- MOBILE: show "Bulk" --}}
-                    <span class="d-inline d-md-none">Bulk Upload</span>
+<div class="container-fluid full-width-content">
+      <!-- PAGE HEADING -->
+  <div class="page-header mb-3 d-flex justify-content-between align-items-center">
+        <div class="page-header mb-3">
+          <h4 class="fw-bold"><i class="bx bx-user"></i> Add Student</h4>
+        </div>
+          <div class="d-flex gap-2">
+          <a href="" 
+            class="d-flex align-items-center gap-2 p-2 rounded border text-decoration-none"
+            data-bs-toggle="tooltip" 
+            title="Download Student DCF">
+              <span class="d-inline d-md-none"></span>
+              <img src="{{ asset('images/pdf.png') }}" alt="PDF" style="height: 24px;">
+              <span class="fw-semibold d-none d-md-inline"> Guideline</span>
+          </a>
+          <!-- ============================================= -->
+            {{-- Bulk Upload Button --}}
+            <a href="{{ route('student.bulk.upload') }}" class="btn btn-success">
 
-                    {{-- DESKTOP: show icon + full text --}}
-                    <span class="d-none d-md-inline">
-                        <i class="bx bx-upload"></i>
-                        Student Bulk Upload
-                    </span>
-                </a>
+                {{-- MOBILE: show "Bulk" --}}
+                <span class="d-inline d-md-none">Bulk Upload</span>
 
-                {{-- Back Button --}}
-                <a href="{{ route('dashboard') }}" class="btn btn-primary">
+                {{-- DESKTOP: show icon + full text --}}
+                <span class="d-none d-md-inline">
+                    <i class="bx bx-upload"></i>
+                    Student Bulk Upload
+                </span>
+            </a>
 
-                    {{-- MOBILE: icon only --}}
-                    <span class="d-inline d-md-none">
-                        <i class="bx bx-arrow-back"></i>
-                    </span>
-                    {{-- DESKTOP: icon + full text --}}
-                    <span class="d-none d-md-inline">
-                        <i class="bx bx-arrow-back"></i>
-                        Back
-                    </span>
-                </a>
+            {{-- Back Button --}}
+            <a href="{{ route('dashboard') }}" class="btn btn-primary">
+
+                {{-- MOBILE: icon only --}}
+                <span class="d-inline d-md-none">
+                    <i class="bx bx-arrow-back"></i>
+                </span>
+                {{-- DESKTOP: icon + full text --}}
+                <span class="d-none d-md-inline">
+                    <i class="bx bx-arrow-back"></i>
+                    Back
+                </span>
+            </a>
+          </div>
+        </div>
+  
+    <div class="alert-container">
+          @if(isset($data['current_step']) && $data['current_step'] >= 1)
+        <div class="entry-alert-box">
+            <span class="entry-alert-text">
+                <i class="bx bx-info-circle"></i>
+                <strong> Resume Entry ?</strong>
+                <span class="d-none d-md-inline">
+                    You have a student entry that is still incomplete at Step {{ $data['current_step'] }}.
+                </span>
+            </span>
+
+            <div class="entry-alert-actions">
+            <button id="resumeEntryBtn" class="btn btn-success">
+
+              {{-- MOBILE TEXT ONLY --}}
+              <span class="d-inline d-md-none">
+                  <i class="bx bx-play-circle"></i> Resume
+              </span>
+
+              {{-- DESKTOP FULL TEXT --}}
+              <span class="d-none d-md-inline">
+                  <i class="bx bx-play-circle"></i>
+                  Resume from Step {{ $data['current_step'] }}
+              </span>
+            </button>
+
+
+              <button id="startNewEntryBtn" class="btn btn-danger">
+
+                {{-- ICON (mobile only) --}}
+                <span class="d-inline d-md-none">
+                    <i class="bx bx-trash"></i> 
+                </span>
+
+                {{-- FULL TEXT (desktop only) --}}
+                <span class="d-none d-md-inline">
+                    Start New Entry
+                </span>
+
+              </button>
+
             </div>
         </div>
+      @endif
+    </div>
 
     <!-- CARD WITH TABS -->
      <div class="card card-full">
@@ -222,7 +290,7 @@
   <div class="modal fade" id="delete_previous_student_entry" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content shadow-lg">
-
+              
               <button type="button" class="btn-close position-absolute end-0 m-2"
                   data-bs-dismiss="modal" aria-label="Close"></button>
 
@@ -287,248 +355,65 @@
   $(document).ready(function() {
 
 
+  // =========Download Student DCF Tooltip===========================
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+  })
+
 
 
   // =============Store Bank Details======================
 
-                    <button type="button" class="btn-close position-absolute end-0 m-2" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+  $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
 
-                    <div class="text-center p-3">
-                        <img src="{{ asset('images/delete_student.png') }}" width="80" height="80"
-                            alt="Icon">
-                        <h5 class="fw-bold mt-2">
-                            Are you sure you want to proceed?
-                        </h5>
-                        <h3 class="text-muted small"> The previous entry will be permanently deleted.</h3>
-                    </div>
+    $('#bank_details_of_student').on('submit', function (e) {
+        e.preventDefault(); // stop normal form submit
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" id="confirmDeleteEntry">
-                            <i class="bx bx-trash me-1"></i> Delete Previous Entry
-                        </button>
+        let form = $(this);
 
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                            <i class="bx bx-x-circle me-1"></i> Cancel
-                        </button>
-                    </div>
+        $.ajax({
+            url: form.attr('action'),      // "{{ route('student.bank_details_of_student') }}"
+            type: 'POST',
+            data: form.serialize(),
+            dataType: 'json',              // expect JSON from controller
+            beforeSend: function () {
+                // Optional: disable button / show loader
+                form.find('button[type="submit"]').prop('disabled', true).text('Saving...');
+            },
+            success: function (response) {
+                // Example: show success message
+                // You can customize this as per your UI
+                alert(response.message || 'Bank details saved successfully!');
+                document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 7 } }));
+                // Optional: move to next tab, reset form, etc.
+                // $('#next_tab_btn').click();
+            },
+            error: function (xhr) {
+                // Basic error handling
+                if (xhr.status === 422) {
+                    // Laravel validation errors
+                    let errors = xhr.responseJSON.errors;
+                    let messages = [];
 
-                </div>
-            </div>
-        </div>
-
-    @endsection
-
-    @section('styles')
-        <!-- add custom styles here if needed -->
-    @endsection
-
-    @section('scripts')
-        @push('scripts')
-            <script src="{{ asset('assets/js/common.js') }}"></script>
-            <script>
-                $(document).ready(function() {
-                    function toggleStreamField(value) {
-                        value = (value || '').toString().toLowerCase();
-                        // alert(value);
-
-                        // Treat both numeric and roman codes as XI / XII
-                        const isHigherSecondary =
-                            value === '11' || value === '12' || value === 'xi' || value === 'xii';
-
-                        if (isHigherSecondary) {
-                            $('#cur_stream_wrapper').show();
-                        } else {
-                            $('#cur_stream_wrapper').hide();
-                            $('#cur_stream_code').val(''); // clear if not XI/XII
-                        }
-                    }
-
-                    // Run when user changes Present Class
-                    $('#present_class').on('change', function() {
-                        toggleStreamField($(this).val());
+                    $.each(errors, function (key, val) {
+                        messages.push(val[0]);
                     });
 
-                    // 👇 IMPORTANT: also run once for the value loaded from DB
-                    toggleStreamField($('#present_class').val());
-
-
-
-                    // ===================================
-
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        }
-                    });
-
-                    $('#bank_details_of_student').on('submit', function(e) {
-                        e.preventDefault(); // stop normal form submit
-
-                        let form = $(this);
-
-                        $.ajax({
-                            url: form.attr('action'), // "{{ route('student.bank_details_of_student') }}"
-                            type: 'POST',
-                            data: form.serialize(),
-                            dataType: 'json', // expect JSON from controller
-                            beforeSend: function() {
-                                // Optional: disable button / show loader
-                                form.find('button[type="submit"]').prop('disabled', true).text(
-                                    'Saving...');
-                            },
-                            success: function(response) {
-                                // Example: show success message
-                                // You can customize this as per your UI
-                                alert(response.message || 'Bank details saved successfully!');
-
-                                // Optional: move to next tab, reset form, etc.
-                                // $('#next_tab_btn').click();
-                            },
-                            error: function(xhr) {
-                                // Basic error handling
-                                if (xhr.status === 422) {
-                                    // Laravel validation errors
-                                    let errors = xhr.responseJSON.errors;
-                                    let messages = [];
-
-                                    $.each(errors, function(key, val) {
-                                        messages.push(val[0]);
-                                    });
-
-                                    alert(messages.join('\n'));
-                                } else {
-                                    alert('Something went wrong. Please try again.');
-                                }
-                            },
-                            complete: function() {
-                                form.find('button[type="submit"]').prop('disabled', false).text(
-                                    'Save Details');
-                            }
-                        });
-                    });
-
-                    // ==========================================
-                    $(function() {
-                        // when bank changes -> request branches
-                        $('#bank_name').on('change', function() {
-                            var bankId = $(this).val();
-                            $('#ifsc').val('');
-                            $('#branch_name').html('<option value="">Loading...</option>');
-
-                            if (!bankId) {
-                                $('#branch_name').html('<option value="">-Please Select-</option>');
-                                return;
-                            }
-
-                            $.ajax({
-                                url: '/get-branches',
-                                type: 'GET',
-                                data: {
-                                    bank_id: bankId
-                                },
-                                success: function(res) {
-                                    // res may be { branches: [...] } or [...] — normalize to an array
-                                    var branches = [];
-                                    if (Array.isArray(res)) {
-                                        branches = res;
-                                    } else if (res && Array.isArray(res.branches)) {
-                                        branches = res.branches;
-                                    } else if (res && res.data && Array.isArray(res.data)) {
-                                        // in case of resource-wrapped response
-                                        branches = res.data;
-                                    }
-
-                                    $('#branch_name').empty().append(
-                                        '<option value="">-Please Select-</option>');
-
-                                    if (!branches.length) {
-                                        $('#branch_name').append(
-                                            '<option value="">No branches found</option>');
-                                        return;
-                                    }
-
-                                    // branches expected format: [{id, name, branch_ifsc}, ...] or [{id, name}]
-                                    branches.forEach(function(b) {
-                                        var id = (b.id !== undefined) ? b.id : '';
-                                        var name = (b.name !== undefined) ? b.name : (b
-                                            .branch_name || '');
-                                        var ifsc = (b.branch_ifsc !== undefined) ?
-                                            String(b.branch_ifsc).trim() : '';
-                                        // Make sure id is used as option value
-                                        $('#branch_name').append(
-                                            '<option value="' + id +
-                                            '" data-ifsc="' + ifsc + '">' + name +
-                                            '</option>'
-                                        );
-                                    });
-
-                                    // optional: if only one real branch, auto-select it
-                                    var realOpts = $('#branch_name').find('option').filter(
-                                        function() {
-                                            return $(this).val() !== '';
-                                        });
-                                    if (realOpts.length === 1) {
-                                        $('#branch_name').val(realOpts.val()).trigger('change');
-                                    }
-                                },
-                                error: function(xhr, status, err) {
-                                    console.error('Failed to load branches', status, err);
-                                    $('#branch_name').html(
-                                        '<option value="">Error loading</option>');
-                                }
-                            });
-                        });
-
-                        // when branch selected -> fill IFSC (fast path from data-ifsc)
-                        $('#branch_name').on('change', function() {
-                            var raw = $(this).val();
-
-                            // fast path: read data-ifsc from selected option (no AJAX)
-                            var ifscFromData = $(this).find('option:selected').data('ifsc');
-                            if (ifscFromData) {
-                                $('#ifsc').val(String(ifscFromData).trim());
-                                return;
-                            }
-
-                            // validate branch id before sending to server
-                            if (!raw || raw === '' || isNaN(parseInt(raw, 10))) {
-                                console.warn('Invalid branch id selected:', raw);
-                                $('#ifsc').val('');
-                                return;
-                            }
-
-                            var branchId = parseInt(raw, 10);
-                            $('#ifsc').val('Loading...');
-
-                            $.ajax({
-                                url: '/get-ifsc',
-                                type: 'GET',
-                                data: {
-                                    branch_id: branchId
-                                },
-                                success: function(res) {
-                                    // res expected { ifsc: '...' }
-                                    var ifsc = (res && (res.ifsc !== undefined)) ? res.ifsc : (
-                                        res.branch_ifsc || '');
-                                    $('#ifsc').val(ifsc ? String(ifsc).trim() : '');
-                                },
-                                error: function() {
-                                    $('#ifsc').val('');
-                                }
-                            });
-                        });
-                    });
-
-
-
-                    // =============================
-                    $('.select2').select2({
-                        width: '100%' // Tells JS to fill the container we defined in CSS
-                    });
-                    $("form").on("submit", function(e) {
-                        e.preventDefault(); // Stop page refresh always
-                    });
+                    alert(messages.join('\n'));
+                } else {
+                    alert('Something went wrong. Please try again.');
+                }
+            },
+            complete: function () {
+                form.find('button[type="submit"]').prop('disabled', false).text('Save Details');
+            }
+        });
+    });
 
   // ==========================================
 
@@ -552,7 +437,7 @@
   // =========================================================================
 $(document).ready(function () {
 
-
+   
 
     // Run when user changes the dropdown
     $('#admission_status_prev').on('change', function () {
@@ -604,7 +489,7 @@ $(document).ready(function () {
 
 
       // ==================================
-      // Student Basic  Details Save
+      // Student Basic  Details Save 
       $('#basic_info_save_btn').off('click').on('click', function () {
         var $btn = $(this);
         var $basicForm = $('#basic_info_of_student');
@@ -617,7 +502,7 @@ $(document).ready(function () {
         // Start with FormData from basic info form
         var formData = new FormData($basicForm[0]);
 
-
+      
 
         // Debug: list entries (optional, safe to remove in production)
         console.log("------ MERGED FORM DATA ------");
@@ -650,10 +535,11 @@ $(document).ready(function () {
             if (res && res.success) {
               if (window.toastr) {
                 toastr.success(res.message || 'Saved successfully');
+                
               } else {
                 alert(res.message || 'Saved successfully');
               }
-
+             document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 1 } }));
               // Move to enrollment details tab after successful save
               var $nextTabBtn = $('#enrollment_details-tab');
               if ($nextTabBtn.length) {
@@ -722,7 +608,7 @@ $(document).ready(function () {
 
 
      // ==================================
-      // Student Enrollment Details Save
+      // Student Enrollment Details Save 
     $('#enrollment_details_save_btn').off('click').on('click', function () {
       var $btn = $(this);
       var $enrollForm = $('#student_enrollment_details');
@@ -768,6 +654,7 @@ $(document).ready(function () {
             else alert(res.message || 'Enrollment saved.');
 
             // If you want to switch tabs programmatically after save, do it here:
+          document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 2 } }));
           document.querySelector('[data-bs-target="#facility_other_dtls_tab"]').click();
           } else {
             console.warn('Unexpected body', res);
@@ -822,7 +709,7 @@ $(document).ready(function () {
     });
 
     // ================================
-   // Student Contact Details Save
+   // Student Contact Details Save 
     (function($) {
       function clearInlineErrors() {
         $('.is-invalid').removeClass('is-invalid');
@@ -871,7 +758,7 @@ $(document).ready(function () {
               if (window.toastr) toastr.success(res.message || 'Contact info saved.');
               else alert(res.message || 'Contact info saved.');
               document.querySelector('[data-bs-target="#bank_dtls_tab"]').click();
-
+              document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 5} }));
               // maybe move to next tab or reset
             } else {
               console.warn('Unexpected body', res);
@@ -992,45 +879,51 @@ $(document).ready(function () {
                     dropdown.append(`<option value="${item.id}" ${selected}>${item.name}</option>`);
                 });
 
-                document.addEventListener("DOMContentLoaded", function() {
-                    let aadhaar_child = document.getElementById("aadhaar_child");
+                // 2️⃣ Load corresponding job roles
+                loadJobRoles(v.trade_sector, v.job_role);
+            });
+    }
+    // Hours
+    $("#theory_hours").val(v.theory_hours);
+    $("#practical_hours").val(v.practical_hours);
+    $("#industry_hours").val(v.industry_hours);
+    $("#field_visit_hours").val(v.field_visit_hours);
 
-                    aadhaar_child.addEventListener("input", function() {
-                        this.value = this.value.replace(/[^0-9]/g, "").slice(0, 12);
-                    });
-                });
-                // ====================================
+    // Exam + Marks
+    $("#appeared_exam").val(v.appeared_exam).trigger("change");
+    $("#marks_obtained").val(v.marks_obtained);
 
+    // Placement + apprenticeship
+    $("#placement_applied").val(v.placement_applied);
+    $("#apprenticeship_applied").val(v.apprenticeship_applied);
 
-                document.addEventListener('DOMContentLoaded', function() {
+    // NSQF + employment
+    $("#nsqf_level").val(v.nsqf_level);
+    $("#employment_status").val(v.employment_status).trigger("change");
 
-                    const bplSelect = document.getElementById('bpl_beneficiary');
-                    const aaySection = document.getElementById('aay_section');
-                    const bplNumberID = document.getElementById('bpl_numberID');
-                    const aayInput = document.getElementById('antyodaya_anna_yojana');
-                    const bplInput = document.getElementById('bpl_number');
+    // Salary offered
+    $("#salary_offered").val(v.salary_offered);
 
-                    function toggleFields() {
+  });
 
-                        if (!bplSelect) return;
-                        let value = bplSelect.value;
-                        if (value === "1" || value.toLowerCase() === "yes") {
+  $("#central_scholarship").on("change", function () {
+    if ($(this).val() === "1") {
 
-                            if (aaySection) aaySection.style.display = "block";
-                            if (bplNumberID) bplNumberID.style.display = "block";
+      $("#central_scholarship_name").attr("required", true);
+      $("#central_scholarship_amount").attr("required", true);
 
-                        } else {
+      $("#central_scholarship_name").closest(".col-md-6").removeClass("d-none");
+      $("#central_scholarship_amount").closest(".col-md-6").removeClass("d-none");
 
-                            if (aaySection) aaySection.style.display = "none";
-                            if (aayInput) aayInput.value = "";
+    } else {
 
-                            if (bplNumberID) bplNumberID.style.display = "none";
-                            if (bplInput) bplInput.value = "";
-                        }
-                    }
+      $("#central_scholarship_name").removeAttr("required").val("");
+      $("#central_scholarship_amount").removeAttr("required").val("");
 
-                    toggleFields();
-                    bplSelect.addEventListener("change", toggleFields);
+      $("#central_scholarship_name").closest(".col-md-6").addClass("d-none");
+      $("#central_scholarship_amount").closest(".col-md-6").addClass("d-none");
+    }
+  });
 
   // ------------------------------
   // STATE SCHOLARSHIP
@@ -1038,19 +931,21 @@ $(document).ready(function () {
   $("#state_scholarship").on("change", function () {
     if ($(this).val() === "1") {
 
-                // ======================================
+      $("#state_scholarship_name").attr("required", true);
+      $("#state_scholarship_amount").attr("required", true);
 
-                document.addEventListener('DOMContentLoaded', function() {
+      $("#state_scholarship_name").closest(".col-md-6").removeClass("d-none");
+      $("#state_scholarship_amount").closest(".col-md-6").removeClass("d-none");
 
-                    const cwsnSelect = document.getElementById('cwsn');
-                    const impairment = document.getElementById('impairment');
-                    const disPercent = document.getElementById('disability');
-                    const impairmentVal = document.getElementById('type_of_impairment');
-                    const percentVal = document.getElementById('disability_percentage');
+    } else {
 
-                    function toggleCWSNFields() {
+      $("#state_scholarship_name").removeAttr("required").val("");
+      $("#state_scholarship_amount").removeAttr("required").val("");
 
-                        if (!cwsnSelect) return;
+      $("#state_scholarship_name").closest(".col-md-6").addClass("d-none");
+      $("#state_scholarship_amount").closest(".col-md-6").addClass("d-none");
+    }
+  });
 
   // ------------------------------
   // OTHER SCHOLARSHIP
@@ -1058,44 +953,47 @@ $(document).ready(function () {
   $("#other_scholarship").on("change", function () {
     if ($(this).val() === "1") {
 
-                            if (impairment) impairment.style.display = 'block';
-                            if (disPercent) disPercent.style.display = 'block';
+      $("#other_scholarship_amount").attr("required", true);
+      $("#other_scholarship_amount").closest(".col-md-6").removeClass("d-none");
 
-                        } else {
+    } else {
 
-                            // Hide sections
-                            if (impairment) impairment.style.display = 'none';
-                            if (disPercent) disPercent.style.display = 'none';
+      $("#other_scholarship_amount").removeAttr("required").val("");
+      $("#other_scholarship_amount").closest(".col-md-6").addClass("d-none");
+    }
+  });
 
-                            // Reset values
-                            if (impairmentVal) impairmentVal.value = '';
-                            if (percentVal) percentVal.value = '';
-                        }
-                    }
 
-                    // Run on page load (important for edit mode)
-                    toggleCWSNFields();
+  // ------------------------------
+  // EXTRACURRICULAR → SHOW GIFTED BLOCK
+  // ------------------------------
+  $("#stu_extracurricular_activity").on("change", function () {
 
-                    // Run on change
-                    cwsnSelect.addEventListener('change', toggleCWSNFields);
-                });
-                // =======================================================================
-                document.addEventListener('DOMContentLoaded', function() {
+    let giftedBlock = $("#gifted_math").closest(".row"); // the entire gifted row container
 
-                    const outOfSchool = document.getElementById('out_of_school');
-                    const mainstreamedSec = document.getElementById('mainstreamed_section');
-                    const mainstreamedVal = document.getElementById('mainstreamed');
+    if ($(this).val() === "1") {
 
-                    function toggleMainstreamed() {
+      giftedBlock.removeClass("d-none");
 
-                        if (!outOfSchool) return;
+      $("#gifted_math").attr("required", true);
+      $("#gifted_language").attr("required", true);
+      $("#gifted_science").attr("required", true);
+      $("#gifted_technical").attr("required", true);
+      $("#gifted_sports").attr("required", true);
+      $("#gifted_art").attr("required", true);
 
-                        let value = outOfSchool.value;
+    } else {
 
-                        // If YES (1 or "yes")
-                        if (value === '1' || value.toLowerCase() === 'yes') {
+      giftedBlock.addClass("d-none");
 
-                            if (mainstreamedSec) mainstreamedSec.style.display = 'block';
+      $("#gifted_math").removeAttr("required").val("");
+      $("#gifted_language").removeAttr("required").val("");
+      $("#gifted_science").removeAttr("required").val("");
+      $("#gifted_technical").removeAttr("required").val("");
+      $("#gifted_sports").removeAttr("required").val("");
+      $("#gifted_art").removeAttr("required").val("");
+    }
+  });
 
 
   // ------------------------------
@@ -1136,6 +1034,7 @@ $(document).ready(function () {
             if (res && res.status) {
                 alert(res.message);
                 document.querySelector('[data-bs-target="#vocational_tab"]').click();
+                  document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 3 } }));
                 $btn.prop('disabled', false).text('Save & Next');
             }
         })
@@ -1169,7 +1068,7 @@ $(document).ready(function () {
             console.error("Error loading trade sectors:", err);
         });
 
-
+      
 
 
       $("#trade_sector").attr("required", true);
@@ -1241,6 +1140,7 @@ $(document).ready(function () {
               if (res && res.status) {
                   alert(res.message);
                   document.querySelector('[data-bs-target="#contact_info_tab"]').click();
+                    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 4 } }));
                   $btn.prop('disabled', false).text('Save & Next');
               }
           })
@@ -1256,7 +1156,7 @@ $(document).ready(function () {
 
 
     // Start New Entry Button
-    $("#resumeEntryBtn").on("click", function ()
+    $("#resumeEntryBtn").on("click", function () 
     {
 
       let step = {{ $data['current_step'] ?? 1 }};
@@ -1269,6 +1169,7 @@ $(document).ready(function () {
           case 4: tabSelector = "#vocational_tab"; break;
           case 5: tabSelector = "#contact_info_tab"; break;
           case 6: tabSelector = "#bank_dtls_tab"; break;
+          case 7: tabSelector = "#additional_dtls_tab"; break;
       }
 
       // Remember resume mode to stop auto-tab switching
@@ -1309,11 +1210,11 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
 
 // ===========================Student Entry Preview Modal Content====================================
     const studentData = @json($data);
-
+    
     document.getElementById('previewBtn').addEventListener('click', function () {
 
       let html = `
-        <div class="alert alert-warning text-center fw-bold"
+        <div class="alert alert-warning text-center fw-bold" 
              style="top:0; z-index:20; padding:8px; border-radius:0;">
             ⚠️ Please check all details before final submit
         </div>
@@ -1326,7 +1227,7 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
                   <h6 class="card-header bg-heading-primary text-white py-2">
                     Basic Details
                   </h6>
-
+                  
                   <table class="table table-sm table-bordered">
 
                       <tr>
@@ -1586,7 +1487,7 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
               const v = studentData.vocational;
 
               html += `
-
+                
                   <h6 class="card-header bg-heading-primary text-white py-2">
                   Vocational Details
                   </h6>
@@ -1749,8 +1650,153 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
         const modal = new bootstrap.Modal(document.getElementById('previewModal'));
         modal.show();
     });
+// ===============================
+(function () {
+  // Map tabs to numeric steps
+  const tabMap = {
+    1: {btnSelector: 'button[data-bs-target="#general_info"]', target: '#general_info'},
+    2: {btnSelector: 'button[data-bs-target="#enrollment_details"]', target: '#enrollment_details'},
+    3: {btnSelector: 'button[data-bs-target="#facility_other_dtls_tab"]', target: '#facility_other_dtls_tab'},
+    4: {btnSelector: 'button[data-bs-target="#vocational_tab"]', target: '#vocational_tab'},
+    5: {btnSelector: 'button[data-bs-target="#contact_info_tab"]', target: '#contact_info_tab'},
+    6: {btnSelector: 'button[data-bs-target="#bank_dtls_tab"]', target: '#bank_dtls_tab'},
+    7: {btnSelector: 'button[data-bs-target="#additional_dtls_tab"]', target: '#additional_dtls_tab'}
+  };
 
+  // Initialize savedState from server current step (tabs <= current_step considered saved)
+  var serverCurrent = {{ intval($data['current_step'] ?? 0) }}; // e.g. 0..7
+  var savedState = {};
+  for (let i = 1; i <= 7; i++) {
+    savedState[i] = (i <= serverCurrent); // true if server says current_step >= i
+  }
 
+  // optional visual: disable tabs that are locked (but don't remove pointer events; actual block by event)
+  function refreshTabUI() {
+    for (let i = 1; i <= 7; i++) {
+      let btn = $(tabMap[i].btnSelector);
+      if (!btn.length) continue;
+      if (!savedState[i]) {
+        btn.addClass('disabled').attr('aria-disabled', 'true');
+      } else {
+        btn.removeClass('disabled').removeAttr('aria-disabled');
+      }
+    }
+  }
+  refreshTabUI();
+
+  // Block navigation to a tab if any PREVIOUS tab (smaller index) is not saved
+  $('button[data-bs-toggle="tab"]').on('show.bs.tab', function (e) {
+    // find destination tab index
+    var dest = $(e.target).data('bsTarget') || $(e.target).attr('data-bs-target');
+    if (!dest) return; // nothing to do
+    // map dest to index
+    var destIndex = null;
+    for (let i = 1; i <= 7; i++) {
+      if (tabMap[i].target === dest) { destIndex = i; break; }
+    }
+    if (destIndex === null) return;
+
+    // allow navigating to same or earlier tabs (back navigation) always
+    // but only allow forward to destIndex if all previous tabs (1..destIndex-1) are saved
+    if (destIndex > 1) {
+      for (let j = 1; j < destIndex; j++) {
+        if (!savedState[j]) {
+          e.preventDefault();
+          if (window.toastr) toastr.warning('Please save previous steps before proceeding.');
+          else alert('Please save previous steps before proceeding.');
+          // focus on first unsaved tab's save button (heuristic)
+          switch(j) {
+            case 1: $('#basic_info_save_btn').focus(); break;
+            case 2: $('#enrollment_details_save_btn').focus(); break;
+            case 3: $('#save_facility_and_other_dtls').focus(); break;
+            case 4: $('#save_vocational_btn').focus(); break;
+            case 5: $('#contact_info_save_btn').focus(); break;
+            case 6: $('#bank_details_of_student').focus(); break;
+            case 7: $('#saveAdditionalDetails').find('button[type="submit"]').focus(); break;
+
+            default: break;
+          }
+          return false;
+        }
+      }
+    }
+    // allowed
+  });
+
+  // Listener for custom event when a tab is saved
+  // dispatch with: document.dispatchEvent(new CustomEvent('tabSaved',{detail:{tab:N}}));
+  document.addEventListener('tabSaved', function (ev) {
+    try {
+      var idx = ev.detail && ev.detail.tab ? parseInt(ev.detail.tab) : null;
+      if (!idx || !(idx in savedState)) return;
+      savedState[idx] = true;
+      refreshTabUI();
+
+      // auto move to next tab if not in resumeMode and next exists
+      if (!window.resumeMode) {
+        var next = idx + 1;
+        if (next <= 7 && $(tabMap[next].btnSelector).length) {
+          // use bootstrap tab show
+          $(tabMap[next].btnSelector).tab('show');
+        }
+      }
+    } catch (err) {
+      console.error('tabSaved handler error', err);
+    }
+  });
+
+  // Convenience: expose a function to mark saved from console if needed
+  window.__markTabSaved = function(n) {
+    document.dispatchEvent(new CustomEvent('tabSaved', {detail: {tab: n}}));
+  };
+
+  // ---------------------------
+  // IMPORTANT: Integration points (where to call dispatch)
+  // ---------------------------
+  // In each tab's AJAX success callback you already have, add this line (after successful save & toast):
+  //
+  //    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: X } }));
+  //
+  // Replace X with:
+  //   Basic Info save success  -> X = 1
+  //   Enrollment save success  -> X = 2
+  //   Facility save success    -> X = 3
+  //   Vocational save success  -> X = 4
+  //   Contact save success     -> X = 5
+  //   Bank details success     -> X = 6
+  //   Additional details save  -> X = 7
+  //
+  // Example (Basic Info success): 
+  //   success: function(res) {
+  //     // ... your existing toast/alert ...
+  //     document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 1 } }));
+  //   }
+  //
+  // I will now list the exact insertion points in your existing handlers:
+  //
+  // 1) In your "#basic_info_save_btn" AJAX success -> add:
+  //    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 1 } }));
+  //
+  // 2) In your "#enrollment_details_save_btn" AJAX success -> add:
+  //    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 2 } }));
+  //
+  // 3) In the "save_facility_and_other_dtls" .then success -> add:
+  //    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 3 } }));
+  //
+  // 4) In "#save_vocational_btn" .then success -> add:
+  //    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 4 } }));
+  //
+  // 5) In your "#contact_info_save_btn" AJAX success -> add:
+  //    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 5 } }));
+  //
+  // 6) In the bank-details AJAX success (the form with id #bank_details_of_student) -> add:
+  //    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 6 } }));
+  //
+  // 7) If you have an "additional details" save handler, add tab:7 similarly.
+  //
+  // If you prefer, you can use the helper __markTabSaved(n) in place of dispatch.
+
+})(); 
 
 </script>
 
