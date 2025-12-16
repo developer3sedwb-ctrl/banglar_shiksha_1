@@ -188,7 +188,7 @@ return new class extends Migration
             $table->foreign('stu_country_code_fk')->references('id')->on('bs_country_master');
             $table->foreign('stu_state_code_fk')->references('id')->on('bs_state_master');
             $table->foreign('stu_contact_district')->references('id')->on('bs_district_master');
-            $table->foreign('stu_contact_block')->references('id')->on('bs_block_munc_corp_master');
+            // $table->foreign('stu_contact_block')->references('id')->on('bs_block_munc_corp_master');
 
             $table->foreign('guardian_country_code_fk')->references('id')->on('bs_country_master');
             $table->foreign('guardian_state_code_fk')->references('id')->on('bs_state_master');

@@ -69,7 +69,7 @@ return new class extends Migration
             $table->char('delete_status', 1);
             $table->unsignedInteger('pin_code')->nullable();
             $table->unsignedSmallInteger('new_school_status')->nullable();
-            $table->unsignedSmallInteger('school_status')->default(0);
+            $table->unsignedSmallInteger('school_status')->nullable()->default(0);
             $table->unsignedSmallInteger('uniform_status')->default(0);
 
             // AUDIT
