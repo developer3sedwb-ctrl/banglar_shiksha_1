@@ -150,51 +150,69 @@
           </div>
         </div>
   
-    <div class="alert-container">
-          @if(isset($data['current_step']) && $data['current_step'] >= 1)
-        <div class="entry-alert-box">
+      <div class="alert-container">
+        {{-- STEP 7 → Final Submit Message --}}
+        @if(isset($data['current_step']) && $data['current_step'] == 7)
+
+          <div class="entry-alert-box bg-success text-white">
             <span class="entry-alert-text">
-                <i class="bx bx-info-circle"></i>
-                <strong> Resume Entry ?</strong>
+                <i class="bx bx-check-circle"></i>
+                <strong>All steps are completed.</strong>
                 <span class="d-none d-md-inline">
-                    You have a student entry that is still incomplete at Step {{ $data['current_step'] }}.
+                     Please review the details and proceed with final submission
                 </span>
             </span>
 
             <div class="entry-alert-actions">
-            <button id="resumeEntryBtn" class="btn btn-success">
+                <button id="startNewEntryBtn" class="btn btn-danger">
+                    <span class="d-inline d-md-none">
+                        <i class="bx bx-trash"></i>
+                    </span>
+                    <span class="d-none d-md-inline">
+                        Start New Entry
+                    </span>
+                </button>
+            </div>
+          </div>
 
-              {{-- MOBILE TEXT ONLY --}}
-              <span class="d-inline d-md-none">
-                  <i class="bx bx-play-circle"></i> Resume
-              </span>
+        {{-- STEP 1–6 → Resume Entry --}}
+        @elseif(isset($data['current_step']) && $data['current_step'] >= 1)
 
-              {{-- DESKTOP FULL TEXT --}}
-              <span class="d-none d-md-inline">
-                  <i class="bx bx-play-circle"></i>
-                  Resume from Step {{ $data['current_step'] }}
-              </span>
-            </button>
-
-
-              <button id="startNewEntryBtn" class="btn btn-danger">
-
-                {{-- ICON (mobile only) --}}
-                <span class="d-inline d-md-none">
-                    <i class="bx bx-trash"></i> 
-                </span>
-
-                {{-- FULL TEXT (desktop only) --}}
+        <div class="entry-alert-box">
+            <span class="entry-alert-text">
+                <i class="bx bx-info-circle"></i>
+                <strong>Resume Entry?</strong>
                 <span class="d-none d-md-inline">
-                    Start New Entry
+                    You have a student entry that is still incomplete at
+                    Step {{ $data['current_step'] }}.
                 </span>
+            </span>
 
-              </button>
+            <div class="entry-alert-actions">
 
+                <button id="resumeEntryBtn" class="btn btn-success">
+                    <span class="d-inline d-md-none">
+                        <i class="bx bx-play-circle"></i> Resume
+                    </span>
+                    <span class="d-none d-md-inline">
+                        <i class="bx bx-play-circle"></i>
+                        Resume from Step {{ $data['current_step'] }}
+                    </span>
+                </button>
+
+                <button id="startNewEntryBtn" class="btn btn-danger">
+                    <span class="d-inline d-md-none">
+                        <i class="bx bx-trash"></i>
+                    </span>
+                    <span class="d-none d-md-inline">
+                        Start New Entry
+                    </span>
+                </button>
             </div>
         </div>
-      @endif
-    </div>
+       @endif
+      </div>
+
 
     <!-- CARD WITH TABS -->
      <div class="card card-full">
@@ -1039,7 +1057,6 @@ $(document).ready(function () {
             }
         })
         .catch(err => {
-            $btn.prop('disabled', false).text('Save & Next');
             console.error("Error saving vocational details:", err);
       });
     }
@@ -1146,7 +1163,6 @@ $(document).ready(function () {
               }
           })
           .catch(err => {
-              $btn.prop('disabled', false).text('Save & Next');
               console.error("Error saving vocational details:", err);
       });
     }

@@ -688,7 +688,17 @@ class StudentInfoController extends Controller
             ->first();
 
         // Default step = 1 if no record found
-        $data['current_step'] = $draft ? $draft->step_number : 0;
+        // $data['current_step'] = $draft ? $draft->step_number : 0;
+        // $data['current_step'] = $draft
+        //     ? min($draft->step_number + 1, 7)
+        //     : 1;
+$data['current_step'] = $draft
+    ? min($draft->step_number + 1, 7)
+    : 0;
+
+    // dd($data['current_step']);
+
+
             $data['stateScholarships'] = DB::table('bs_name_and_code_of_state_scholarships_master')
                                             ->where('status', 1)
                                             ->orderBy('id')
