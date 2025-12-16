@@ -138,7 +138,8 @@
             <div class="col-md-10 mb-2">
               <div class="input-group">
                 <span class="input-group-text"><i class="bx bx-id-card"></i></span>
-                <input type="text" class="form-control" placeholder="Student Code">
+ <input type="text" class="form-control" id="student_code" placeholder="Student Code">
+
               </div>
             </div>
 
@@ -240,61 +241,6 @@
   </div>
 
 
-
-  <!-- ==================DELETE PREVIOUS STUDENT ENTRY MODAL=========Subhajit Das===================== -->
-  <div class="modal fade" id="delete_previous_student_entry" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content shadow-lg">
-              
-              <button type="button" class="btn-close position-absolute end-0 m-2"
-                  data-bs-dismiss="modal" aria-label="Close"></button>
-
-              <div class="text-center p-3">
-                  <img src="{{ asset('images/delete_student.png') }}"
-                      width="80" height="80" alt="Icon">
-                  <h5 class="fw-bold mt-2">
-                  Are you sure you want to proceed?
-                  </h5>
-                  <h3 class="text-muted small"> The previous entry will be permanently deleted.</h3>
-              </div>
-
-              <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="confirmDeleteEntry">
-                      <i class="bx bx-trash me-1"></i> Delete Previous Entry
-                  </button>
-
-                  <button type="button" class="btn btn-outline-secondary"
-                      data-bs-dismiss="modal">
-                      <i class="bx bx-x-circle me-1"></i> Cancel
-                  </button>
-              </div>
-
-          </div>
-      </div>
-  </div>
-
-
-  <!-- ================Final Submit Preview  MODAL= Subhajit Das============================= -->
-  <div class="modal fade" id="previewModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title preview-title">
-            <i class="bi bi-eye-fill me-2"></i> Preview
-          </h5>
-
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" id="previewModalBody">
-          <!-- JS will fill this -->
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-success" data-bs-dismiss="modal">Final Submit</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- =================END Final Submit Preview  MODAL======================================= -->
 @endsection
@@ -1130,452 +1076,6 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
         });
 });
 
-
-
-
-
-// ===========================Student Entry Preview Modal Content====================================
-    const studentData = @json($data);
-    
-    document.getElementById('previewBtn').addEventListener('click', function () {
-
-      let html = `
-        <div class="alert alert-warning text-center fw-bold" 
-             style="top:0; z-index:20; padding:8px; border-radius:0;">
-            ⚠️ Please check all details before final submit
-        </div>
-      `;
-          // ===== Basic Info =====
-          if (studentData.basic_info) {
-              const b = studentData.basic_info;
-
-              html += `
-                  <h6 class="card-header bg-heading-primary text-white py-2">
-                    Basic Details
-                  </h6>
-                  
-                  <table class="table table-sm table-bordered">
-
-                      <tr>
-                          <th>Name</th><td>${b.student_name ?? ''}</td>
-                          <th>Name (Aadhaar)</th><td>${b.student_name_as_per_aadhaar ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Gender</th><td>${b.gender ?? ''}</td>
-                          <th>DOB</th><td>${b.dob ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Father Name</th><td>${b.father_name ?? ''}</td>
-                          <th>Mother Name</th><td>${b.mother_name ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Guardian Name</th><td>${b.guardian_name ?? ''}</td>
-                          <th>Aadhaar Number</th><td>${b.aadhaar_child ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Mother Tongue</th><td>${b.mother_tongue ?? ''}</td>
-                          <th>Social Category</th><td>${b.social_category ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Religion</th><td>${b.religion ?? ''}</td>
-                          <th>Nationality</th><td>${b.nationality ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Blood Group</th><td>${b.blood_group ?? ''}</td>
-                          <th>BPL Beneficiary</th><td>${b.bpl_beneficiary ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Antyodaya Anna Yojana</th><td>${b.antyodaya_anna_yojana ?? ''}</td>
-                          <th>BPL Number</th><td>${b.bpl_number ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Disadvantaged Group</th><td>${b.disadvantaged_group ?? ''}</td>
-                          <th>CWSN</th><td>${b.cwsn ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Type of Impairment</th><td>${b.type_of_impairment ?? ''}</td>
-                          <th>Disability %</th><td>${b.disability_percentage ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Out of School</th><td>${b.out_of_school ?? ''}</td>
-                          <th>Mainstreamed</th><td>${b.mainstreamed ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Birth Reg. No</th><td>${b.birth_reg_no ?? ''}</td>
-                          <th>Identification Mark</th><td>${b.identification_mark ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Health ID</th><td>${b.health_id ?? ''}</td>
-                          <th>Relationship With Guardian</th><td>${b.relationship_with_guardian ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Family Income</th><td>${b.family_income ?? ''}</td>
-                          <th>Guardian Qualifications</th><td>${b.guardian_qualifications ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Height (cm)</th><td>${b.student_height ?? ''}</td>
-                          <th>Weight (kg)</th><td>${b.student_weight ?? ''}</td>
-                      </tr>
-
-                  </table>
-                  <hr>
-              `;
-          }
-          // ===== Enrollment Info =====
-          if (studentData.enrollment_info) {
-              const e = studentData.enrollment_info;
-
-              html += `
-                  <h6 class="card-header bg-heading-primary text-white py-2">
-                  Enrollment Details
-                  </h6>
-                  <table class="table table-sm table-bordered">
-
-                      <tr>
-                          <th>Admission No</th><td>${e.admission_no ?? ''}</td>
-                          <th>Status Previous Year</th><td>${e.status_pre_year ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Prev Class Appeared Exam</th><td>${e.prev_class_appeared_exam ?? ''}</td>
-                          <th>Prev Class Result</th><td>${e.prev_class_exam_result ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Prev Class % Marks</th><td>${e.prev_class_marks_percent ?? ''}</td>
-                          <th>Attendance Previous Year</th><td>${e.attendention_pre_year ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Previous Class</th><td>${e.pre_class_code_fk ?? ''}</td>
-                          <th>Previous Section</th><td>${e.pre_section_code_fk ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Previous Stream</th><td>${e.pre_stream_code_fk ?? ''}</td>
-                          <th>Previous Roll No</th><td>${e.pre_roll_number ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Current Class</th><td>${e.cur_class_code_fk ?? ''}</td>
-                          <th>Academic Year</th><td>${e.academic_year ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Current Section</th><td>${e.cur_section_code_fk ?? ''}</td>
-                          <th>Medium</th><td>${e.medium_code_fk ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Current Roll No</th><td>${e.cur_roll_number ?? ''}</td>
-                          <th>Admission Date</th><td>${e.admission_date ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Current Stream</th><td>${e.cur_stream_code ?? ''}</td>
-                          <th>Admission Type</th><td>${e.admission_type_code_fk ?? ''}</td>
-                      </tr>
-
-                  </table>
-                  <hr>
-              `;
-          }
-          // ===== Facility Info =====
-          if (studentData.facility) {
-              const f = studentData.facility;
-
-              html += `
-                  <h6 class="card-header bg-heading-primary text-white py-2">
-                  Facility & Other Details
-                  </h6>
-                  <table class="table table-sm table-bordered">
-
-                      <!-- Facilities Provided -->
-                      <tr>
-                          <th>Facilities Provided (Year)</th><td>${f.facilities_provided_for_the_yeear ?? ''}</td>
-                          <th>Free Uniforms</th><td>${f.free_uniforms ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Free Transport</th><td>${f.free_transport_facility ?? ''}</td>
-                          <th>Free Escort</th><td>${f.free_escort ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Free Hostel</th><td>${f.free_host_facility ?? ''}</td>
-                          <th>Free Bicycle</th><td>${f.free_bicycle ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Free Shoes</th><td>${f.free_shoe ?? ''}</td>
-                          <th>Free Exercise Books</th><td>${f.free_exercise_book ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Complete Free Books</th><td>${f.complete_free_books ?? ''}</td>
-                          <th></th><td></td>
-                      </tr>
-
-                      <!-- Scholarships -->
-                      <tr>
-                          <th>Central Scholarship</th><td>${f.central_scholarship ?? ''}</td>
-                          <th>Central Scholarship Name</th><td>${f.central_scholarship_name ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Central Scholarship Amount</th><td>${f.central_scholarship_amount ?? ''}</td>
-                          <th>State Scholarship</th><td>${f.state_scholarship ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>State Scholarship Name</th><td>${f.state_scholarship_name ?? ''}</td>
-                          <th>State Scholarship Amount</th><td>${f.state_scholarship_amount ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Other Scholarship</th><td>${f.other_scholarship ?? ''}</td>
-                          <th>Other Scholarship Amount</th><td>${f.other_scholarship_amount ?? ''}</td>
-                      </tr>
-
-                      <!-- Gifted / Special Cases -->
-                      <tr>
-                          <th>Hyperactive Disorder</th><td>${f.child_hyperactive_disorder ?? ''}</td>
-                          <th>Extra-curricular Activities</th><td>${f.stu_extracurricular_activity ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Gifted in Mathematics</th><td>${f.gifted_math ?? ''}</td>
-                          <th>Gifted in Language</th><td>${f.gifted_language ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Gifted in Science</th><td>${f.gifted_science ?? ''}</td>
-                          <th>Gifted in Technical</th><td>${f.gifted_technical ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Gifted in Sports</th><td>${f.gifted_sports ?? ''}</td>
-                          <th>Gifted in Art</th><td>${f.gifted_art ?? ''}</td>
-                      </tr>
-
-                      <!-- Other details -->
-                      <tr>
-                          <th>Provided Mentors</th><td>${f.provided_mentors ?? ''}</td>
-                          <th>Participated in Nurturance Camp</th><td>${f.whether_participated_nurturance_camp ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>State Level Nurturance</th><td>${f.state_nurturance ?? ''}</td>
-                          <th>National Level Nurturance</th><td>${f.national_nurturance ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>State/National Competitions</th><td>${f.participated_competitions ?? ''}</td>
-                          <th>NCC/NSS/Guides</th><td>${f.ncc_nss_guides ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>RTE Free Education</th><td>${f.rte_free_education ?? ''}</td>
-                          <th>Homeless</th><td>${f.homeless ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Special Training</th><td>${f.special_training ?? ''}</td>
-                          <th>Able to Handle Digital Devices</th><td>${f.able_to_handle_devices ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Internet Access</th><td>${f.internet_access ?? ''}</td>
-                          <th></th><td></td>
-                      </tr>
-
-                  </table>
-                  <hr>
-              `;
-          }
-
-          // ===== Vocational Info =====
-          if (studentData.vocational) {
-              const v = studentData.vocational;
-
-              html += `
-                
-                  <h6 class="card-header bg-heading-primary text-white py-2">
-                  Vocational Details
-                  </h6>
-                  <table class="table table-sm table-bordered">
-
-                      <tr>
-                          <th>Exposure to Vocational Activities</th><td>${v.exposure ?? ''}</td>
-                          <th>Undertook Vocational Course</th><td>${v.undertook ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Trade / Sector</th><td>${v.trade_sector ?? ''}</td>
-                          <th>Job Role</th><td>${v.job_role ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Theory Hours</th><td>${v.theory_hours ?? ''}</td>
-                          <th>Practical Hours</th><td>${v.practical_hours ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Industry Training Hours</th><td>${v.industry_hours ?? ''}</td>
-                          <th>Field Visit Hours</th><td>${v.field_visit_hours ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Appeared in Exam</th><td>${v.appeared_exam ?? ''}</td>
-                          <th>Marks Obtained (%)</th><td>${v.marks_obtained ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Placement Applied</th><td>${v.placement_applied ?? ''}</td>
-                          <th>Apprenticeship Applied</th><td>${v.apprenticeship_applied ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>NSQF Level</th><td>${v.nsqf_level ?? ''}</td>
-                          <th>Employment Status</th><td>${v.employment_status ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Salary Offered</th><td>${v.salary_offered ?? ''}</td>
-                          <th></th><td></td>
-                      </tr>
-
-                  </table>
-                  <hr>
-              `;
-          }
-
-          // ===== Student Contact Info =====
-          if (studentData.student_contact) {
-          const c = studentData.student_contact;
-
-          html += `
-          <h6 class="card-header bg-heading-primary text-white py-2">
-          Student Contact Details
-          </h6>
-          <table class="table table-sm table-bordered">
-
-          <tr>
-          <th>Country Code</th><td>${c.stu_country_code ?? ''}</td>
-          <th>State</th><td>${c.stu_state_code ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>District</th><td>${c.stu_contact_district ?? ''}</td>
-          <th>Block</th><td>${c.stu_contact_block ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Panchayat</th><td>${c.stu_contact_panchayat ?? ''}</td>
-          <th>Habitation</th><td>${c.stu_contact_habitation ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Address</th><td>${c.stu_contact_address ?? ''}</td>
-          <th>Police Station</th><td>${c.stu_police_station ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Post Office</th><td>${c.stu_post_office ?? ''}</td>
-          <th>PIN Code</th><td>${c.stu_pin_code ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Mobile No</th><td>${c.stu_mobile_no ?? ''}</td>
-          <th>Email</th><td>${c.stu_email ?? ''}</td>
-          </tr>
-
-          </table>
-
-          <h6 class="card-header bg-heading-primary text-white py-2">
-          Guardian Contact Details
-          </h6>
-          <table class="table table-sm table-bordered">
-
-          <tr>
-          <th>Country Code</th><td>${c.guardian_country_code ?? ''}</td>
-          <th>State</th><td>${c.guardian_state_code ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>District</th><td>${c.guardian_contact_district ?? ''}</td>
-          <th>Block</th><td>${c.guardian_contact_block ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Panchayat</th><td>${c.guardian_contact_panchayat ?? ''}</td>
-          <th>Habitation</th><td>${c.guardian_contact_habitation ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Address</th><td>${c.guardian_contact_address ?? ''}</td>
-          <th>Police Station</th><td>${c.guardian_police_station ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Post Office</th><td>${c.guardian_post_office ?? ''}</td>
-          <th>PIN Code</th><td>${c.guardian_pin_code ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Mobile No</th><td>${c.guardian_mobile_no ?? ''}</td>
-          <th>Email</th><td>${c.guardian_email ?? ''}</td>
-          </tr>
-
-          </table>
-          <hr>
-          `;
-          }
-
-          // ===== Student Bank Details =====
-          if (studentData.student_bank_details) {
-          const b = studentData.student_bank_details;
-
-          html += `
-          <h6 class="card-header bg-heading-primary text-white py-2">
-          Student Bank Details
-          </h6>
-          <table class="table table-sm table-bordered">
-
-          <tr>
-          <th>Bank</th><td>${b.bank_id_fk ?? ''}</td>
-          <th>Branch</th><td>${b.branch_id_fk ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>IFSC Code</th><td>${b.bank_ifsc ?? ''}</td>
-          <th>Account Number</th><td>${b.stu_bank_acc_no ?? ''}</td>
-          </tr>
-
-          </table>
-          <hr>
-          `;
-          }
-
-        document.getElementById('previewModalBody').innerHTML = html;
-
-        const modal = new bootstrap.Modal(document.getElementById('previewModal'));
-        modal.show();
-    });
 // ===============================
 (function () {
   // Map tabs to numeric steps
@@ -1723,6 +1223,45 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
   // If you prefer, you can use the helper __markTabSaved(n) in place of dispatch.
 
 })(); 
+
+
+$(document).on('click', '.student-search-btn', function () {
+
+    let studentCode = $('#student_code').val().trim();
+
+    if (studentCode === '') {
+        alert('Please enter student code');
+        return;
+    }
+
+    $.ajax({
+        url: "{{ url('/get_studet_details_by_stu_code') }}",
+        type: "GET",
+        data: {
+            student_code: studentCode
+        },
+        beforeSend: function () {
+            $('.student-search-btn').prop('disabled', true).text('Searching...');
+        },
+        success: function (response) {
+
+            // If controller returns a VIEW (HTML)
+            $('#main_content').html(response);
+
+            // OR if full page load is needed
+            // document.open();
+            // document.write(response);
+            // document.close();
+        },
+        error: function (xhr) {
+            alert(xhr.responseJSON?.message || 'Student not found');
+        },
+        complete: function () {
+            $('.student-search-btn').prop('disabled', false).text('Search');
+        }
+    });
+
+});
 
 </script>
 
