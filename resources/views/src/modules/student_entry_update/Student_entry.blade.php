@@ -11,9 +11,11 @@
     $student_contact_info = $data['student_contact'] ?? [];
 
     $student_bank = $data['student_bank_details'] ?? [];
+
+    $additional_info = $data['student_additional_details'] ?? []; 
 @endphp
 
-  <!-- @dump($student_bank) -->
+  <!-- @dump($additional_info) -->
   @php
     $dropdowns = config('student');
 
@@ -41,7 +43,7 @@
 
     $bs_stream_master = DB::table('bs_stream_master')->pluck('name', 'id')->toArray(); 
     $bs_school_medium = DB::table('bs_school_medium')->pluck('id', 'id')->toArray();
-    $bs_school_classwise_section = DB::table('bs_school_classwise_section')->pluck('id', 'id')->toArray();  
+    $bs_school_classwise_section = DB::table('bs_school_classwise_section')->pluck('class_code_fk', 'id')->toArray();  
 
     $bs_admission_type_master = DB::table('bs_admission_type_master')->pluck('name', 'id')->toArray(); 
       //========END=========Enrollmnent==================== 
@@ -60,8 +62,10 @@
 
     
 //================================================
-
+//===============Addtional=================
   
+    $bs_student_residence_to_school_distance = DB::table('bs_student_residence_to_school_distance')->pluck('name', 'id')->toArray(); 
+  //==============================================
     $genders = $gender_master;
     $mother_tongue = $mother_tongue_master;
 
@@ -101,6 +105,15 @@
           <h4 class="fw-bold"><i class="bx bx-user"></i> Add Student</h4>
         </div>
           <div class="d-flex gap-2">
+          <a href="" 
+            class="d-flex align-items-center gap-2 p-2 rounded border text-decoration-none"
+            data-bs-toggle="tooltip" 
+            title="Download Student DCF">
+              <span class="d-inline d-md-none"></span>
+              <img src="{{ asset('images/pdf.png') }}" alt="PDF" style="height: 24px;">
+              <span class="fw-semibold d-none d-md-inline"> Guideline</span>
+          </a>
+          <!-- ============================================= -->
             {{-- Bulk Upload Button --}}
             <a href="{{ route('student.bulk.upload') }}" class="btn btn-success">
 
@@ -335,6 +348,12 @@
   $(document).ready(function() {
 
 
+  // =========Download Student DCF Tooltip===========================
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+  })
+
 
 
   // =============Store Bank Details======================
@@ -363,7 +382,7 @@
                 // Example: show success message
                 // You can customize this as per your UI
                 alert(response.message || 'Bank details saved successfully!');
-
+                document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 7 } }));
                 // Optional: move to next tab, reset form, etc.
                 // $('#next_tab_btn').click();
             },
@@ -509,10 +528,11 @@ $(document).ready(function () {
             if (res && res.success) {
               if (window.toastr) {
                 toastr.success(res.message || 'Saved successfully');
+                
               } else {
                 alert(res.message || 'Saved successfully');
               }
-
+             document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 1 } }));
               // Move to enrollment details tab after successful save
               var $nextTabBtn = $('#enrollment_details-tab');
               if ($nextTabBtn.length) {
@@ -627,6 +647,7 @@ $(document).ready(function () {
             else alert(res.message || 'Enrollment saved.');
 
             // If you want to switch tabs programmatically after save, do it here:
+          document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 2 } }));
           document.querySelector('[data-bs-target="#facility_other_dtls_tab"]').click();
           } else {
             console.warn('Unexpected body', res);
@@ -730,7 +751,7 @@ $(document).ready(function () {
               if (window.toastr) toastr.success(res.message || 'Contact info saved.');
               else alert(res.message || 'Contact info saved.');
               document.querySelector('[data-bs-target="#bank_dtls_tab"]').click();
-
+              document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 5} }));
               // maybe move to next tab or reset
             } else {
               console.warn('Unexpected body', res);
@@ -1006,6 +1027,7 @@ $(document).ready(function () {
             if (res && res.status) {
                 alert(res.message);
                 document.querySelector('[data-bs-target="#vocational_tab"]').click();
+                  document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 3 } }));
                 $btn.prop('disabled', false).text('Save & Next');
             }
         })
@@ -1111,6 +1133,7 @@ $(document).ready(function () {
               if (res && res.status) {
                   alert(res.message);
                   document.querySelector('[data-bs-target="#contact_info_tab"]').click();
+                    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 4 } }));
                   $btn.prop('disabled', false).text('Save & Next');
               }
           })
@@ -1139,6 +1162,7 @@ $(document).ready(function () {
           case 4: tabSelector = "#vocational_tab"; break;
           case 5: tabSelector = "#contact_info_tab"; break;
           case 6: tabSelector = "#bank_dtls_tab"; break;
+          case 7: tabSelector = "#additional_dtls_tab"; break;
       }
 
       // Remember resume mode to stop auto-tab switching
@@ -1619,8 +1643,153 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
         const modal = new bootstrap.Modal(document.getElementById('previewModal'));
         modal.show();
     });
+// ===============================
+(function () {
+  // Map tabs to numeric steps
+  const tabMap = {
+    1: {btnSelector: 'button[data-bs-target="#general_info"]', target: '#general_info'},
+    2: {btnSelector: 'button[data-bs-target="#enrollment_details"]', target: '#enrollment_details'},
+    3: {btnSelector: 'button[data-bs-target="#facility_other_dtls_tab"]', target: '#facility_other_dtls_tab'},
+    4: {btnSelector: 'button[data-bs-target="#vocational_tab"]', target: '#vocational_tab'},
+    5: {btnSelector: 'button[data-bs-target="#contact_info_tab"]', target: '#contact_info_tab'},
+    6: {btnSelector: 'button[data-bs-target="#bank_dtls_tab"]', target: '#bank_dtls_tab'},
+    7: {btnSelector: 'button[data-bs-target="#additional_dtls_tab"]', target: '#additional_dtls_tab'}
+  };
 
+  // Initialize savedState from server current step (tabs <= current_step considered saved)
+  var serverCurrent = {{ intval($data['current_step'] ?? 0) }}; // e.g. 0..7
+  var savedState = {};
+  for (let i = 1; i <= 7; i++) {
+    savedState[i] = (i <= serverCurrent); // true if server says current_step >= i
+  }
 
+  // optional visual: disable tabs that are locked (but don't remove pointer events; actual block by event)
+  function refreshTabUI() {
+    for (let i = 1; i <= 7; i++) {
+      let btn = $(tabMap[i].btnSelector);
+      if (!btn.length) continue;
+      if (!savedState[i]) {
+        btn.addClass('disabled').attr('aria-disabled', 'true');
+      } else {
+        btn.removeClass('disabled').removeAttr('aria-disabled');
+      }
+    }
+  }
+  refreshTabUI();
+
+  // Block navigation to a tab if any PREVIOUS tab (smaller index) is not saved
+  $('button[data-bs-toggle="tab"]').on('show.bs.tab', function (e) {
+    // find destination tab index
+    var dest = $(e.target).data('bsTarget') || $(e.target).attr('data-bs-target');
+    if (!dest) return; // nothing to do
+    // map dest to index
+    var destIndex = null;
+    for (let i = 1; i <= 7; i++) {
+      if (tabMap[i].target === dest) { destIndex = i; break; }
+    }
+    if (destIndex === null) return;
+
+    // allow navigating to same or earlier tabs (back navigation) always
+    // but only allow forward to destIndex if all previous tabs (1..destIndex-1) are saved
+    if (destIndex > 1) {
+      for (let j = 1; j < destIndex; j++) {
+        if (!savedState[j]) {
+          e.preventDefault();
+          if (window.toastr) toastr.warning('Please save previous steps before proceeding.');
+          else alert('Please save previous steps before proceeding.');
+          // focus on first unsaved tab's save button (heuristic)
+          switch(j) {
+            case 1: $('#basic_info_save_btn').focus(); break;
+            case 2: $('#enrollment_details_save_btn').focus(); break;
+            case 3: $('#save_facility_and_other_dtls').focus(); break;
+            case 4: $('#save_vocational_btn').focus(); break;
+            case 5: $('#contact_info_save_btn').focus(); break;
+            case 6: $('#bank_details_of_student').focus(); break;
+            case 7: $('#saveAdditionalDetails').find('button[type="submit"]').focus(); break;
+
+            default: break;
+          }
+          return false;
+        }
+      }
+    }
+    // allowed
+  });
+
+  // Listener for custom event when a tab is saved
+  // dispatch with: document.dispatchEvent(new CustomEvent('tabSaved',{detail:{tab:N}}));
+  document.addEventListener('tabSaved', function (ev) {
+    try {
+      var idx = ev.detail && ev.detail.tab ? parseInt(ev.detail.tab) : null;
+      if (!idx || !(idx in savedState)) return;
+      savedState[idx] = true;
+      refreshTabUI();
+
+      // auto move to next tab if not in resumeMode and next exists
+      if (!window.resumeMode) {
+        var next = idx + 1;
+        if (next <= 7 && $(tabMap[next].btnSelector).length) {
+          // use bootstrap tab show
+          $(tabMap[next].btnSelector).tab('show');
+        }
+      }
+    } catch (err) {
+      console.error('tabSaved handler error', err);
+    }
+  });
+
+  // Convenience: expose a function to mark saved from console if needed
+  window.__markTabSaved = function(n) {
+    document.dispatchEvent(new CustomEvent('tabSaved', {detail: {tab: n}}));
+  };
+
+  // ---------------------------
+  // IMPORTANT: Integration points (where to call dispatch)
+  // ---------------------------
+  // In each tab's AJAX success callback you already have, add this line (after successful save & toast):
+  //
+  //    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: X } }));
+  //
+  // Replace X with:
+  //   Basic Info save success  -> X = 1
+  //   Enrollment save success  -> X = 2
+  //   Facility save success    -> X = 3
+  //   Vocational save success  -> X = 4
+  //   Contact save success     -> X = 5
+  //   Bank details success     -> X = 6
+  //   Additional details save  -> X = 7
+  //
+  // Example (Basic Info success): 
+  //   success: function(res) {
+  //     // ... your existing toast/alert ...
+  //     document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 1 } }));
+  //   }
+  //
+  // I will now list the exact insertion points in your existing handlers:
+  //
+  // 1) In your "#basic_info_save_btn" AJAX success -> add:
+  //    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 1 } }));
+  //
+  // 2) In your "#enrollment_details_save_btn" AJAX success -> add:
+  //    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 2 } }));
+  //
+  // 3) In the "save_facility_and_other_dtls" .then success -> add:
+  //    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 3 } }));
+  //
+  // 4) In "#save_vocational_btn" .then success -> add:
+  //    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 4 } }));
+  //
+  // 5) In your "#contact_info_save_btn" AJAX success -> add:
+  //    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 5 } }));
+  //
+  // 6) In the bank-details AJAX success (the form with id #bank_details_of_student) -> add:
+  //    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 6 } }));
+  //
+  // 7) If you have an "additional details" save handler, add tab:7 similarly.
+  //
+  // If you prefer, you can use the helper __markTabSaved(n) in place of dispatch.
+
+})(); 
 
 </script>
 

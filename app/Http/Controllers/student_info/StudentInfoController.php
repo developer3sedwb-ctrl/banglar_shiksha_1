@@ -24,6 +24,7 @@ use Exception;
 use App\Http\Requests\StoreUserRequestStudentContactInfo;
 use Illuminate\Support\Facades\Schema;
 use App\Models\student_info\StudentBankDetailsTemp;
+use App\Models\student_info\StudentAdditionalInfo;
 
 class StudentInfoController extends Controller
 {
@@ -173,7 +174,7 @@ class StudentInfoController extends Controller
                     'admission_date'            => $request->admission_date_present,
 
                     'admission_type_code_fk'    => $request->admission_type,
-                    'cur_stream_code_fk'    => $request-> cur_stream_code,
+                    'cur_stream_code_fk'=> $request->cur_stream_code,
 
                     // meta
                     'school_id_fk'              => $inputMeta['school_id_fk'],
@@ -467,8 +468,10 @@ class StudentInfoController extends Controller
 
             $inputMeta = [
                 'school_id_fk' => 1,
-                'created_by'   => $userId,
-                'updated_by'   => $userId,
+                'entry_ip'            => request()->ip(),
+                'update_ip'           => request()->ip(),
+                'created_by'          => auth()->id() ?? 1,
+                'updated_by'          => auth()->id() ?? 1,
                 
             ];
 
@@ -504,9 +507,10 @@ class StudentInfoController extends Controller
 
                 // System fields
                 'school_id_fk'              => $inputMeta['school_id_fk'],
-                // 'entry_ip'                  => $inputMeta['entry_ip'],
-                // 'update_ip'                 => $inputMeta['update_ip'],
-             
+                'entry_ip'                  => $inputMeta['entry_ip'],
+                'update_ip'                 => $inputMeta['update_ip'],
+                 'created_by'   => $inputMeta['created_by'],
+                 'updated_by'   => $inputMeta['updated_by'],
 
             ];
     
@@ -553,7 +557,7 @@ class StudentInfoController extends Controller
     }
 
 
-   // 6. ==============Store Student Bank Details======================
+    // 6. ==============Store Student Bank Details======================
     public function bankDetailsOfStudent(Request $request)
     {
         $userId   = auth()->id() ?? 1;
@@ -616,6 +620,56 @@ class StudentInfoController extends Controller
         ]);
     }
 
+    // 7.=============================Additional Details ========================================
+
+    public function StudentAdditionalDetails(Request $request)
+    {
+         $validated = $request->validate([
+            'rte_entitlement_claimed_amount' => 'required|integer',
+            'stu_residance_sch_distance_code_fk' => 'required|integer',
+            'cur_class_appeared_exam' => 'required|integer',
+            'cur_class_marks_percent' => 'required|numeric|min:0|max:100',
+            'attendention_cur_year' => 'required|integer|min:0|max:100',
+            'status' => 'nullable|integer',
+        ]);
+
+
+        $schoolId   = 1;   // STATIC
+        $districtId = 10;  // STATIC
+
+        $validated['school_id_fk'] = $schoolId;
+        $validated['district_code_fk'] = $districtId;
+        $validated['disabality_certificate_y_n'] = 0;
+
+
+        $validated['update_ip']  = $request->ip();
+        $validated['updated_by'] = 1;
+
+
+        $data = StudentAdditionalInfo::updateOrCreate(
+            ['school_id_fk' => $schoolId],
+            array_merge($validated, [
+                'entry_ip'   => $request->ip(),
+                'created_by' => 1,
+            ])
+        );
+
+          StudentEntryDraftTracker::updateOrCreate(
+            [
+                'school_id_fk' => $schoolId,
+                'step_number'  => 7,
+            ],
+            [
+                'created_by' => 1,
+                'updated_by' => 1,
+            ]
+        );
+
+        return response()->json([
+            'message' => 'Student addon data saved successfully',
+            'data' => $data
+        ], 200);
+    }
     
     // =======================Fetch Student Data===========================
     public function getStudentEntry()
@@ -848,13 +902,13 @@ class StudentInfoController extends Controller
                 'guardian_pin_code'           => $student_contact->guardian_pin_code,
                 'guardian_email'              => $student_contact->guardian_email,
                 ];
-            } else {
-                $data['student_contact'] = null;
-            }
+                } else {
+                    $data['student_contact'] = null;
+                }
 
 
 
-             // 5 . ==================== Contact Details ========================================
+             // 6 . ==================== Bank Details ========================================
 
             $student_bank_details = EntryStudentBankInfo::where('school_id_fk', $schoolId)->first();
 
@@ -869,6 +923,25 @@ class StudentInfoController extends Controller
             } else {
                 $data['student_bank_details'] = null;
             }
+
+
+
+            // 7 . ==================== Addi Details ========================================
+
+            $student_additional_details = StudentAdditionalInfo::where('school_id_fk', $schoolId)->first();
+
+            if ($student_additional_details) {
+                $data['student_additional_details'] = [
+                'rte_entitlement_claimed_amount'      => $student_additional_details -> rte_entitlement_claimed_amount,
+                'stu_residance_sch_distance_code_fk'    => $student_additional_details -> stu_residance_sch_distance_code_fk,
+                'cur_class_appeared_exam'       => $student_additional_details -> cur_class_appeared_exam,
+                'cur_class_marks_percent' => $student_additional_details -> cur_class_marks_percent,
+                'attendention_cur_year' => $student_additional_details -> attendention_cur_year,
+                ];
+            } else {
+                $data['student_additional_details'] = null;
+            }
+      
       
             return view('src.modules.student_entry_update.student_entry', compact('data'));
 
@@ -885,6 +958,7 @@ class StudentInfoController extends Controller
         }
     }
 
+
     // ======================Delete Previous Student Entry================================
     public function resetEntry()
     {
@@ -895,19 +969,33 @@ class StudentInfoController extends Controller
                 'status' => 0,
                 'deleted_at' => now()
             ];
-            // Soft delete + deactivate Facility records
+
+            StudentInfo::where('school_id_fk', $schoolId)
+                ->update($updateData);
+
+            StudentEnrollmentInfo::where('school_id_fk', $schoolId)
+                ->update($updateData);
+        
             StudentFacilityAndOtherDetails::where('school_id_fk', $schoolId)
                 ->update($updateData);
 
-            // Soft delete + deactivate Vocational records
             StudentVocationalDetails::where('school_id_fk', $schoolId)
                 ->update($updateData);
-            StudentInfo::where('school_id_fk', $schoolId)
-                ->update($updateData);
-            StudentEnrollmentInfo::where('school_id_fk', $schoolId)
+
+
+            StudentContactInfo::where('school_id_fk', $schoolId)
                 ->update($updateData);
 
-            // Soft delete + deactivate Draft Tracker
+
+            EntryStudentBankInfo::where('school_id_fk', $schoolId)
+                ->update($updateData);
+
+            StudentAdditionalInfo::where('school_id_fk', $schoolId)
+                ->update($updateData);
+           
+
+
+
             StudentEntryDraftTracker::where('school_id_fk', $schoolId)
                 ->update($updateData);
 
@@ -1094,6 +1182,7 @@ class StudentInfoController extends Controller
             StudentEntryMaster::Create($masterData);
         });
     }
+
 
 
 
