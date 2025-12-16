@@ -1110,35 +1110,6 @@ $(document).ready(function () {
 // {{--Vocational DETAILS OF THE STUDENT Aziza End --}}
 
 
-    // Start New Entry Button
-    $("#resumeEntryBtn").on("click", function () 
-    {
-
-      let step = {{ $data['current_step'] ?? 1 }};
-      let tabSelector = "#general_info";
-
-      switch (step) {
-          case 1: tabSelector = "#general_info"; break;
-          case 2: tabSelector = "#enrollment_details"; break;
-          case 3: tabSelector = "#facility_other_dtls_tab"; break;
-          case 4: tabSelector = "#vocational_tab"; break;
-          case 5: tabSelector = "#contact_info_tab"; break;
-          case 6: tabSelector = "#bank_dtls_tab"; break;
-          case 7: tabSelector = "#additional_dtls_tab"; break;
-      }
-
-      // Remember resume mode to stop auto-tab switching
-      window.resumeMode = true;
-
-      // Activate tab using jQuery
-      $(`button[data-bs-target='${tabSelector}']`).tab("show");
-
-      // Scroll into view
-      setTimeout(() => {
-          $(tabSelector).get(0).scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 300);
-    });
-
   // When clicking "Start New Entry" → open modal instead of confirm()
 document.getElementById("startNewEntryBtn")?.addEventListener("click", function () {
     let modal = new bootstrap.Modal(document.getElementById("delete_previous_student_entry"));
@@ -1626,57 +1597,57 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
   }
 
   // optional visual: disable tabs that are locked (but don't remove pointer events; actual block by event)
-  function refreshTabUI() {
-    for (let i = 1; i <= 7; i++) {
-      let btn = $(tabMap[i].btnSelector);
-      if (!btn.length) continue;
-      if (!savedState[i]) {
-        btn.addClass('disabled').attr('aria-disabled', 'true');
-      } else {
-        btn.removeClass('disabled').removeAttr('aria-disabled');
-      }
-    }
-  }
-  refreshTabUI();
+  // function refreshTabUI() {
+  //   for (let i = 1; i <= 7; i++) {
+  //     let btn = $(tabMap[i].btnSelector);
+  //     if (!btn.length) continue;
+  //     if (!savedState[i]) {
+  //       btn.addClass('disabled').attr('aria-disabled', 'true');
+  //     } else {
+  //       btn.removeClass('disabled').removeAttr('aria-disabled');
+  //     }
+  //   }
+  // }
+  // refreshTabUI();
 
   // Block navigation to a tab if any PREVIOUS tab (smaller index) is not saved
-  $('button[data-bs-toggle="tab"]').on('show.bs.tab', function (e) {
-    // find destination tab index
-    var dest = $(e.target).data('bsTarget') || $(e.target).attr('data-bs-target');
-    if (!dest) return; // nothing to do
-    // map dest to index
-    var destIndex = null;
-    for (let i = 1; i <= 7; i++) {
-      if (tabMap[i].target === dest) { destIndex = i; break; }
-    }
-    if (destIndex === null) return;
+  // $('button[data-bs-toggle="tab"]').on('show.bs.tab', function (e) {
+  //   // find destination tab index
+  //   var dest = $(e.target).data('bsTarget') || $(e.target).attr('data-bs-target');
+  //   if (!dest) return; // nothing to do
+  //   // map dest to index
+  //   var destIndex = null;
+  //   for (let i = 1; i <= 7; i++) {
+  //     if (tabMap[i].target === dest) { destIndex = i; break; }
+  //   }
+  //   if (destIndex === null) return;
 
-    // allow navigating to same or earlier tabs (back navigation) always
-    // but only allow forward to destIndex if all previous tabs (1..destIndex-1) are saved
-    if (destIndex > 1) {
-      for (let j = 1; j < destIndex; j++) {
-        if (!savedState[j]) {
-          e.preventDefault();
-          if (window.toastr) toastr.warning('Please save previous steps before proceeding.');
-          else alert('Please save previous steps before proceeding.');
-          // focus on first unsaved tab's save button (heuristic)
-          switch(j) {
-            case 1: $('#basic_info_save_btn').focus(); break;
-            case 2: $('#enrollment_details_save_btn').focus(); break;
-            case 3: $('#save_facility_and_other_dtls').focus(); break;
-            case 4: $('#save_vocational_btn').focus(); break;
-            case 5: $('#contact_info_save_btn').focus(); break;
-            case 6: $('#bank_details_of_student').focus(); break;
-            case 7: $('#saveAdditionalDetails').find('button[type="submit"]').focus(); break;
+  //   // allow navigating to same or earlier tabs (back navigation) always
+  //   // but only allow forward to destIndex if all previous tabs (1..destIndex-1) are saved
+  //   if (destIndex > 1) {
+  //     for (let j = 1; j < destIndex; j++) {
+  //       if (!savedState[j]) {
+  //         e.preventDefault();
+  //         if (window.toastr) toastr.warning('Please save previous steps before proceeding.');
+  //         else alert('Please save previous steps before proceeding.');
+  //         // focus on first unsaved tab's save button (heuristic)
+  //         switch(j) {
+  //           case 1: $('#basic_info_save_btn').focus(); break;
+  //           case 2: $('#enrollment_details_save_btn').focus(); break;
+  //           case 3: $('#save_facility_and_other_dtls').focus(); break;
+  //           case 4: $('#save_vocational_btn').focus(); break;
+  //           case 5: $('#contact_info_save_btn').focus(); break;
+  //           case 6: $('#bank_details_of_student').focus(); break;
+  //           case 7: $('#saveAdditionalDetails').find('button[type="submit"]').focus(); break;
 
-            default: break;
-          }
-          return false;
-        }
-      }
-    }
-    // allowed
-  });
+  //           default: break;
+  //         }
+  //         return false;
+  //       }
+  //     }
+  //   }
+  //   // allowed
+  // });
 
   // Listener for custom event when a tab is saved
   // dispatch with: document.dispatchEvent(new CustomEvent('tabSaved',{detail:{tab:N}}));
