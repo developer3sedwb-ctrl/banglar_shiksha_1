@@ -371,24 +371,16 @@ class StudentInfoController extends Controller
     public function saveVocationalDetails(StoreUserRequestStudentVocationalDetails $request)
     {
         try {
-            $input = [
-                'school_id_fk'        => 1,
-                'district_code_fk'    => 4,
-                'subdivision_code_fk' => 45,
-                'block_munc_code_fk'  => 329,
-                'circle_code_fk'      => 115,
-                'gs_ward_code_fk'     => 11026,
-                'entry_ip'            => request()->ip(),
-                'update_ip'           => request()->ip(),
-                'created_by'          => auth()->id() ?? 1,
-                'updated_by'          => auth()->id() ?? 1,
-            ];
-
             $data = $request->validated();
 
             $save = StudentVocationalDetails::updateOrCreate(
-                ['school_id_fk' => $input['school_id_fk']],
                 [
+                    'school_id_fk'        => 1,
+                    'district_code_fk'    => 4,
+                    'subdivision_code_fk' => 45,
+                    'block_munc_code_fk'  => 329,
+                    'circle_code_fk'      => 115,
+                    'gs_ward_code_fk'     => 11026,
 
                     // YES / NO FLAGS
                     'exposure_vocational_activities_y_n'  => $data['exposure_vocational_activities_y_n'] ?? null,
@@ -419,10 +411,10 @@ class StudentInfoController extends Controller
                     'vocational_salary_offered'          => $data['salary_offered'] ?? null,
 
                     // SYSTEM FIELDS
-                    'entry_ip'   => $input['entry_ip'],
-                    'update_ip'  => $input['update_ip'],
-                    'created_by' => $input['created_by'],
-                    'updated_by' => $input['updated_by'],
+                    'entry_ip'            => request()->ip(),
+                    'update_ip'           => request()->ip(),
+                    'created_by'          => auth()->id() ?? 1,
+                    'updated_by'          => auth()->id() ?? 1,
                 ]
             );
             // ONLY IF the above is successful
@@ -433,7 +425,7 @@ class StudentInfoController extends Controller
                 // -------------------------------
                 StudentEntryDraftTracker::updateOrCreate(
                     [
-                        'school_id_fk' => $input['school_id_fk'],    // match school
+                        'school_id_fk' => 1,    // match school
                         'step_number'  => 4
                     ],
                     [
