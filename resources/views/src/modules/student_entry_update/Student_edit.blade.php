@@ -106,14 +106,34 @@
 @endphp
 
 <div class="container-fluid full-width-content">
-
-
-    <!-- PAGE HEADING -->
-      <div class="page-header mb-3 d-flex justify-content-between align-items-center">
+      <!-- PAGE HEADING -->
+  <div class="page-header mb-3 d-flex justify-content-between align-items-center">
         <div class="page-header mb-3">
-          <h4 class="fw-bold"><i class="bx bx-user"></i> Edit Student</h4>
+          <h4 class="fw-bold"><i class="bx bx-user"></i> Add Student</h4>
         </div>
-        <div class="d-flex gap-2">
+          <div class="d-flex gap-2">
+          <a href="" 
+            class="d-flex align-items-center gap-2 p-2 rounded border text-decoration-none"
+            data-bs-toggle="tooltip" 
+            title="Download Student DCF">
+              <span class="d-inline d-md-none"></span>
+              <img src="{{ asset('images/pdf.png') }}" alt="PDF" style="height: 24px;">
+              <span class="fw-semibold d-none d-md-inline"> Guideline</span>
+          </a>
+          <!-- ============================================= -->
+            {{-- Bulk Upload Button --}}
+            <a href="{{ route('student.bulk.upload') }}" class="btn btn-success">
+
+                {{-- MOBILE: show "Bulk" --}}
+                <span class="d-inline d-md-none">Bulk Upload</span>
+
+                {{-- DESKTOP: show icon + full text --}}
+                <span class="d-none d-md-inline">
+                    <i class="bx bx-upload"></i>
+                    Student Bulk Upload
+                </span>
+            </a>
+
             {{-- Back Button --}}
             <a href="{{ route('dashboard') }}" class="btn btn-primary">
 
@@ -127,30 +147,54 @@
                     Back
                 </span>
             </a>
-        </div>
-      </div>
-  
-      <!-- HTML -->
-      <div class="card mb-3">
-        <div class="card-header bg-primary text-white py-2">Student Search</div>
-        <div class="card-body p-3">
-          <div class="row g-2 align-items-center">
-            <div class="col-md-10 mb-2">
-              <div class="input-group">
-                <span class="input-group-text"><i class="bx bx-id-card"></i></span>
- <input type="text" class="form-control" id="student_code" placeholder="Student Code">
-
-              </div>
-            </div>
-
-            <!-- Use a slightly larger column so the button fits -->
-            <div class="col-md-2 mb-2 text-end">
-              <button class="btn btn-primary w-100 student-search-btn">Search</button>
-            </div>
           </div>
         </div>
-      </div>
+  
+    <div class="alert-container">
+          @if(isset($data['current_step']) && $data['current_step'] >= 1)
+        <div class="entry-alert-box">
+            <span class="entry-alert-text">
+                <i class="bx bx-info-circle"></i>
+                <strong> Resume Entry ?</strong>
+                <span class="d-none d-md-inline">
+                    You have a student entry that is still incomplete at Step {{ $data['current_step'] }}.
+                </span>
+            </span>
 
+            <div class="entry-alert-actions">
+            <button id="resumeEntryBtn" class="btn btn-success">
+
+              {{-- MOBILE TEXT ONLY --}}
+              <span class="d-inline d-md-none">
+                  <i class="bx bx-play-circle"></i> Resume
+              </span>
+
+              {{-- DESKTOP FULL TEXT --}}
+              <span class="d-none d-md-inline">
+                  <i class="bx bx-play-circle"></i>
+                  Resume from Step {{ $data['current_step'] }}
+              </span>
+            </button>
+
+
+              <button id="startNewEntryBtn" class="btn btn-danger">
+
+                {{-- ICON (mobile only) --}}
+                <span class="d-inline d-md-none">
+                    <i class="bx bx-trash"></i> 
+                </span>
+
+                {{-- FULL TEXT (desktop only) --}}
+                <span class="d-none d-md-inline">
+                    Start New Entry
+                </span>
+
+              </button>
+
+            </div>
+        </div>
+      @endif
+    </div>
 
     <!-- CARD WITH TABS -->
      <div class="card card-full">
@@ -241,6 +285,61 @@
   </div>
 
 
+
+  <!-- ==================DELETE PREVIOUS STUDENT ENTRY MODAL=========Subhajit Das===================== -->
+  <div class="modal fade" id="delete_previous_student_entry" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content shadow-lg">
+              
+              <button type="button" class="btn-close position-absolute end-0 m-2"
+                  data-bs-dismiss="modal" aria-label="Close"></button>
+
+              <div class="text-center p-3">
+                  <img src="{{ asset('images/delete_student.png') }}"
+                      width="80" height="80" alt="Icon">
+                  <h5 class="fw-bold mt-2">
+                  Are you sure you want to proceed?
+                  </h5>
+                  <h3 class="text-muted small"> The previous entry will be permanently deleted.</h3>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="confirmDeleteEntry">
+                      <i class="bx bx-trash me-1"></i> Delete Previous Entry
+                  </button>
+
+                  <button type="button" class="btn btn-outline-secondary"
+                      data-bs-dismiss="modal">
+                      <i class="bx bx-x-circle me-1"></i> Cancel
+                  </button>
+              </div>
+
+          </div>
+      </div>
+  </div>
+
+
+  <!-- ================Final Submit Preview  MODAL= Subhajit Das============================= -->
+  <div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title preview-title">
+            <i class="bi bi-eye-fill me-2"></i> Preview
+          </h5>
+
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="previewModalBody">
+          <!-- JS will fill this -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-bs-dismiss="modal">Final Submit</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- =================END Final Submit Preview  MODAL======================================= -->
 @endsection
@@ -940,6 +1039,7 @@ $(document).ready(function () {
             }
         })
         .catch(err => {
+            $btn.prop('disabled', false).text('Save & Next');
             console.error("Error saving vocational details:", err);
       });
     }
@@ -1046,6 +1146,7 @@ $(document).ready(function () {
               }
           })
           .catch(err => {
+              $btn.prop('disabled', false).text('Save & Next');
               console.error("Error saving vocational details:", err);
       });
     }
@@ -1055,6 +1156,35 @@ $(document).ready(function () {
 });
 // {{--Vocational DETAILS OF THE STUDENT Aziza End --}}
 
+
+    // Start New Entry Button
+    $("#resumeEntryBtn").on("click", function () 
+    {
+
+      let step = {{ $data['current_step'] ?? 1 }};
+      let tabSelector = "#general_info";
+
+      switch (step) {
+          case 1: tabSelector = "#general_info"; break;
+          case 2: tabSelector = "#enrollment_details"; break;
+          case 3: tabSelector = "#facility_other_dtls_tab"; break;
+          case 4: tabSelector = "#vocational_tab"; break;
+          case 5: tabSelector = "#contact_info_tab"; break;
+          case 6: tabSelector = "#bank_dtls_tab"; break;
+          case 7: tabSelector = "#additional_dtls_tab"; break;
+      }
+
+      // Remember resume mode to stop auto-tab switching
+      window.resumeMode = true;
+
+      // Activate tab using jQuery
+      $(`button[data-bs-target='${tabSelector}']`).tab("show");
+
+      // Scroll into view
+      setTimeout(() => {
+          $(tabSelector).get(0).scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
+    });
 
   // When clicking "Start New Entry" → open modal instead of confirm()
 document.getElementById("startNewEntryBtn")?.addEventListener("click", function () {
@@ -1076,6 +1206,452 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
         });
 });
 
+
+
+
+
+// ===========================Student Entry Preview Modal Content====================================
+    const studentData = @json($data);
+    
+    document.getElementById('previewBtn').addEventListener('click', function () {
+
+      let html = `
+        <div class="alert alert-warning text-center fw-bold" 
+             style="top:0; z-index:20; padding:8px; border-radius:0;">
+            ⚠️ Please check all details before final submit
+        </div>
+      `;
+          // ===== Basic Info =====
+          if (studentData.basic_info) {
+              const b = studentData.basic_info;
+
+              html += `
+                  <h6 class="card-header bg-heading-primary text-white py-2">
+                    Basic Details
+                  </h6>
+                  
+                  <table class="table table-sm table-bordered">
+
+                      <tr>
+                          <th>Name</th><td>${b.student_name ?? ''}</td>
+                          <th>Name (Aadhaar)</th><td>${b.student_name_as_per_aadhaar ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Gender</th><td>${b.gender ?? ''}</td>
+                          <th>DOB</th><td>${b.dob ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Father Name</th><td>${b.father_name ?? ''}</td>
+                          <th>Mother Name</th><td>${b.mother_name ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Guardian Name</th><td>${b.guardian_name ?? ''}</td>
+                          <th>Aadhaar Number</th><td>${b.aadhaar_child ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Mother Tongue</th><td>${b.mother_tongue ?? ''}</td>
+                          <th>Social Category</th><td>${b.social_category ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Religion</th><td>${b.religion ?? ''}</td>
+                          <th>Nationality</th><td>${b.nationality ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Blood Group</th><td>${b.blood_group ?? ''}</td>
+                          <th>BPL Beneficiary</th><td>${b.bpl_beneficiary ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Antyodaya Anna Yojana</th><td>${b.antyodaya_anna_yojana ?? ''}</td>
+                          <th>BPL Number</th><td>${b.bpl_number ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Disadvantaged Group</th><td>${b.disadvantaged_group ?? ''}</td>
+                          <th>CWSN</th><td>${b.cwsn ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Type of Impairment</th><td>${b.type_of_impairment ?? ''}</td>
+                          <th>Disability %</th><td>${b.disability_percentage ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Out of School</th><td>${b.out_of_school ?? ''}</td>
+                          <th>Mainstreamed</th><td>${b.mainstreamed ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Birth Reg. No</th><td>${b.birth_reg_no ?? ''}</td>
+                          <th>Identification Mark</th><td>${b.identification_mark ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Health ID</th><td>${b.health_id ?? ''}</td>
+                          <th>Relationship With Guardian</th><td>${b.relationship_with_guardian ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Family Income</th><td>${b.family_income ?? ''}</td>
+                          <th>Guardian Qualifications</th><td>${b.guardian_qualifications ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Height (cm)</th><td>${b.student_height ?? ''}</td>
+                          <th>Weight (kg)</th><td>${b.student_weight ?? ''}</td>
+                      </tr>
+
+                  </table>
+                  <hr>
+              `;
+          }
+          // ===== Enrollment Info =====
+          if (studentData.enrollment_info) {
+              const e = studentData.enrollment_info;
+
+              html += `
+                  <h6 class="card-header bg-heading-primary text-white py-2">
+                  Enrollment Details
+                  </h6>
+                  <table class="table table-sm table-bordered">
+
+                      <tr>
+                          <th>Admission No</th><td>${e.admission_no ?? ''}</td>
+                          <th>Status Previous Year</th><td>${e.status_pre_year ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Prev Class Appeared Exam</th><td>${e.prev_class_appeared_exam ?? ''}</td>
+                          <th>Prev Class Result</th><td>${e.prev_class_exam_result ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Prev Class % Marks</th><td>${e.prev_class_marks_percent ?? ''}</td>
+                          <th>Attendance Previous Year</th><td>${e.attendention_pre_year ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Previous Class</th><td>${e.pre_class_code_fk ?? ''}</td>
+                          <th>Previous Section</th><td>${e.pre_section_code_fk ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Previous Stream</th><td>${e.pre_stream_code_fk ?? ''}</td>
+                          <th>Previous Roll No</th><td>${e.pre_roll_number ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Current Class</th><td>${e.cur_class_code_fk ?? ''}</td>
+                          <th>Academic Year</th><td>${e.academic_year ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Current Section</th><td>${e.cur_section_code_fk ?? ''}</td>
+                          <th>Medium</th><td>${e.medium_code_fk ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Current Roll No</th><td>${e.cur_roll_number ?? ''}</td>
+                          <th>Admission Date</th><td>${e.admission_date ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Current Stream</th><td>${e.cur_stream_code ?? ''}</td>
+                          <th>Admission Type</th><td>${e.admission_type_code_fk ?? ''}</td>
+                      </tr>
+
+                  </table>
+                  <hr>
+              `;
+          }
+          // ===== Facility Info =====
+          if (studentData.facility) {
+              const f = studentData.facility;
+
+              html += `
+                  <h6 class="card-header bg-heading-primary text-white py-2">
+                  Facility & Other Details
+                  </h6>
+                  <table class="table table-sm table-bordered">
+
+                      <!-- Facilities Provided -->
+                      <tr>
+                          <th>Facilities Provided (Year)</th><td>${f.facilities_provided_for_the_yeear ?? ''}</td>
+                          <th>Free Uniforms</th><td>${f.free_uniforms ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Free Transport</th><td>${f.free_transport_facility ?? ''}</td>
+                          <th>Free Escort</th><td>${f.free_escort ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Free Hostel</th><td>${f.free_host_facility ?? ''}</td>
+                          <th>Free Bicycle</th><td>${f.free_bicycle ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Free Shoes</th><td>${f.free_shoe ?? ''}</td>
+                          <th>Free Exercise Books</th><td>${f.free_exercise_book ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Complete Free Books</th><td>${f.complete_free_books ?? ''}</td>
+                          <th></th><td></td>
+                      </tr>
+
+                      <!-- Scholarships -->
+                      <tr>
+                          <th>Central Scholarship</th><td>${f.central_scholarship ?? ''}</td>
+                          <th>Central Scholarship Name</th><td>${f.central_scholarship_name ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Central Scholarship Amount</th><td>${f.central_scholarship_amount ?? ''}</td>
+                          <th>State Scholarship</th><td>${f.state_scholarship ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>State Scholarship Name</th><td>${f.state_scholarship_name ?? ''}</td>
+                          <th>State Scholarship Amount</th><td>${f.state_scholarship_amount ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Other Scholarship</th><td>${f.other_scholarship ?? ''}</td>
+                          <th>Other Scholarship Amount</th><td>${f.other_scholarship_amount ?? ''}</td>
+                      </tr>
+
+                      <!-- Gifted / Special Cases -->
+                      <tr>
+                          <th>Hyperactive Disorder</th><td>${f.child_hyperactive_disorder ?? ''}</td>
+                          <th>Extra-curricular Activities</th><td>${f.stu_extracurricular_activity ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Gifted in Mathematics</th><td>${f.gifted_math ?? ''}</td>
+                          <th>Gifted in Language</th><td>${f.gifted_language ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Gifted in Science</th><td>${f.gifted_science ?? ''}</td>
+                          <th>Gifted in Technical</th><td>${f.gifted_technical ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Gifted in Sports</th><td>${f.gifted_sports ?? ''}</td>
+                          <th>Gifted in Art</th><td>${f.gifted_art ?? ''}</td>
+                      </tr>
+
+                      <!-- Other details -->
+                      <tr>
+                          <th>Provided Mentors</th><td>${f.provided_mentors ?? ''}</td>
+                          <th>Participated in Nurturance Camp</th><td>${f.whether_participated_nurturance_camp ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>State Level Nurturance</th><td>${f.state_nurturance ?? ''}</td>
+                          <th>National Level Nurturance</th><td>${f.national_nurturance ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>State/National Competitions</th><td>${f.participated_competitions ?? ''}</td>
+                          <th>NCC/NSS/Guides</th><td>${f.ncc_nss_guides ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>RTE Free Education</th><td>${f.rte_free_education ?? ''}</td>
+                          <th>Homeless</th><td>${f.homeless ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Special Training</th><td>${f.special_training ?? ''}</td>
+                          <th>Able to Handle Digital Devices</th><td>${f.able_to_handle_devices ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Internet Access</th><td>${f.internet_access ?? ''}</td>
+                          <th></th><td></td>
+                      </tr>
+
+                  </table>
+                  <hr>
+              `;
+          }
+
+          // ===== Vocational Info =====
+          if (studentData.vocational) {
+              const v = studentData.vocational;
+
+              html += `
+                
+                  <h6 class="card-header bg-heading-primary text-white py-2">
+                  Vocational Details
+                  </h6>
+                  <table class="table table-sm table-bordered">
+
+                      <tr>
+                          <th>Exposure to Vocational Activities</th><td>${v.exposure ?? ''}</td>
+                          <th>Undertook Vocational Course</th><td>${v.undertook ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Trade / Sector</th><td>${v.trade_sector ?? ''}</td>
+                          <th>Job Role</th><td>${v.job_role ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Theory Hours</th><td>${v.theory_hours ?? ''}</td>
+                          <th>Practical Hours</th><td>${v.practical_hours ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Industry Training Hours</th><td>${v.industry_hours ?? ''}</td>
+                          <th>Field Visit Hours</th><td>${v.field_visit_hours ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Appeared in Exam</th><td>${v.appeared_exam ?? ''}</td>
+                          <th>Marks Obtained (%)</th><td>${v.marks_obtained ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Placement Applied</th><td>${v.placement_applied ?? ''}</td>
+                          <th>Apprenticeship Applied</th><td>${v.apprenticeship_applied ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>NSQF Level</th><td>${v.nsqf_level ?? ''}</td>
+                          <th>Employment Status</th><td>${v.employment_status ?? ''}</td>
+                      </tr>
+
+                      <tr>
+                          <th>Salary Offered</th><td>${v.salary_offered ?? ''}</td>
+                          <th></th><td></td>
+                      </tr>
+
+                  </table>
+                  <hr>
+              `;
+          }
+
+          // ===== Student Contact Info =====
+          if (studentData.student_contact) {
+          const c = studentData.student_contact;
+
+          html += `
+          <h6 class="card-header bg-heading-primary text-white py-2">
+          Student Contact Details
+          </h6>
+          <table class="table table-sm table-bordered">
+
+          <tr>
+          <th>Country Code</th><td>${c.stu_country_code ?? ''}</td>
+          <th>State</th><td>${c.stu_state_code ?? ''}</td>
+          </tr>
+
+          <tr>
+          <th>District</th><td>${c.stu_contact_district ?? ''}</td>
+          <th>Block</th><td>${c.stu_contact_block ?? ''}</td>
+          </tr>
+
+          <tr>
+          <th>Panchayat</th><td>${c.stu_contact_panchayat ?? ''}</td>
+          <th>Habitation</th><td>${c.stu_contact_habitation ?? ''}</td>
+          </tr>
+
+          <tr>
+          <th>Address</th><td>${c.stu_contact_address ?? ''}</td>
+          <th>Police Station</th><td>${c.stu_police_station ?? ''}</td>
+          </tr>
+
+          <tr>
+          <th>Post Office</th><td>${c.stu_post_office ?? ''}</td>
+          <th>PIN Code</th><td>${c.stu_pin_code ?? ''}</td>
+          </tr>
+
+          <tr>
+          <th>Mobile No</th><td>${c.stu_mobile_no ?? ''}</td>
+          <th>Email</th><td>${c.stu_email ?? ''}</td>
+          </tr>
+
+          </table>
+
+          <h6 class="card-header bg-heading-primary text-white py-2">
+          Guardian Contact Details
+          </h6>
+          <table class="table table-sm table-bordered">
+
+          <tr>
+          <th>Country Code</th><td>${c.guardian_country_code ?? ''}</td>
+          <th>State</th><td>${c.guardian_state_code ?? ''}</td>
+          </tr>
+
+          <tr>
+          <th>District</th><td>${c.guardian_contact_district ?? ''}</td>
+          <th>Block</th><td>${c.guardian_contact_block ?? ''}</td>
+          </tr>
+
+          <tr>
+          <th>Panchayat</th><td>${c.guardian_contact_panchayat ?? ''}</td>
+          <th>Habitation</th><td>${c.guardian_contact_habitation ?? ''}</td>
+          </tr>
+
+          <tr>
+          <th>Address</th><td>${c.guardian_contact_address ?? ''}</td>
+          <th>Police Station</th><td>${c.guardian_police_station ?? ''}</td>
+          </tr>
+
+          <tr>
+          <th>Post Office</th><td>${c.guardian_post_office ?? ''}</td>
+          <th>PIN Code</th><td>${c.guardian_pin_code ?? ''}</td>
+          </tr>
+
+          <tr>
+          <th>Mobile No</th><td>${c.guardian_mobile_no ?? ''}</td>
+          <th>Email</th><td>${c.guardian_email ?? ''}</td>
+          </tr>
+
+          </table>
+          <hr>
+          `;
+          }
+
+          // ===== Student Bank Details =====
+          if (studentData.student_bank_details) {
+          const b = studentData.student_bank_details;
+
+          html += `
+          <h6 class="card-header bg-heading-primary text-white py-2">
+          Student Bank Details
+          </h6>
+          <table class="table table-sm table-bordered">
+
+          <tr>
+          <th>Bank</th><td>${b.bank_id_fk ?? ''}</td>
+          <th>Branch</th><td>${b.branch_id_fk ?? ''}</td>
+          </tr>
+
+          <tr>
+          <th>IFSC Code</th><td>${b.bank_ifsc ?? ''}</td>
+          <th>Account Number</th><td>${b.stu_bank_acc_no ?? ''}</td>
+          </tr>
+
+          </table>
+          <hr>
+          `;
+          }
+
+        document.getElementById('previewModalBody').innerHTML = html;
+
+        const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+        modal.show();
+    });
 // ===============================
 (function () {
   // Map tabs to numeric steps
@@ -1097,57 +1673,57 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
   }
 
   // optional visual: disable tabs that are locked (but don't remove pointer events; actual block by event)
-  // function refreshTabUI() {
-  //   for (let i = 1; i <= 7; i++) {
-  //     let btn = $(tabMap[i].btnSelector);
-  //     if (!btn.length) continue;
-  //     if (!savedState[i]) {
-  //       btn.addClass('disabled').attr('aria-disabled', 'true');
-  //     } else {
-  //       btn.removeClass('disabled').removeAttr('aria-disabled');
-  //     }
-  //   }
-  // }
-  // refreshTabUI();
+  function refreshTabUI() {
+    for (let i = 1; i <= 7; i++) {
+      let btn = $(tabMap[i].btnSelector);
+      if (!btn.length) continue;
+      if (!savedState[i]) {
+        btn.addClass('disabled').attr('aria-disabled', 'true');
+      } else {
+        btn.removeClass('disabled').removeAttr('aria-disabled');
+      }
+    }
+  }
+  refreshTabUI();
 
   // Block navigation to a tab if any PREVIOUS tab (smaller index) is not saved
-  // $('button[data-bs-toggle="tab"]').on('show.bs.tab', function (e) {
-  //   // find destination tab index
-  //   var dest = $(e.target).data('bsTarget') || $(e.target).attr('data-bs-target');
-  //   if (!dest) return; // nothing to do
-  //   // map dest to index
-  //   var destIndex = null;
-  //   for (let i = 1; i <= 7; i++) {
-  //     if (tabMap[i].target === dest) { destIndex = i; break; }
-  //   }
-  //   if (destIndex === null) return;
+  $('button[data-bs-toggle="tab"]').on('show.bs.tab', function (e) {
+    // find destination tab index
+    var dest = $(e.target).data('bsTarget') || $(e.target).attr('data-bs-target');
+    if (!dest) return; // nothing to do
+    // map dest to index
+    var destIndex = null;
+    for (let i = 1; i <= 7; i++) {
+      if (tabMap[i].target === dest) { destIndex = i; break; }
+    }
+    if (destIndex === null) return;
 
-  //   // allow navigating to same or earlier tabs (back navigation) always
-  //   // but only allow forward to destIndex if all previous tabs (1..destIndex-1) are saved
-  //   if (destIndex > 1) {
-  //     for (let j = 1; j < destIndex; j++) {
-  //       if (!savedState[j]) {
-  //         e.preventDefault();
-  //         if (window.toastr) toastr.warning('Please save previous steps before proceeding.');
-  //         else alert('Please save previous steps before proceeding.');
-  //         // focus on first unsaved tab's save button (heuristic)
-  //         switch(j) {
-  //           case 1: $('#basic_info_save_btn').focus(); break;
-  //           case 2: $('#enrollment_details_save_btn').focus(); break;
-  //           case 3: $('#save_facility_and_other_dtls').focus(); break;
-  //           case 4: $('#save_vocational_btn').focus(); break;
-  //           case 5: $('#contact_info_save_btn').focus(); break;
-  //           case 6: $('#bank_details_of_student').focus(); break;
-  //           case 7: $('#saveAdditionalDetails').find('button[type="submit"]').focus(); break;
+    // allow navigating to same or earlier tabs (back navigation) always
+    // but only allow forward to destIndex if all previous tabs (1..destIndex-1) are saved
+    if (destIndex > 1) {
+      for (let j = 1; j < destIndex; j++) {
+        if (!savedState[j]) {
+          e.preventDefault(); 
+          if (window.toastr) toastr.warning('Please save previous steps before proceeding.');
+          else alert('Please save previous steps before proceeding.');
+          // focus on first unsaved tab's save button (heuristic)
+          switch(j) {
+            case 1: $('#basic_info_save_btn').focus(); break;
+            case 2: $('#enrollment_details_save_btn').focus(); break;
+            case 3: $('#save_facility_and_other_dtls').focus(); break;
+            case 4: $('#save_vocational_btn').focus(); break;
+            case 5: $('#contact_info_save_btn').focus(); break;
+            case 6: $('#bank_details_of_student').focus(); break;
+            case 7: $('#saveAdditionalDetails').find('button[type="submit"]').focus(); break;
 
-  //           default: break;
-  //         }
-  //         return false;
-  //       }
-  //     }
-  //   }
-  //   // allowed
-  // });
+            default: break;
+          }
+          return false;
+        }
+      }
+    }
+    // allowed
+  });
 
   // Listener for custom event when a tab is saved
   // dispatch with: document.dispatchEvent(new CustomEvent('tabSaved',{detail:{tab:N}}));
@@ -1223,45 +1799,6 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
   // If you prefer, you can use the helper __markTabSaved(n) in place of dispatch.
 
 })(); 
-
-
-$(document).on('click', '.student-search-btn', function () {
-
-    let studentCode = $('#student_code').val().trim();
-
-    if (studentCode === '') {
-        alert('Please enter student code');
-        return;
-    }
-
-    $.ajax({
-        url: "{{ url('/get_studet_details_by_stu_code') }}",
-        type: "GET",
-        data: {
-            student_code: studentCode
-        },
-        beforeSend: function () {
-            $('.student-search-btn').prop('disabled', true).text('Searching...');
-        },
-        success: function (response) {
-
-            // If controller returns a VIEW (HTML)
-            $('#main_content').html(response);
-
-            // OR if full page load is needed
-            // document.open();
-            // document.write(response);
-            // document.close();
-        },
-        error: function (xhr) {
-            alert(xhr.responseJSON?.message || 'Student not found');
-        },
-        complete: function () {
-            $('.student-search-btn').prop('disabled', false).text('Search');
-        }
-    });
-
-});
 
 </script>
 
