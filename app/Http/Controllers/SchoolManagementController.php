@@ -78,6 +78,8 @@ class SchoolManagementController extends Controller
             $data['school_managements'] = ManagementMaster::where('status', 1)->select('id', 'name')->orderBy('name')->get();
 
             // Get paginated school list with eager loading
+
+
             $query = SchoolMaster::with(['district', 'block', 'ward', 'management'])
                 ->where('status', 1);
 
@@ -108,8 +110,20 @@ class SchoolManagementController extends Controller
                 ->paginate($per_page)
                 ->withQueryString(); // This preserves all query parameters
 
+
+                    // Prepare filters array for view
+            $filters = [
+                'district_id' => $district_id,
+                'management_id' => $management_id,
+                'search' => $request->search ?? '',
+                'per_page' => $per_page,
+                'districtid_param' => $districtid,
+                'managementid_param' => $managementid,
+            ];
+            // return $data;
             return view('src.school_management.school_list', [
                 'data' => $data,
+                'filters' => $filters, // Add this line
                 'selected_district_id' => $district_id,
                 'selected_management_id' => $management_id,
                 'districtid_param' => $districtid,

@@ -274,8 +274,8 @@
 
                 <ul class="menu-sub">
                     @canany(['view students', 'export students'])
-                        <li class="menu-item {{ request()->routeIs('student_list.list') ? 'active' : '' }}">
-                            <a href="{{ route('student_list.list') }}" class="menu-link">
+                        <li class="menu-item {{ request()->routeIs('students.list') ? 'active' : '' }}">
+                            <a href="{{ route('students.list') }}" class="menu-link">
                                 <div>Students' List View</div>
                             </a>
                         </li>

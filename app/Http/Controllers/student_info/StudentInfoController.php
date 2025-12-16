@@ -1,39 +1,47 @@
 <?php
 namespace App\Http\Controllers\student_info;
-use App\Http\Controllers\Controller;
-use App\Models\student_info\StudentInfo;
-use App\Models\student_info\StudentEnrollmentInfo;
-use App\Models\student_info\StudentFacilityAndOtherDetails;
-use App\Models\student_info\StudentVocationalDetails;
-use App\Models\student_info\StudentEntryDraftTracker;
-use App\Models\student_info\StudentContactInfo;
-use App\Models\student_info\BankList;
-use App\Models\student_info\StudentEntryMaster;
-use App\Models\student_info\BranchList;
-use App\Models\student_info\EntryStudentBankInfo;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\StoreUserRequestStudentEntry;
-use App\Http\Requests\StoreEnrollmentRequest;
-use App\Http\Requests\StoreUserRequestStudentFacilityAndOtherDetails;
-use App\Http\Requests\StoreUserRequestStudentVocationalDetails;
 use Exception;
-use App\Http\Requests\StoreUserRequestStudentContactInfo;
+use App\Models\BlockMaster;
+use App\Models\SchoolMaster;
+use Illuminate\Http\Request;
+use App\Models\StudentMaster;
+use App\Models\CategoryMaster;
+use App\Models\DistrictMaster;
+use App\Models\ManagementMaster;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Models\student_info\BankList;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Schema;
+use App\Models\student_info\BranchList;
+use App\Models\student_info\StudentInfo;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreEnrollmentRequest;
+use Illuminate\Validation\ValidationException;
+use App\Models\student_info\StudentContactInfo;
+use App\Models\student_info\StudentEntryMaster;
+use App\Models\student_info\EntryStudentBankInfo;
+use App\Models\student_info\StudentEnrollmentInfo;
+use App\Http\Requests\StoreUserRequestStudentEntry;
 use App\Models\student_info\StudentBankDetailsTemp;
+use App\Models\student_info\StudentEntryDraftTracker;
+use App\Models\student_info\StudentVocationalDetails;
+use App\Http\Requests\StoreUserRequestStudentContactInfo;
+use App\Models\student_info\StudentFacilityAndOtherDetails;
+use App\Http\Requests\StoreUserRequestStudentVocationalDetails;
+use App\Http\Requests\StoreUserRequestStudentFacilityAndOtherDetails;
 
 class StudentInfoController extends Controller
 {
     // 1 . ======================Store Student Basic Details============================
     public function StoreStudentEntryStoreBasicDetails(StoreUserRequestStudentEntry $request)
     {
-        DB::beginTransaction();
         // dd(request()->all());
         try {
-            $userId = auth()->id() ?? 1;
+            DB::beginTransaction();
+            $userId = Auth::user()->id ?? 1;
 
             $inputMeta = [
                 'school_id_fk' => 1,
@@ -138,10 +146,10 @@ class StudentInfoController extends Controller
     // 2. =======================Store Student Enrollment Data==============
     public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
     {
-        DB::beginTransaction();
-            // dd($request->all());
-            try {
-                $userId = auth()->id() ?? 1;
+        // dd($request->all());
+        try {
+                DB::beginTransaction();
+                $userId = Auth::user()->id ?? 1;
 
                 $inputMeta = [
                     'school_id_fk' => 1,
@@ -152,7 +160,7 @@ class StudentInfoController extends Controller
                 ];
                 // ['school_id_fk' => $inputMeta['school_id_fk']];
                 $enrollAttrs = [
-                
+
                     'admission_no'              => $request->admission_number,
                     'status_pre_year'           => $request->admission_status_prev,
                     'prev_class_appeared_exam'  => $request->prev_class_appeared_exam,
@@ -200,8 +208,8 @@ class StudentInfoController extends Controller
                             'step_number'  => 2
                         ],
                         [
-                            'created_by' => auth()->id() ?? 1,
-                            'updated_by' => auth()->id() ?? 1
+                            'created_by' => Auth::user()->id ?? 1,
+                            'updated_by' => Auth::user()->id ?? 1
                         ]
                     );
                 }
@@ -260,8 +268,8 @@ class StudentInfoController extends Controller
             'gs_ward_code_fk'    => 11026,
             'entry_ip'           => request()->ip(),
             'update_ip'          => request()->ip(),
-            'created_by'         => auth()->id() ?? 1,
-            'updated_by'         => auth()->id() ?? 1,
+            'created_by'         => Auth::user()->id ?? 1,
+            'updated_by'         => Auth::user()->id ?? 1,
         ];
 
         // ----------------------------------------------
@@ -346,8 +354,8 @@ class StudentInfoController extends Controller
                     'step_number'  => 3
                 ],
                 [
-                    'created_by' => auth()->id() ?? 1,
-                    'updated_by' => auth()->id() ?? 1
+                    'created_by' => Auth::user()->id ?? 1,
+                    'updated_by' => Auth::user()->id ?? 1
                 ]
             );
         }
@@ -379,8 +387,8 @@ class StudentInfoController extends Controller
                 'gs_ward_code_fk'     => 11026,
                 'entry_ip'            => request()->ip(),
                 'update_ip'           => request()->ip(),
-                'created_by'          => auth()->id() ?? 1,
-                'updated_by'          => auth()->id() ?? 1,
+                'created_by'          => Auth::user()->id ?? 1,
+                'updated_by'          => Auth::user()->id ?? 1,
             ];
 
             $data = $request->validated();
@@ -436,8 +444,8 @@ class StudentInfoController extends Controller
                         'step_number'  => 4
                     ],
                     [
-                        'created_by' => auth()->id() ?? 1,
-                        'updated_by' => auth()->id() ?? 1
+                        'created_by' => Auth::user()->id ?? 1,
+                        'updated_by' => Auth::user()->id ?? 1
                     ]
                 );
             }
@@ -463,13 +471,13 @@ class StudentInfoController extends Controller
         DB::beginTransaction();
         // dd(request()->all());
         try {
-            $userId = auth()->id() ?? 1;
+            $userId = Auth::user()->id ?? 1;
 
             $inputMeta = [
                 'school_id_fk' => 1,
                 'created_by'   => $userId,
                 'updated_by'   => $userId,
-                
+
             ];
 
             $data = [
@@ -506,10 +514,10 @@ class StudentInfoController extends Controller
                 'school_id_fk'              => $inputMeta['school_id_fk'],
                 // 'entry_ip'                  => $inputMeta['entry_ip'],
                 // 'update_ip'                 => $inputMeta['update_ip'],
-             
+
 
             ];
-    
+
             $contact_info_of_student = StudentContactInfo::updateOrCreate(
                 ['school_id_fk' => $inputMeta['school_id_fk']],
                 $data
@@ -556,8 +564,8 @@ class StudentInfoController extends Controller
    // 6. ==============Store Student Bank Details======================
     public function bankDetailsOfStudent(Request $request)
     {
-        $userId   = auth()->id() ?? 1;
-        $schoolId = $request->input('school_id_fk', 1); 
+        $userId   = Auth::user()->id ?? 1;
+        $schoolId = $request->input('school_id_fk', 1);
         // or use auth()->user()->school_id_fk depending on your flow
 
         $validated = $request->validate([
@@ -616,7 +624,7 @@ class StudentInfoController extends Controller
         ]);
     }
 
-    
+
     // =======================Fetch Student Data===========================
     public function getStudentEntry()
     {
@@ -811,10 +819,10 @@ class StudentInfoController extends Controller
             } else {
                 $data['vocational'] = null;
             }
-      
 
 
-            
+
+
             // 5 . ==================== Contact Details ========================================
 
             $student_contact = StudentContactInfo::where('school_id_fk', $schoolId)->first();
@@ -864,12 +872,12 @@ class StudentInfoController extends Controller
                 'branch_id_fk'    => $student_bank_details -> branch_id_fk,
                 'bank_ifsc'       => $student_bank_details -> bank_ifsc,
                 'stu_bank_acc_no' => $student_bank_details -> stu_bank_acc_no,
-          
+
                 ];
             } else {
                 $data['student_bank_details'] = null;
             }
-      
+
             return view('src.modules.student_entry_update.student_entry', compact('data'));
 
         }
@@ -901,7 +909,7 @@ class StudentInfoController extends Controller
 
             StudentEnrollmentInfo::where('school_id_fk', $schoolId)
                 ->update($updateData);
-        
+
             StudentFacilityAndOtherDetails::where('school_id_fk', $schoolId)
                 ->update($updateData);
 
@@ -916,7 +924,7 @@ class StudentInfoController extends Controller
             EntryStudentBankInfo::where('school_id_fk', $schoolId)
                 ->update($updateData);
 
-           
+
 
 
 
@@ -939,7 +947,7 @@ class StudentInfoController extends Controller
         }
     }
 
-   
+
 
     //  =========================Fetch Bank Branch========================
     public function getBranches(Request $request)
@@ -973,7 +981,7 @@ class StudentInfoController extends Controller
 
         return response()->json(['ifsc' => $branch ? trim($branch->branch_ifsc) : null]);
     }
- 
+
     // ====================Final Student Details Submit========================================
     protected function finalizeStudentEntry(int $schoolId, int $userId)
     {
@@ -1011,7 +1019,7 @@ class StudentInfoController extends Controller
                 'student_code'        => 1,
 
                 'state_code_fk'      => 1,
-            
+
 
                 // -------- BASIC INFO ---------------
                 'studentname'                         => $basic->studentname,
@@ -1108,5 +1116,326 @@ class StudentInfoController extends Controller
     }
 
 
+    /**
+     * Display student list with filters
+     */
+    /**
+     * Display student list with filters
+     */
+    public function studentList(Request $request)
+    {
+        try {
+            // ===============================
+            // Filter parameters
+            // ===============================
+            $district_id = null;
+            $block_id = null;
+            $management_id = null;
+            $school_id = null;
+
+            $search_param        = $request->search ?? '';
+            $gender_param        = $request->gender ?? '';
+            $class_param         = $request->class ?? '';
+            $category_param      = $request->category ?? '';
+            $bpl_param           = $request->bpl ?? '';
+            $cwsn_param          = $request->cwsn ?? '';
+            $academic_year_param = $request->academic_year ?? '';
+            $per_page            = $request->per_page ?? 20;
+
+            // ===============================
+            // Decrypt IDs safely
+            // ===============================
+            foreach (['district_id', 'block_id', 'management_id', 'school_id'] as $field) {
+                if ($request->filled($field)) {
+                    try {
+                        ${$field} = Crypt::decrypt($request->$field);
+                    } catch (\Throwable $e) {
+                        ${$field} = null;
+                    }
+                }
+            }
+            $data = [];
+
+            // ===============================
+            // MASTER DATA (NO CACHE)
+            // ===============================
+            $data['districts'] = DistrictMaster::where('status', 1)
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get();
+
+            $data['blocks'] = BlockMaster::where('status', 1)
+                ->select('id', 'name', 'district_id')
+                ->orderBy('name')
+                ->get();
+
+            $data['managements'] = ManagementMaster::where('status', 1)
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get();
+
+            // $data['genders'] = GenderMaster::where('status', 1)
+            //     ->select('id', 'name')
+            //     ->orderBy('id')
+            //     ->get();
+            $data['genders'] = [];
+            // $data['classes'] = ClassMaster::where('status', 1)
+            //     ->select('id', 'name')
+            //     ->orderBy('id')
+            //     ->get();
+            $data['classes'] = [];
+
+            $data['categories'] = CategoryMaster::where('status', 1)
+                ->select('id', 'name')
+                ->orderBy('id')
+                ->get();
+
+            // Academic years
+            $data['academic_years'] = StudentMaster::select('academic_year')
+                ->distinct()
+                ->orderBy('academic_year', 'desc')
+                ->pluck('academic_year');
+
+            // ===============================
+            // STUDENT QUERY
+            // ===============================
+            $query = StudentMaster::with([
+                'district:id,name',
+                'block:id,name',
+                // 'management:id,name',
+                'school:id,school_name,schcd',
+                // 'gender:id,name',
+                // 'currentClass:id,name',
+                // 'category:id,name'
+            ])->where('status', 1);
+
+            // District filter (partition key)
+            if ($district_id) {
+                $query->where('district_code_fk', $district_id);
+
+                $data['schools'] = SchoolMaster::where('district_id', $district_id)
+                    ->where('status', 1)
+                    ->select('id', 'school_name', 'schcd')
+                    ->orderBy('school_name')
+                    ->get();
+            } else {
+                $data['schools'] = collect();
+            }
+
+            if ($block_id) {
+                $query->where('circle_code_fk', $block_id);
+            }
+
+            if ($management_id) {
+                $query->whereHas('school', function ($q) use ($management_id) {
+                    $q->where('management_id', $management_id);
+                });
+            }
+
+            if ($school_id) {
+                $query->where('school_code_fk', $school_id);
+            }
+
+            if ($gender_param) {
+                $query->where('gender_code_fk', $gender_param);
+            }
+
+            if ($class_param) {
+                $query->where('cur_class_code_fk', $class_param);
+            }
+
+            if ($category_param) {
+                $query->where('social_category_code_fk', $category_param);
+            }
+
+            if ($academic_year_param) {
+                $query->where('academic_year', $academic_year_param);
+            }
+
+            if ($bpl_param !== '') {
+                $query->where('bpl_y_n', $bpl_param);
+            }
+
+            if ($cwsn_param !== '') {
+                $query->where('cwsn_y_n', $cwsn_param);
+            }
+
+            // ===============================
+            // SEARCH
+            // ===============================
+            if ($search_param) {
+                $search = trim($search_param);
+                $query->where(function ($q) use ($search) {
+                    $q->where('studentname', 'ILIKE', "%{$search}%")
+                        ->orWhere('studentname_as_per_aadhaar', 'ILIKE', "%{$search}%")
+                        ->orWhere('admission_no', 'ILIKE', "%{$search}%")
+                        ->orWhere('student_code', 'ILIKE', "%{$search}%")
+                        ->orWhere('aadhaar_number', 'ILIKE', "%{$search}%")
+                        ->orWhere('fathername', 'ILIKE', "%{$search}%")
+                        ->orWhere('mothername', 'ILIKE', "%{$search}%")
+                        ->orWhere('guardian_name', 'ILIKE', "%{$search}%")
+                        ->orWhere('stu_mobile_no', 'ILIKE', "%{$search}%")
+                        ->orWhere('guardian_mobile_no', 'ILIKE', "%{$search}%")
+                        ->orWhereHas('school', function ($q) use ($search) {
+                            $q->where('school_name', 'ILIKE', "%{$search}%")
+                              ->orWhere('schcd', 'ILIKE', "%{$search}%");
+                        });
+                });
+            }
+// dd($query
+//                 ->orderBy('student_code', 'desc')
+//                 ->paginate($per_page)
+//                 ->withQueryString()
+//                 ->onEachSide(1));
+            // ===============================
+            // PAGINATION
+            // ===============================
+            $data['students'] = $query
+                ->orderBy('student_code', 'desc')
+                ->paginate($per_page)
+                ->withQueryString()
+                ->onEachSide(1);
+
+            // ===============================
+            // STATISTICS
+            // ===============================
+            $statsQuery = StudentMaster::where('status', 1);
+
+            if ($district_id) {
+                $statsQuery->where('district_code_fk', $district_id);
+            }
+
+            $data['total_students']  = $statsQuery->count();
+            $data['male_students']   = (clone $statsQuery)->where('gender_code_fk', 1)->count();
+            $data['female_students'] = (clone $statsQuery)->where('gender_code_fk', 2)->count();
+            $data['bpl_students']    = (clone $statsQuery)->where('bpl_y_n', 1)->count();
+            $data['cwsn_students']   = (clone $statsQuery)->where('cwsn_y_n', 2)->count();
+
+            $data['class_distribution'] = (clone $statsQuery)
+                ->select('cur_class_code_fk', DB::raw('COUNT(*) as count'))
+                ->groupBy('cur_class_code_fk')
+                // ->with('currentClass:id,name')
+                ->get();
+
+            $data['category_distribution'] = (clone $statsQuery)
+                ->select('social_category_code_fk', DB::raw('COUNT(*) as count'))
+                ->groupBy('social_category_code_fk')
+                // ->with('category:id,name')
+                ->get();
+            // dd($data);
+            // ===============================
+            // VIEW
+            // ===============================
+            return view('src.modules.student_information.student_list', [
+                'data' => $data,
+                'selected_district_id'   => $district_id,
+                'selected_block_id'      => $block_id,
+                'selected_management_id' => $management_id,
+                'selected_school_id'     => $school_id,
+                'search_param'           => $search_param,
+                'gender_param'           => $gender_param,
+                'class_param'            => $class_param,
+                'category_param'         => $category_param,
+                'bpl_param'              => $bpl_param,
+                'cwsn_param'             => $cwsn_param,
+                'academic_year_param'    => $academic_year_param,
+                'per_page'               => $per_page,
+                'encrypted_params'       => $request->only([
+                    'district_id', 'block_id', 'management_id', 'school_id'
+                ])
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Student list error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return redirect()->back()->with('error', 'An error occurred while loading student list.');
+        }
+    }
+
+
+
+     /**
+     * Get blocks by district (AJAX)
+     */
+    public function getBlocksByDistrict(Request $request)
+    {
+        try {
+            $district_id = Crypt::decrypt($request->district_id);
+            $blocks = BlockMaster::where('district_id', $district_id)
+                ->where('status', 1)
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'blocks' => $blocks
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load blocks'
+            ]);
+        }
+    }
+
+    /**
+     * Get schools by filters (AJAX)
+     */
+    public function getSchoolsByFilters(Request $request)
+    {
+        try {
+            $query = SchoolMaster::where('status', 1);
+
+            if ($request->has('district_id') && !empty($request->district_id)) {
+                $district_id = Crypt::decrypt($request->district_id);
+                $query->where('district_id', $district_id);
+            }
+
+            if ($request->has('block_id') && !empty($request->block_id)) {
+                $block_id = Crypt::decrypt($request->block_id);
+                $query->where('block_id', $block_id);
+            }
+
+            if ($request->has('management_id') && !empty($request->management_id)) {
+                $management_id = Crypt::decrypt($request->management_id);
+                $query->where('management_id', $management_id);
+            }
+
+            $schools = $query->select('id', 'school_name', 'schcd')
+                ->orderBy('school_name')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'schools' => $schools
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load schools'
+            ]);
+        }
+    }
+
+
+
+     /**
+     * Get student statistics for dashboard
+     */
+    public function getStatistics()
+    {
+        $stats = [
+            'total' => StudentMaster::where('status', 1)->count(),
+            'male' => StudentMaster::where('status', 1)->where('gender_code_fk', 'Male')->count(),
+            'female' => StudentMaster::where('status', 1)->where('gender_code_fk', 'Female')->count(),
+            'bpl' => StudentMaster::where('status', 1)->where('bpl_y_n', 'Y')->count(),
+            'cwsn' => StudentMaster::where('status', 1)->where('cwsn_y_n', 'Y')->count(),
+            'current_year' => StudentMaster::where('status', 1)
+                ->where('academic_year', date('Y'))
+                ->count(),
+        ];
+
+        return response()->json($stats);
+    }
 
 }
