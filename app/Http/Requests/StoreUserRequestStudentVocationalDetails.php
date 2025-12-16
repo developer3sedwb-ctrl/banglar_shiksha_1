@@ -29,8 +29,8 @@ class StoreUserRequestStudentVocationalDetails extends FormRequest
             'appeared_exam'     => ['required_if:undertook_vocational_course,1', 'nullable', 'in:0,1,2'],
             'marks_obtained'    => ['required_if:appeared_exam,1,2', 'nullable', 'numeric'],
 
-            'placement_applied'     => ['required_if:undertook_vocational_course,1', 'nullable', 'in:0,1'],
-            'apprenticeship_applied'=> ['required_if:undertook_vocational_course,1', 'nullable', 'in:0,1'],
+            'placement_applied'     => ['required_if:undertook_vocational_course,1', 'nullable', 'in:1,2,3'],
+            'apprenticeship_applied'=> ['required_if:undertook_vocational_course,1', 'nullable', 'in:1,2,3'],
 
             'nsqf_level'        => ['required_if:undertook_vocational_course,1', 'nullable', 'integer'],
             'employment_status' => ['required_if:undertook_vocational_course,1', 'nullable', 'in:0,1,2,3'],
