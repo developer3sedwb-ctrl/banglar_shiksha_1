@@ -105,7 +105,6 @@ return new class extends Migration
             $table->timestamps();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
-            $table->unsignedBigInteger('update_by_stake_cd')->nullable();
             $table->softDeletes();
             $table->unique(['school_id_fk', 'deleted_at'], 'unique_school_student_general_info');
             $table->unique(['studentname', 'dob', 'fathername', 'mothername', 'deleted_at'], 'unique_student_identity_temp');

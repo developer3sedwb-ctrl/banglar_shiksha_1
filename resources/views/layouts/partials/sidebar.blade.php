@@ -229,8 +229,8 @@
                     @endcan
 
                     @can('edit school')
-                        <li class="menu-item {{ request()->routeIs('school.search') ? 'active' : '' }}">
-                            <a href="{{ route('school.search') }}" class="menu-link">
+                        <li class="menu-item {{ request()->routeIs('school.update') ? 'active' : '' }}">
+                            <a href="{{ route('school.update') }}" class="menu-link">
                                 <div>School Update</div>
                             </a>
                         </li>
@@ -274,8 +274,8 @@
 
                 <ul class="menu-sub">
                     @canany(['view students', 'export students'])
-                        <li class="menu-item {{ request()->routeIs('students.list') ? 'active' : '' }}">
-                            <a href="{{ route('students.list') }}" class="menu-link">
+                        <li class="menu-item {{ request()->routeIs('student_list.list') ? 'active' : '' }}">
+                            <a href="{{ route('student_list.list') }}" class="menu-link">
                                 <div>Students' List View</div>
                             </a>
                         </li>
@@ -351,224 +351,6 @@
                         </li>
                     @endcanany
                 </ul>
-            </li>
-        @endcanany
-
-
-
-
-        <!-- Employee Management -->
-        @canany(['view employees', 'create employees', 'edit employees', 'delete employees', 'export employees'])
-            <li class="menu-item {{ request()->routeIs('employee.*') ? 'active open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-group"></i>
-                    <div>Employee Management</div>
-                </a>
-
-                <ul class="menu-sub">
-                    @canany(['view employees', 'create employees', 'edit employees', 'delete employees', 'export employees'])
-                        <li class="menu-item {{ request()->routeIs('employee.list') ? 'active' : '' }}">
-                            <a href="{{ route('employee.list') }}" class="menu-link">
-                                <div>Employee List</div>
-                            </a>
-                        </li>
-                    @endcanany
-                </ul>
-            </li>
-        @endcanany
-
-        <!-- Mission Banglar Shiksha -->
-        @canany(['view mission', 'manage mission', 'download school_details', 'view school_basic', 'download enrolment_certificate'])
-            <li class="menu-item {{ request()->routeIs('mission.*') ? 'active open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-book-alt"></i>
-                    <div>Mission Banglar Shiksha</div>
-                </a>
-
-                <ul class="menu-sub">
-                    @can('download school_details')
-                        <li class="menu-item {{ request()->routeIs('mission.download_basic_details') ? 'active' : '' }}">
-                            <a href="{{ route('mission.download_basic_details') }}" class="menu-link">
-                                <div>Download School Basic Details</div>
-                            </a>
-                        </li>
-                    @endcan
-
-                    @can('download enrolment_certificate')
-                        <li class="menu-item {{ request()->routeIs('mission.enrolment_certificate') ? 'active' : '' }}">
-                            <a href="{{ route('mission.enrolment_certificate') }}" class="menu-link">
-                                <div>Enrolment Certificate</div>
-                            </a>
-                        </li>
-                    @endcan
-
-                    @can('view school_basic')
-                        <li class="menu-item {{ request()->routeIs('mission.school_basic_details') ? 'active' : '' }}">
-                            <a href="{{ route('mission.school_basic_details') }}" class="menu-link">
-                                <div>School Basic Details View</div>
-                            </a>
-                        </li>
-                    @endcan
-                </ul>
-            </li>
-        @endcanany
-
-
-        <!-- Incentives -->
-        @canany(['view incentives', 'manage incentives', 'view stock', 'manage stock', 'view distribution', 'manage distribution'])
-            <li class="menu-item {{ request()->routeIs('incentives.*') ? 'active open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-gift"></i>
-                    <div>Incentives</div>
-                </a>
-
-                <ul class="menu-sub">
-                    @can('view stock')
-                        <li class="menu-item {{ request()->routeIs('incentives.challan_wise_stock') ? 'active' : '' }}">
-                            <a href="{{ route('incentives.challan_wise_stock') }}" class="menu-link">
-                                <div>Challan wise stock received details</div>
-                            </a>
-                        </li>
-                    @endcan
-
-                    @can('view distribution')
-                        <li class="menu-item {{ request()->routeIs('incentives.student_wise_distribution') ? 'active' : '' }}">
-                            <a href="{{ route('incentives.student_wise_distribution') }}" class="menu-link">
-                                <div>Student wise Stock Distribution</div>
-                            </a>
-                        </li>
-                    @endcan
-
-                    @can('view stock')
-                        <li class="menu-item {{ request()->routeIs('incentives.available_stock') ? 'active' : '' }}">
-                            <a href="{{ route('incentives.available_stock') }}" class="menu-link">
-                                <div>Available Stock</div>
-                            </a>
-                        </li>
-                    @endcan
-
-                    @can('view stock')
-                        <li class="menu-item {{ request()->routeIs('incentives.stock_received_history') ? 'active' : '' }}">
-                            <a href="{{ route('incentives.stock_received_history') }}" class="menu-link">
-                                <div>Stock Received History</div>
-                            </a>
-                        </li>
-                    @endcan
-
-                    @can('view distribution')
-                        <li class="menu-item {{ request()->routeIs('incentives.stock_distribution_history') ? 'active' : '' }}">
-                            <a href="{{ route('incentives.stock_distribution_history') }}" class="menu-link">
-                                <div>Stock Distribution History</div>
-                            </a>
-                        </li>
-                    @endcan
-
-                    @can('manage stock')
-                        <li class="menu-item {{ request()->routeIs('incentives.opening_stock_entry') ? 'active' : '' }}">
-                            <a href="{{ route('incentives.opening_stock_entry') }}" class="menu-link">
-                                <div>Opening Stock Entry</div>
-                            </a>
-                        </li>
-                    @endcan
-
-                    @can('view stock')
-                        <li class="menu-item {{ request()->routeIs('incentives.stock_return_history') ? 'active' : '' }}">
-                            <a href="{{ route('incentives.stock_return_history') }}" class="menu-link">
-                                <div>Stock Return History</div>
-                            </a>
-                        </li>
-                    @endcan
-                </ul>
-            </li>
-        @endcanany
-
-        <!-- Download -->
-        @canany(['view downloads', 'download materials', 'view presentations', 'view training', 'view manuals'])
-            <li class="menu-item {{ request()->routeIs('downloads.*') ? 'active open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-download"></i>
-                    <div>Download</div>
-                </a>
-
-                <ul class="menu-sub">
-                    @can('view presentations')
-                        <li class="menu-item {{ request()->routeIs('downloads.presentation') ? 'active' : '' }}">
-                            <a href="{{ route('downloads.presentation') }}" class="menu-link">
-                                <div>Presentation of Central Portal</div>
-                            </a>
-                        </li>
-                    @endcan
-
-                    @can('view training')
-                        <li class="menu-item {{ request()->routeIs('downloads.training_schedule') ? 'active' : '' }}">
-                            <a href="{{ route('downloads.training_schedule') }}" class="menu-link">
-                                <div>Training Time Schedule</div>
-                            </a>
-                        </li>
-                    @endcan
-
-                    @can('view manuals')
-                        <li class="menu-item {{ request()->routeIs('downloads.school_user_manual') ? 'active' : '' }}">
-                            <a href="{{ route('downloads.school_user_manual') }}" class="menu-link">
-                                <div>School Level User Manual</div>
-                            </a>
-                        </li>
-                    @endcan
-
-                    @can('download materials')
-                        <li class="menu-item {{ request()->routeIs('downloads.student_doe') ? 'active' : '' }}">
-                            <a href="{{ route('downloads.student_doe') }}" class="menu-link">
-                                <div>Student DOE ( )</div>
-                            </a>
-                        </li>
-                    @endcan
-
-                    @can('download materials')
-                        <li class="menu-item {{ request()->routeIs('downloads.student_doe_instruction') ? 'active' : '' }}">
-                            <a href="{{ route('downloads.student_doe_instruction') }}" class="menu-link">
-                                <div>Student DOE Instruction</div>
-                            </a>
-                        </li>
-                    @endcan
-                </ul>
-            </li>
-        @endcanany
-
-        <!-- Account Management -->
-        @canany(['view account', 'manage account', 'update contact', 'change password'])
-            <li class="menu-item {{ request()->routeIs('account.*') ? 'active open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons bx bx-cog"></i>
-                    <div>Account Management</div>
-                </a>
-
-                <ul class="menu-sub">
-                    @can('update contact')
-                        <li class="menu-item {{ request()->routeIs('account.update_contact') ? 'active' : '' }}">
-                            <a href="{{ route('account.update_contact') }}" class="menu-link">
-                                <div>Update Contact No. in UDISE+</div>
-                            </a>
-                        </li>
-                    @endcan
-
-                    @can('change password')
-                        <li class="menu-item {{ request()->routeIs('account.change_password') ? 'active' : '' }}">
-                            <a href="{{ route('account.change_password') }}" class="menu-link">
-                                <div>Change Password</div>
-                            </a>
-                        </li>
-                    @endcan
-                </ul>
-            </li>
-        @endcanany
-
-        <!-- ALP -->
-        @canany(['view alp', 'download alp'])
-            <li class="menu-item {{ request()->routeIs('alp.*') ? 'active' : '' }}">
-                <a href="{{ route('alp.download') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-file"></i>
-                    <div>ALP</div>
-                </a>
             </li>
         @endcanany
     </ul>

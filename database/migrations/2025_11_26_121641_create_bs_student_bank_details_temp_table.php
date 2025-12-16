@@ -16,10 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('school_id_fk');
             $table->foreign('school_id_fk')->references('id')->on('bs_school_master');
             // Guardian address same as student
-            $table->unsignedSmallInteger('bank_id_fk');
-            $table->foreign('bank_id_fk')->references('id')->on('bs_bank_code_name_master');
-            $table->unsignedSmallInteger('branch_id_fk');
-            $table->foreign('branch_id_fk')->references('id')->on('bs_bank_branch_master');
+            // $table->integer('stu_bank');
+            // $table->foreign('stu_bank')->references('id')->on('bs_bank_master');
+            // $table->integer('stu_bank_branch');
+            // $table->foreign('stu_bank_branch')->references('id')->on('bs_bank_branch_master');
             $table->string('bank_ifsc', 20);
             $table->string('stu_bank_acc_no', 50);
             $table->smallInteger('status')->default(1);
@@ -28,7 +28,6 @@ return new class extends Migration
             $table->timestamps();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
-            $table->unsignedBigInteger('update_by_stake_cd')->nullable();
             $table->softDeletes();
         });
     }

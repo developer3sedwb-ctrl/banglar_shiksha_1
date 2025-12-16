@@ -18,11 +18,8 @@ class BsCurriculumFollowedMasterSeeder extends Seeder
          DB::table('bs_curriculum_followed_master')->insert([
             ['name' => 'CBSE', 'created_at' => $now, 'updated_at' => $now],
             ['name' => 'CISCE', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'WBBPE', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'OTHER', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'WBBSE', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'WBCHSE', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'WBBME', 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'WB BOARD', 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'OTHER', 'created_at' => $now, 'updated_at' => $now]
         ]);
     }
 }

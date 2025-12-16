@@ -102,12 +102,11 @@ return new class extends Migration
 
                 created_by BIGINT,
                 updated_by BIGINT,
-                update_by_stake_cd BIGINT NULL,
                 created_at TIMESTAMP,
                 updated_at TIMESTAMP,
                 deleted_at TIMESTAMP,
 
-                PRIMARY KEY(student_code, district_id_fk)
+                PRIMARY KEY(id, district_id_fk)
             )
             PARTITION BY LIST (district_id_fk);
         ");

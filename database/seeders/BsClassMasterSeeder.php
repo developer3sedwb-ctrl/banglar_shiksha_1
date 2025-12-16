@@ -30,8 +30,7 @@ class BsClassMasterSeeder extends Seeder
             ['id'=>'9','name' => 'CLASS IX',       'created_at' => $now, 'updated_at' => $now],
             ['id'=>'10','name' => 'CLASS X',        'created_at' => $now, 'updated_at' => $now],
             ['id'=>'11','name' => 'CLASS XI',       'created_at' => $now, 'updated_at' => $now],
-            ['id'=>'12','name' => 'CLASS XII',      'created_at' => $now, 'updated_at' => $now],
-            ['id'=>'999','name' => 'NOT APPLICABLE',      'created_at' => $now, 'updated_at' => $now]
+            ['id'=>'12','name' => 'CLASS XII',      'created_at' => $now, 'updated_at' => $now]
         ]);
     }
 }

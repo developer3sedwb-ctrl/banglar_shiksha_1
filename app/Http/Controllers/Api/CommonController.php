@@ -19,158 +19,71 @@ class CommonController extends Controller
 {
     public function getDistrict(Request $request)
     {
-        try{
-            $data = DistrictMaster::get();        
-            return response()->json(['data' => $data]);
-        }
-        catch (\Throwable $e) {
-            return response()->json([
-                'error' => true,
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile(),
-            ], 500);
-        }
+        $data = DistrictMaster::get();        
+        return response()->json(['data' => $data]);
     }
 
     public function getBlocksByDistrict(Request $request, $district_id)
     {
-        try{
-            $blocks = BlockMaster::where('district_id', $district_id)->get();
-            return response()->json(['data' => $blocks]);
-        }
-        catch (\Throwable $e) {
-            return response()->json([
-                'error' => true,
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile(),
-            ], 500);
-        }
+        $blocks = BlockMaster::where('district_id', $district_id)->get();
+        return response()->json(['data' => $blocks]);
     }
 
     public function getCircleByDistrict(Request $request, $district_id)
     {
-        try{
-            $data = CircleMaster::where('district_id', $district_id)->get();
-            return response()->json(['data' => $data]);
-        }
-        catch (\Throwable $e) {
-            return response()->json([
-                'error' => true,
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile(),
-            ], 500);
-        }
+        $data = CircleMaster::where('district_id', $district_id)->get();
+        return response()->json(['data' => $data]);
     }
 
     public function getClusterByDistrict(Request $request, $district_id)
     {
-        try{
-            $data = ClusterMaster::where('district_id', $district_id)->get();
-            return response()->json(['data' => $data]);
-        }
-        catch (\Throwable $e) {
-            return response()->json([
-                'error' => true,
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile(),
-            ], 500);
-        }
+        $data = ClusterMaster::where('district_id', $district_id)->get();
+        return response()->json(['data' => $data]);
     }
 
     public function getWardsByBlock(Request $request, $block_id)
     {
-        try{
-            $data = WardMaster::where('block_munc_corp_id', $block_id)->get();
-            return response()->json(['data' => $data]);
-        }
-        catch (\Throwable $e) {
-            return response()->json([
-                'error' => true,
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile(),
-            ], 500);
-        }
+        $data = WardMaster::where('block_munc_corp_id', $block_id)->get();
+        return response()->json(['data' => $data]);
     }
 
     public function getDisecode(Request $request, $ward_id){
-        try{
-            $disecode = null;
-            $wardData = WardMaster::where('id', $ward_id)->first();
-            if($wardData && $wardData->schcd){
-                $schcd = trim($wardData->schcd ?? null);
-                $schoolData = SchoolMaster::whereRaw("CAST(schcd AS TEXT) LIKE ?", [$schcd.'%'])->orderBy('schcd', 'DESC')->first();
-                if($schoolData){
-                    $lastSchcd = $schoolData->schcd;
-                    $disecode = str_pad((int)$lastSchcd + 1, strlen($lastSchcd), '0', STR_PAD_LEFT);
-                }
-                else{
-                    $disecode = $wardData->schcd . '01';
-                }
+        $disecode = null;
+        $wardData = WardMaster::where('id', $ward_id)->first();
+        if($wardData && $wardData->schcd){
+            $schcd = trim($wardData->schcd ?? null);
+            $schoolData = SchoolMaster::whereRaw("CAST(schcd AS TEXT) LIKE ?", [$schcd.'%'])->orderBy('schcd', 'DESC')->first();
+            if($schoolData){
+                $lastSchcd = $schoolData->schcd;
+                $disecode = str_pad((int)$lastSchcd + 1, strlen($lastSchcd), '0', STR_PAD_LEFT);
             }
-            $data = ['disecode' => $disecode];
-            return response()->json(['data'=>$data]);
-        } 
-        catch (\Throwable $e) {
-            return response()->json([
-                'error' => true,
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile(),
-            ], 500);
+            else{
+                $disecode = $wardData->schcd . '01';
+            }
         }
+        $data = ['disecode' => $disecode];
+        return response()->json(['data'=>$data]);
     }
 
     public function getSubdivisions(Request $request, $district_id)
     {
-        try{
-            $data = \App\Models\SubdivisionMaster::where('district_id', $district_id)->get();
-            return response()->json(['data' => $data]);
-        }
-        catch (\Throwable $e) {
-            return response()->json([
-                'error' => true,
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile(),
-            ], 500);
-        }
+        $data = \App\Models\SubdivisionMaster::where('district_id', $district_id)->get();
+        return response()->json(['data' => $data]);
     }
 
     public function getSchoolCategoryTypesByManagement(Request $request, $management_id)
     {
-        try{
-            $subcatids = \App\Models\ManagementAndSchoolCategoryTypeMappingMaster::where('management_id', $management_id)->pluck('school_category_type_id');
-            $categoryTypes = \App\Models\SchoolCategoryTypeMaster::whereIn('id',$subcatids)->get();
-            return response()->json(['data' => $categoryTypes]);
-        }
-        catch (\Throwable $e) {
-            return response()->json([
-                'error' => true,
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile(),
-            ], 500);
-        }
+        $categoryTypes = \App\Models\SchoolCategoryTypeMaster::whereIn(
+            'id',
+            \App\Models\ManagementAndSchoolCategoryTypeMappingMaster::where('school_management_code_pk', $management_id)->pluck('school_category_type_code_pk')
+        )->get();
+
+        return response()->json(['data' => $categoryTypes]);
     }
 
     public function getSchoolByBlock(Request $request, $block_id){
-        try{
-            $schoolList = SchoolMaster::get();
-            return response()->json(['data' => $schoolList]);
-        }
-        catch (\Throwable $e) {
-            return response()->json([
-                'error' => true,
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile(),
-            ], 500);
-        }
+        $schoolList = SchoolMaster::get();
+        return response()->json(['data' => $schoolList]);
     }
     public function getVocationalTradeSector(){
         $result = VocationalTradeSectorMaster::where('status', 1)->get();

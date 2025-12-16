@@ -65,7 +65,6 @@ return new class extends Migration
             $table->timestamps();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
-            $table->unsignedBigInteger('update_by_stake_cd')->nullable();
             $table->softDeletes();
         });
     }

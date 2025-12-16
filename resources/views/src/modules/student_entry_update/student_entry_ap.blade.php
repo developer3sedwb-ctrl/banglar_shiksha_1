@@ -1860,7 +1860,7 @@ $guardian_qualification = $guardian_qualification_master;
             console.error("Error loading trade sectors:", err);
         });
 
-
+      
 
 
       $("#trade_sector").attr("required", true);

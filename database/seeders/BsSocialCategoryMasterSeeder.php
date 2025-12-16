@@ -11,45 +11,30 @@ class BsSocialCategoryMasterSeeder extends Seeder
     /**
      * Run the database seeds.
      */
- public function run(): void
+    public function run(): void
     {
         $now = Carbon::now();
 
-        $rows = [
-            [8, 'OBC-B', 80, 0, 0, null, 'N'],
-            [7, 'OBC-A', 70, 0, 0, null, 'N'],
-            [1, 'GENERAL', 10, 1, 1, 1, 'N'],
-            [2, 'SC', 20, 1, 1, 2, 'N'],
-            [3, 'ST', 30, 1, 1, 3, 'N'],
-            [4, 'OBC', 40, 1, 1, 4, 'N'],
-            [5, 'ORC', 50, 0, 1, 5, 'N'],
-            [6, 'OTHERS', 60, 0, 1, 6, 'N'],
+        $categories = [
+            ['name' => 'GENERAL', 'rank' => 10, 'udise_active_status' => 1, 'udise_tch_active_status' => 1, 'udise_code' => 1],
+            ['name' => 'SC', 'rank' => 20, 'udise_active_status' => 1, 'udise_tch_active_status' => 1, 'udise_code' => 2],
+            ['name' => 'ST', 'rank' => 30, 'udise_active_status' => 1, 'udise_tch_active_status' => 1, 'udise_code' => 3],
+            ['name' => 'OBC', 'rank' => 40, 'udise_active_status' => 1, 'udise_tch_active_status' => 1, 'udise_code' => 4],
+            ['name' => 'OTHERS', 'rank' => 50, 'udise_active_status' => 1, 'udise_tch_active_status' => 1, 'udise_code' => 5],
+            ['name' => 'NOT APPLICABLE', 'rank' => 60, 'udise_active_status' => 0, 'udise_tch_active_status' => 0, 'udise_code' => 0],
         ];
 
-        $data = [];
-
-        foreach ($rows as $r) {
-            $data[] = [
-                'id'                     => $r[0],
-                'name'                   => $r[1],
-                'rank'                   => $r[2],
-                'udise_active_status'    => $r[3],
-                'udise_tch_active_status'=> $r[4],
-                'udise_code'             => $r[5],
-                'status'                 => $r[6] === 'N' ? 1 : 2,
-                'created_at'             => $now,
-                'updated_at'             => $now,
-            ];
-        }
+        $data = array_map(fn($item) => [
+            'name' => $item['name'],
+            'rank' => $item['rank'],
+            'udise_active_status' => $item['udise_active_status'],
+            'udise_tch_active_status' => $item['udise_tch_active_status'],
+            'udise_code' => $item['udise_code'],
+            'status' => 1,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ], $categories);
 
         DB::table('bs_social_category_master')->insert($data);
-
-        // Reset sequence
-        DB::statement("
-            SELECT setval(
-                pg_get_serial_sequence('bs_social_category_master', 'id'),
-                (SELECT MAX(id) FROM bs_social_category_master)
-            );
-        ");
     }
 }

@@ -17,7 +17,7 @@ return new class extends Migration
                 district_code_fk SMALLINT NOT NULL,
                 school_id_fk BIGINT NOT NULL,
                 -- student_code that will be used to reference parent (must match parent column name & type)
-                student_code CHAR(14) NOT NULL,
+                student_code_fk CHAR(14) NOT NULL,
                 academic_year SMALLINT,
 
                 exposure_vocational_activities_y_n SMALLINT,
@@ -53,7 +53,6 @@ return new class extends Migration
                 update_ip VARCHAR(15),
                 created_by BIGINT,
                 updated_by BIGINT,
-                update_by_stake_cd BIGINT NULL,
                 created_at TIMESTAMP,
                 updated_at TIMESTAMP,
                 deleted_at TIMESTAMP,
@@ -97,7 +96,7 @@ return new class extends Migration
             DB::statement("
                 ALTER TABLE {$partitionName}
                 ADD CONSTRAINT {$partitionName}_fk_student_master
-                FOREIGN KEY (district_code_fk, student_code)
+                FOREIGN KEY (district_code_fk, student_code_fk)
                 REFERENCES bs_student_master (district_code_fk, student_code)
                 ON UPDATE CASCADE
                 ON DELETE RESTRICT;

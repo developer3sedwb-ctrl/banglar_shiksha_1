@@ -1,30 +1,28 @@
 <?php
 namespace App\Http\Controllers\student_info;
-use Exception;
-use App\Models\BlockMaster;
-use App\Models\SchoolMaster;
-use Illuminate\Http\Request;
-use App\Models\StudentMaster;
-use App\Models\CategoryMaster;
-use App\Models\DistrictMaster;
-use App\Models\ManagementMaster;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use App\Models\student_info\BankList;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Schema;
-use App\Models\student_info\BranchList;
 use App\Models\student_info\StudentInfo;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\StoreEnrollmentRequest;
-use Illuminate\Validation\ValidationException;
-use App\Models\student_info\StudentContactInfo;
-use App\Models\student_info\StudentEntryMaster;
-use App\Models\student_info\EntryStudentBankInfo;
 use App\Models\student_info\StudentEnrollmentInfo;
+use App\Models\student_info\StudentFacilityAndOtherDetails;
+use App\Models\student_info\StudentVocationalDetails;
+use App\Models\student_info\StudentEntryDraftTracker;
+use App\Models\student_info\StudentContactInfo;
+use App\Models\student_info\BankList;
+use App\Models\student_info\StudentEntryMaster;
+use App\Models\student_info\BranchList;
+use App\Models\student_info\EntryStudentBankInfo;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreUserRequestStudentEntry;
+use App\Http\Requests\StoreEnrollmentRequest;
+use App\Http\Requests\StoreUserRequestStudentFacilityAndOtherDetails;
+use App\Http\Requests\StoreUserRequestStudentVocationalDetails;
+use Exception;
+use App\Http\Requests\StoreUserRequestStudentContactInfo;
+use Illuminate\Support\Facades\Schema;
 use App\Models\student_info\StudentBankDetailsTemp;
 use App\Models\student_info\StudentAdditionalInfo;
 
@@ -33,10 +31,10 @@ class StudentInfoController extends Controller
     // 1 . ======================Store Student Basic Details============================
     public function StoreStudentEntryStoreBasicDetails(StoreUserRequestStudentEntry $request)
     {
+        DB::beginTransaction();
         // dd(request()->all());
         try {
-            DB::beginTransaction();
-            $userId = Auth::user()->id ?? 1;
+            $userId = auth()->id() ?? 1;
 
             $inputMeta = [
                 'school_id_fk' => 1,
@@ -141,10 +139,10 @@ class StudentInfoController extends Controller
     // 2. =======================Store Student Enrollment Data==============
     public function storeEnrollmentDetails(StoreEnrollmentRequest $request)
     {
-        // dd($request->all());
-        try {
-                DB::beginTransaction();
-                $userId = Auth::user()->id ?? 1;
+        DB::beginTransaction();
+            // dd($request->all());
+            try {
+                $userId = auth()->id() ?? 1;
 
                 $inputMeta = [
                     'school_id_fk' => 1,
@@ -155,7 +153,7 @@ class StudentInfoController extends Controller
                 ];
                 // ['school_id_fk' => $inputMeta['school_id_fk']];
                 $enrollAttrs = [
-
+                
                     'admission_no'              => $request->admission_number,
                     'status_pre_year'           => $request->admission_status_prev,
                     'prev_class_appeared_exam'  => $request->prev_class_appeared_exam,
@@ -203,8 +201,8 @@ class StudentInfoController extends Controller
                             'step_number'  => 2
                         ],
                         [
-                            'created_by' => Auth::user()->id ?? 1,
-                            'updated_by' => Auth::user()->id ?? 1
+                            'created_by' => auth()->id() ?? 1,
+                            'updated_by' => auth()->id() ?? 1
                         ]
                     );
                 }
@@ -263,8 +261,8 @@ class StudentInfoController extends Controller
             'gs_ward_code_fk'    => 11026,
             'entry_ip'           => request()->ip(),
             'update_ip'          => request()->ip(),
-            'created_by'         => Auth::user()->id ?? 1,
-            'updated_by'         => Auth::user()->id ?? 1,
+            'created_by'         => auth()->id() ?? 1,
+            'updated_by'         => auth()->id() ?? 1,
         ];
 
         // ----------------------------------------------
@@ -349,8 +347,8 @@ class StudentInfoController extends Controller
                     'step_number'  => 3
                 ],
                 [
-                    'created_by' => Auth::user()->id ?? 1,
-                    'updated_by' => Auth::user()->id ?? 1
+                    'created_by' => auth()->id() ?? 1,
+                    'updated_by' => auth()->id() ?? 1
                 ]
             );
         }
@@ -373,16 +371,24 @@ class StudentInfoController extends Controller
     public function saveVocationalDetails(StoreUserRequestStudentVocationalDetails $request)
     {
         try {
+            $input = [
+                'school_id_fk'        => 1,
+                'district_code_fk'    => 4,
+                'subdivision_code_fk' => 45,
+                'block_munc_code_fk'  => 329,
+                'circle_code_fk'      => 115,
+                'gs_ward_code_fk'     => 11026,
+                'entry_ip'            => request()->ip(),
+                'update_ip'           => request()->ip(),
+                'created_by'          => auth()->id() ?? 1,
+                'updated_by'          => auth()->id() ?? 1,
+            ];
+
             $data = $request->validated();
 
             $save = StudentVocationalDetails::updateOrCreate(
+                ['school_id_fk' => $input['school_id_fk']],
                 [
-                    'school_id_fk'        => 1,
-                    'district_code_fk'    => 4,
-                    'subdivision_code_fk' => 45,
-                    'block_munc_code_fk'  => 329,
-                    'circle_code_fk'      => 115,
-                    'gs_ward_code_fk'     => 11026,
 
                     // YES / NO FLAGS
                     'exposure_vocational_activities_y_n'  => $data['exposure_vocational_activities_y_n'] ?? null,
@@ -413,10 +419,10 @@ class StudentInfoController extends Controller
                     'vocational_salary_offered'          => $data['salary_offered'] ?? null,
 
                     // SYSTEM FIELDS
-                    'entry_ip'            => request()->ip(),
-                    'update_ip'           => request()->ip(),
-                    'created_by'          => auth()->id() ?? 1,
-                    'updated_by'          => auth()->id() ?? 1,
+                    'entry_ip'   => $input['entry_ip'],
+                    'update_ip'  => $input['update_ip'],
+                    'created_by' => $input['created_by'],
+                    'updated_by' => $input['updated_by'],
                 ]
             );
             // ONLY IF the above is successful
@@ -427,12 +433,12 @@ class StudentInfoController extends Controller
                 // -------------------------------
                 StudentEntryDraftTracker::updateOrCreate(
                     [
-                        'school_id_fk' => 1,    // match school
+                        'school_id_fk' => $input['school_id_fk'],    // match school
                         'step_number'  => 4
                     ],
                     [
-                        'created_by' => Auth::user()->id ?? 1,
-                        'updated_by' => Auth::user()->id ?? 1
+                        'created_by' => auth()->id() ?? 1,
+                        'updated_by' => auth()->id() ?? 1
                     ]
                 );
             }
@@ -458,7 +464,7 @@ class StudentInfoController extends Controller
         DB::beginTransaction();
         // dd(request()->all());
         try {
-            $userId = Auth::user()->id ?? 1;
+            $userId = auth()->id() ?? 1;
 
             $inputMeta = [
                 'school_id_fk' => 1,
@@ -507,7 +513,7 @@ class StudentInfoController extends Controller
                  'updated_by'   => $inputMeta['updated_by'],
 
             ];
-
+    
             $contact_info_of_student = StudentContactInfo::updateOrCreate(
                 ['school_id_fk' => $inputMeta['school_id_fk']],
                 $data
@@ -554,8 +560,8 @@ class StudentInfoController extends Controller
     // 6. ==============Store Student Bank Details======================
     public function bankDetailsOfStudent(Request $request)
     {
-        $userId   = Auth::user()->id ?? 1;
-        $schoolId = $request->input('school_id_fk', 1);
+        $userId   = auth()->id() ?? 1;
+        $schoolId = $request->input('school_id_fk', 1); 
         // or use auth()->user()->school_id_fk depending on your flow
 
         $validated = $request->validate([
@@ -859,10 +865,10 @@ class StudentInfoController extends Controller
             } else {
                 $data['vocational'] = null;
             }
+      
 
 
-
-
+            
             // 5 . ==================== Contact Details ========================================
 
             $student_contact = StudentContactInfo::where('school_id_fk', $schoolId)->first();
@@ -912,7 +918,7 @@ class StudentInfoController extends Controller
                 'branch_id_fk'    => $student_bank_details -> branch_id_fk,
                 'bank_ifsc'       => $student_bank_details -> bank_ifsc,
                 'stu_bank_acc_no' => $student_bank_details -> stu_bank_acc_no,
-
+          
                 ];
             } else {
                 $data['student_bank_details'] = null;
@@ -969,7 +975,7 @@ class StudentInfoController extends Controller
 
             StudentEnrollmentInfo::where('school_id_fk', $schoolId)
                 ->update($updateData);
-
+        
             StudentFacilityAndOtherDetails::where('school_id_fk', $schoolId)
                 ->update($updateData);
 
@@ -1009,7 +1015,7 @@ class StudentInfoController extends Controller
         }
     }
 
-
+   
 
     //  =========================Fetch Bank Branch========================
     public function getBranches(Request $request)
@@ -1043,7 +1049,7 @@ class StudentInfoController extends Controller
 
         return response()->json(['ifsc' => $branch ? trim($branch->branch_ifsc) : null]);
     }
-
+ 
     // ====================Final Student Details Submit========================================
     protected function finalizeStudentEntry(int $schoolId, int $userId)
     {
@@ -1081,7 +1087,7 @@ class StudentInfoController extends Controller
                 'student_code'        => 1,
 
                 'state_code_fk'      => 1,
-
+            
 
                 // -------- BASIC INFO ---------------
                 'studentname'                         => $basic->studentname,

@@ -6,62 +6,11 @@
 
 @push('css')
     <style>
-        /* Compact Design */
-        :root {
-            --compact-padding: 0.5rem;
-            --border-radius-sm: 6px;
-            --border-radius-md: 8px;
-        }
-
-        .card {
-            border: none;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-        }
-
-        .card-header {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            color: white;
-            padding: 0.75rem 1rem;
-            border-bottom: none;
-        }
-
-        .card-body {
-            padding: 1rem;
-        }
-
-        /* Compact Table */
-        .table {
-            margin-bottom: 0;
-            font-size: 0.875rem;
-        }
-
-        .table th {
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
-            padding: 0.75rem 0.5rem;
-            background: #f8fafc;
-            border-bottom: 2px solid #e2e8f0;
-            color: #475569;
-        }
-
-        .table td {
-            padding: 0.5rem;
-            vertical-align: middle;
-            border-color: #f1f5f9;
-        }
-
-        .table tr:hover {
-            background-color: #f8fafc;
-        }
-
-        /* Avatar - Smaller */
-        .avatar-sm {
+        .user-avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            background: var(--bs-primary);
             color: white;
             display: flex;
             align-items: center;
@@ -70,390 +19,161 @@
             font-size: 0.875rem;
         }
 
-        .avatar-online {
-            position: relative;
-        }
-
-        .avatar-online::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 8px;
-            height: 8px;
-            background-color: #10b981;
-            border-radius: 50%;
-            border: 2px solid white;
-        }
-
-        /* Compact Action Buttons */
-        .btn-xs {
-            padding: 0.25rem 0.5rem;
+        .status-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
             font-size: 0.75rem;
-            line-height: 1;
-            border-radius: var(--border-radius-sm);
+            font-weight: 500;
         }
 
         .action-buttons {
             display: flex;
             gap: 0.25rem;
+            flex-wrap: nowrap;
         }
 
         .action-btn {
-            width: 28px;
-            height: 28px;
-            padding: 0;
-            display: inline-flex;
+            width: 32px;
+            height: 32px;
+            display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 6px;
+            transition: all 0.2s;
         }
 
-        /* Text Highlighting */
-        .text-highlight {
-            color: #1e40af;
-            font-weight: 600;
-        }
-
-        .text-muted {
-            color: #64748b !important;
-            font-size: 0.8125rem;
-        }
-
-        .text-success {
-            color: #059669 !important;
-        }
-
-        .text-danger {
-            color: #dc2626 !important;
-        }
-
-        .text-warning {
-            color: #d97706 !important;
-        }
-
-        .text-info {
-            color: #0891b2 !important;
-        }
-
-        /* Badge Compact */
-        .badge-sm {
-            font-size: 0.6875rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 10px;
-            font-weight: 500;
-        }
-
-        .badge-success-light {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-
-        .badge-danger-light {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-
-        .badge-primary-light {
-            background-color: #dbeafe;
-            color: #1e40af;
-        }
-
-        .badge-warning-light {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
-
-        /* Form Controls Compact */
-        .form-control-sm,
-        .form-select-sm {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.875rem;
-            border-radius: var(--border-radius-sm);
-        }
-
-        .input-group-sm>.form-control,
-        .input-group-sm>.form-select {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.875rem;
-        }
-
-        /* Search Card Compact */
-        .search-card .card-header {
-            padding: 0.5rem 1rem;
-            background: #f8fafc;
-            color: #1e293b;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .search-card .card-body {
-            padding: 0.75rem;
-        }
-
-        /* Stats Compact */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 0.5rem;
-            margin: 0.75rem 0;
-        }
-
-        .stat-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: var(--border-radius-md);
-            padding: 0.75rem;
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 1.25rem;
-            font-weight: 700;
-            line-height: 1;
-            margin-bottom: 0.25rem;
-        }
-
-        .stat-label {
-            font-size: 0.75rem;
-            color: #64748b;
-        }
-
-        /* Bulk Actions Compact */
-        .bulk-section {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: var(--border-radius-md);
-            padding: 0.75rem;
-            margin: 0.75rem 0;
-        }
-
-        /* Empty State Compact */
-        .empty-state {
-            padding: 2rem 1rem;
-            text-align: center;
-        }
-
-        .empty-state-icon {
-            font-size: 2.5rem;
-            color: #cbd5e1;
-            margin-bottom: 1rem;
-        }
-
-        /* Pagination Compact */
-        .pagination-sm .page-link {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.875rem;
-        }
-
-        /* User Info Compact */
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .user-details {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 0.875rem;
-            line-height: 1.2;
-        }
-
-        .user-email {
-            color: #64748b;
-            font-size: 0.8125rem;
-            line-height: 1.2;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        /* Role Tags Compact */
-        .role-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            background: #e0e7ff;
-            color: #3730a3;
-            padding: 0.125rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin: 0.125rem;
-        }
-
-        /* Last Login Compact */
-        .last-login {
-            font-size: 0.8125rem;
-            color: #64748b;
-        }
-
-        .last-login-time {
-            font-weight: 500;
-            color: #1e293b;
-        }
-
-        /* Impersonation Notice Compact */
-        .impersonation-notice {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: #78350f;
-            padding: 0.375rem 0.75rem;
-            border-radius: var(--border-radius-sm);
-            font-size: 0.8125rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-right: 0.75rem;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .table-responsive {
-                margin: 0 -1rem;
-                padding: 0 1rem;
-            }
-
-            .action-buttons {
-                flex-wrap: wrap;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* Hover Effects */
-        .btn:hover {
+        .action-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .stat-card:hover {
-            border-color: #c7d2fe;
-            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.1);
+        .bulk-action-section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e5e7eb;
         }
 
-        /* Custom Scrollbar */
-        .table-responsive::-webkit-scrollbar {
-            height: 6px;
+        .impersonate-btn {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
         }
 
-        .table-responsive::-webkit-scrollbar-track {
-            background: #f1f5f9;
+        .impersonate-btn:hover {
+            background: #059669;
+            border-color: #059669;
+            transform: translateY(-1px);
         }
 
-        .table-responsive::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
+        .stop-impersonate-btn {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: white;
+        }
+
+        .stop-impersonate-btn:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+        }
+
+        .empty-state {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            opacity: 0.5;
+            margin-bottom: 1rem;
         }
     </style>
 @endpush
 
 @section('content')
     <div class="container-fluid">
-        <!-- Loading Overlay -->
-        <div class="loading-overlay d-none" id="loadingOverlay">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
-
         <div class="row">
             <div class="col-12">
-                <!-- Main Card -->
                 <div class="card">
-                    <!-- Card Header -->
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="mb-0 fw-bold">
-                                <i class='bx bx-user me-2'></i>User Management
-                            </h5>
-                            <small class="opacity-75">Manage all system users and permissions</small>
-                        </div>
-                        <div class="d-flex align-items-center">
+                        <h3 class="card-title mb-0">Users List</h3>
+                        <div class="card-actions d-flex align-items-center">
                             <!-- Impersonation Notice -->
                             @if (session('impersonator'))
-                                <div class="impersonation-notice">
-                                    <i class='bx bx-user-voice'></i>
-                                    <span>Impersonating: {{ auth()->user()->name }}</span>
+                                <div class="me-3">
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-user-switch me-1"></i>
+                                        Impersonating: {{ auth()->user()->name }}
+                                    </span>
                                     <a href="{{ route('admin.users.stop-impersonate') }}"
-                                        class="btn btn-xs btn-danger ms-2">
-                                        <i class='bx bx-log-out'></i> Stop
+                                        class="btn btn-danger btn-sm stop-impersonate-btn ms-2">
+                                        <i class="fas fa-user-slash me-1"></i>Stop Impersonating
                                     </a>
                                 </div>
                             @endif
 
                             @can('create users')
                                 <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm">
-                                    <i class='bx bx-plus me-1'></i> Add User
+                                    <i class="fas fa-plus me-1"></i> Create New User
                                 </a>
                             @endcan
                         </div>
                     </div>
-
-                    <!-- Card Body -->
                     <div class="card-body">
-                        <!-- Messages -->
+                        <!-- Success/Error Messages -->
                         @session('success')
-                            <div class="alert alert-success alert-dismissible fade show py-2" role="alert">
-                                <i class='bx bx-check-circle me-2'></i>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check me-2"></i>
                                 {{ $value }}
-                                <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         @endsession
 
                         @session('error')
-                            <div class="alert alert-danger alert-dismissible fade show py-2" role="alert">
-                                <i class='bx bx-error-circle me-2'></i>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>
                                 {{ $value }}
-                                <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         @endsession
 
-                        <!-- Search Section -->
-                        <div class="card search-card mb-3">
-                            <div class="card-header py-2">
-                                <h6 class="mb-0">
-                                    <i class='bx bx-search me-2'></i>Search & Filters
-                                </h6>
+
+                        {{--  --}}
+                        <!-- Advanced Search Section -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-search me-2"></i>Advanced Search
+                                </h5>
                             </div>
                             <div class="card-body">
                                 <form method="GET" action="{{ route('admin.users.index') }}" id="searchForm">
-                                    <div class="row g-2">
+                                    <div class="row g-3">
                                         <!-- Global Search -->
-                                        <div class="col-lg-3 col-md-6">
-                                            <div class="input-group input-group-sm">
-                                                <span class="input-group-text bg-transparent">
-                                                    <i class='bx bx-search text-muted'></i>
-                                                </span>
-                                                <input type="text" name="search" class="form-control"
-                                                    placeholder="Search..." value="{{ request('search') }}">
-                                            </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Global Search</label>
+                                            <input type="text" name="search" class="form-control"
+                                                placeholder="Search name, email, phone, department..."
+                                                value="{{ request('search') }}">
                                         </div>
 
-                                        <!-- Status -->
-                                        <div class="col-lg-2 col-md-4">
-                                            <select name="status" class="form-select form-select-sm">
+                                        <!-- Status Filter -->
+                                        <div class="col-md-2">
+                                            <label class="form-label">Status</label>
+                                            <select name="status" class="form-select">
                                                 <option value="all">All Status</option>
                                                 <option value="active"
-                                                    {{ request('status') == 'active' ? 'selected' : '' }}>
-                                                    Active
-                                                </option>
+                                                    {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
                                                 <option value="inactive"
-                                                    {{ request('status') == 'inactive' ? 'selected' : '' }}>
-                                                    Inactive
+                                                    {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive
                                                 </option>
                                             </select>
                                         </div>
 
-                                        <!-- Role -->
-                                        <div class="col-lg-2 col-md-4">
-                                            <select name="role" class="form-select form-select-sm">
+                                        <!-- Role Filter -->
+                                        <div class="col-md-2">
+                                            <label class="form-label">Role</label>
+                                            <select name="role" class="form-select">
                                                 <option value="all">All Roles</option>
                                                 @foreach ($roles as $roleName => $roleDisplay)
                                                     <option value="{{ $roleName }}"
@@ -464,9 +184,10 @@
                                             </select>
                                         </div>
 
-                                        <!-- Department -->
-                                        <div class="col-lg-2 col-md-4">
-                                            <select name="department" class="form-select form-select-sm">
+                                        <!-- Department Filter -->
+                                        <div class="col-md-2">
+                                            <label class="form-label">Department</label>
+                                            <select name="department" class="form-select">
                                                 <option value="all">All Departments</option>
                                                 @foreach ($departments as $department)
                                                     <option value="{{ $department }}"
@@ -477,127 +198,103 @@
                                             </select>
                                         </div>
 
-                                        <!-- Action Buttons -->
-                                        <div class="col-lg-3 col-md-6 d-flex gap-2">
-                                            <button type="submit" class="btn btn-primary btn-sm flex-grow-1">
-                                                <i class='bx bx-search me-1'></i> Search
-                                            </button>
-                                            <a href="{{ route('admin.users.index') }}"
-                                                class="btn btn-outline-secondary btn-sm">
-                                                <i class='bx bx-reset'></i>
-                                            </a>
+                                        <!-- Online Status -->
+                                        <div class="col-md-2">
+                                            <label class="form-label">Online Status</label>
+                                            <select name="online_status" class="form-select">
+                                                <option value="all">All</option>
+                                                <option value="online"
+                                                    {{ request('online_status') == 'online' ? 'selected' : '' }}>Online
+                                                </option>
+                                                <option value="offline"
+                                                    {{ request('online_status') == 'offline' ? 'selected' : '' }}>Offline
+                                                </option>
+                                            </select>
                                         </div>
-                                    </div>
 
-                                    <!-- Advanced Filters (Collapsible) -->
-                                    <div class="mt-2">
-                                        <a class="btn btn-link btn-sm text-decoration-none p-0" data-bs-toggle="collapse"
-                                            href="#advancedFilters" role="button">
-                                            <i class='bx bx-chevron-down me-1'></i>Advanced Filters
-                                        </a>
+                                        <!-- Date Range -->
+                                        <div class="col-md-3">
+                                            <label class="form-label">Date From</label>
+                                            <input type="date" name="date_from" class="form-control"
+                                                value="{{ request('date_from') }}">
+                                        </div>
 
-                                        <div class="collapse mt-2" id="advancedFilters">
-                                            <div class="row g-2">
-                                                <!-- Date Range -->
-                                                <div class="col-md-3">
-                                                    <input type="date" name="date_from"
-                                                        class="form-control form-control-sm" placeholder="From"
-                                                        value="{{ request('date_from') }}">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <input type="date" name="date_to"
-                                                        class="form-control form-control-sm" placeholder="To"
-                                                        value="{{ request('date_to') }}">
-                                                </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Date To</label>
+                                            <input type="date" name="date_to" class="form-control"
+                                                value="{{ request('date_to') }}">
+                                        </div>
 
-                                                <!-- Online Status -->
-                                                <div class="col-md-3">
-                                                    <select name="online_status" class="form-select form-select-sm">
-                                                        <option value="all">All Online Status</option>
-                                                        <option value="online"
-                                                            {{ request('online_status') == 'online' ? 'selected' : '' }}>
-                                                            Online
-                                                        </option>
-                                                        <option value="offline"
-                                                            {{ request('online_status') == 'offline' ? 'selected' : '' }}>
-                                                            Offline
-                                                        </option>
-                                                    </select>
-                                                </div>
-                                            </div>
+                                        <!-- Action Buttons -->
+                                        <div class="col-md-6 d-flex align-items-end gap-2">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-search me-1"></i> Search
+                                            </button>
+                                            <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">
+                                                <i class="fas fa-redo me-1"></i> Reset
+                                            </a>
+
+                                            @if (request()->hasAny(['search', 'status', 'role', 'department', 'date_from', 'date_to', 'online_status']))
+                                                <span class="badge bg-info align-self-center ms-2">
+                                                    <i class="fas fa-filter me-1"></i>
+                                                    {{ $users->total() }} results found
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
                                 </form>
                             </div>
                         </div>
 
-                        <!-- Quick Stats -->
-                        {{-- <div class="stats-grid d-flex mt-5 text-center mb-3">
-                            <div class="stat-card">
-                                <div class="stat-number text-primary">{{ $users->total() }}</div>
-                                <div class="stat-label">Total Users</div>
-                                <i class='bx bx-user mt-1 text-primary'></i>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number text-success">{{ $activeUsersCount ?? 0 }}</div>
-                                <div class="stat-label">Active</div>
-                                <i class='bx bx-user-check mt-1 text-success'></i>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number text-danger">{{ $inactiveUsersCount ?? 0 }}</div>
-                                <div class="stat-label">Inactive</div>
-                                <i class='bx bx-user-x mt-1 text-danger'></i>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number text-info">{{ $onlineUsersCount ?? 0 }}</div>
-                                <div class="stat-label">Online</div>
-                                <i class='bx bx-wifi mt-1 text-info'></i>
-                            </div>
-                        </div> --}}
+                        {{--  --}}
 
-                        <!-- Bulk Actions -->
+                        <!-- Bulk Actions Section -->
                         @canany(['edit users', 'delete users', 'impersonate users'])
-                            <div class="bulk-section">
-                                <form method="POST" action="{{ route('admin.users.bulk-action') }}" id="bulkActionForm">
+                            <div class="bulk-action-section">
+                                <form method="POST" action="{{ route('admin.users.bulk-action') }}" class="mb-0"
+                                    id="bulkActionForm">
                                     @csrf
-                                    <div class="row align-items-center g-2">
-                                        <div class="col-md-4">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="selectAll">
-                                                    <label class="form-check-label small" for="selectAll">
-                                                        Select All
-                                                    </label>
+                                    <div class="row align-items-center">
+                                        <div class="col-md-3">
+                                            <label class="form-label small text-muted mb-1">Bulk Actions</label>
+                                            <select name="action" class="form-select" required>
+                                                <option value="">Choose Action...</option>
+                                                <option value="activate">Activate Selected</option>
+                                                <option value="deactivate">Deactivate Selected</option>
+                                                @can('impersonate users')
+                                                    <option value="impersonate">Impersonate Selected</option>
+                                                @endcan
+                                                @can('delete users')
+                                                    <option value="delete">Delete Selected</option>
+                                                @endcan
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label small text-muted mb-1">&nbsp;</label>
+                                            <button type="submit" class="btn btn-secondary w-100" id="bulkActionBtn">
+                                                Apply Action
+                                            </button>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <label class="form-label small text-muted mb-1">Quick Stats</label>
+                                            <div class="d-flex gap-3 text-center">
+                                                <div>
+                                                    <div class="h5 mb-0 text-primary">{{ $users->total() }}</div>
+                                                    <small class="text-muted">Total Users</small>
                                                 </div>
-                                                <span class="badge bg-light text-dark">
-                                                    <span id="selectedCount">0</span> selected
-                                                </span>
+                                                <div>
+                                                    <div class="h5 mb-0 text-success">{{ $activeUsersCount ?? 0 }}</div>
+                                                    <small class="text-muted">Active</small>
+                                                </div>
+                                                <div>
+                                                    <div class="h5 mb-0 text-danger">{{ $inactiveUsersCount ?? 0 }}</div>
+                                                    <small class="text-muted">Inactive</small>
+                                                </div>
+                                                <div>
+                                                    <div class="h5 mb-0 text-info">{{ $onlineUsersCount ?? 0 }}</div>
+                                                    <small class="text-muted">Online</small>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-5">
-                                            <div class="d-flex gap-2">
-                                                <select name="action" class="form-select form-select-sm" required>
-                                                    <option value="">Bulk Action...</option>
-                                                    <option value="activate">Activate</option>
-                                                    <option value="deactivate">Deactivate</option>
-                                                    @can('impersonate users')
-                                                        <option value="impersonate">Impersonate</option>
-                                                    @endcan
-                                                    @can('delete users')
-                                                        <option value="delete">Delete</option>
-                                                    @endcan
-                                                </select>
-                                                <button type="submit" class="btn btn-sm btn-primary" id="bulkActionBtn"
-                                                    disabled>
-                                                    Apply
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 text-end">
-                                            <small class="text-muted">
-                                                Showing {{ $users->firstItem() }}-{{ $users->lastItem() }} of
-                                                {{ $users->total() }}
-                                            </small>
                                         </div>
                                     </div>
                                 </form>
@@ -606,52 +303,48 @@
 
                         <!-- Users Table -->
                         <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light">
                                     <tr>
                                         @canany(['edit users', 'delete users', 'impersonate users'])
-                                            <th width="40px" class="ps-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="selectAllTable">
-                                                </div>
+                                            <th width="40px">
+                                                <input type="checkbox" id="selectAll">
                                             </th>
                                         @endcanany
                                         <th width="60px">ID</th>
-                                        <th>User</th>
-                                        <th>Role</th>
+                                        <th>User Information</th>
+                                        <th>Role & Permissions</th>
                                         <th>Department</th>
-                                        <th width="100px">Status</th>
-                                        <th width="120px">Last Login</th>
-                                        <th width="100px" class="text-end pe-3">Actions</th>
+                                        <th>Status</th>
+                                        <th>Last Login</th>
+                                        <th width="180px">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse ($users as $user)
                                         <tr class="{{ $user->id == auth()->id() ? 'table-active' : '' }}">
                                             @canany(['edit users', 'delete users', 'impersonate users'])
-                                                <td class="ps-3">
-                                                    <div class="form-check">
-                                                        <input type="checkbox" name="users[]" value="{{ $user->id }}"
-                                                            class="user-checkbox form-check-input"
-                                                            {{ $user->id == auth()->id() || $user->hasRole('Super Admin') ? 'disabled' : '' }}>
-                                                    </div>
+                                                <td>
+                                                    <input type="checkbox" name="users[]" value="{{ $user->id }}"
+                                                        class="user-checkbox form-check-input"
+                                                        {{ $user->id == auth()->id() || $user->hasRole('Super Admin') ? 'disabled' : '' }}>
                                                 </td>
                                             @endcanany
                                             <td>
-                                                <span class="badge bg-light text-dark">#{{ $user->id }}</span>
+                                                <span class="text-muted">#{{ $user->id }}</span>
                                             </td>
                                             <td>
-                                                <div class="user-info">
-                                                    <div class="avatar-sm {{ $user->is_online ? 'avatar-online' : '' }}">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="user-avatar me-3">
                                                         {{ substr($user->name, 0, 1) }}
                                                     </div>
-                                                    <div class="user-details">
-                                                        <div class="user-name text-highlight">{{ $user->name }}</div>
-                                                        <div class="user-email">{{ $user->email }}</div>
+                                                    <div>
+                                                        <div class="fw-bold">{{ $user->name }}</div>
+                                                        <div class="text-muted small">{{ $user->email }}</div>
                                                         @if ($user->phone)
-                                                            <small class="text-muted">
-                                                                <i class='bx bx-phone'></i> {{ $user->phone }}
-                                                            </small>
+                                                            <div class="text-muted small">
+                                                                <i class="fas fa-phone me-1"></i>{{ $user->phone }}
+                                                            </div>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -659,95 +352,89 @@
                                             <td>
                                                 <div class="d-flex flex-wrap gap-1">
                                                     @foreach ($user->roles as $role)
-                                                        <span class="role-tag">
-                                                            <i class='bx bx-shield-alt'></i>
-                                                            {{ $role->name }}
-                                                        </span>
+                                                        <span class="badge bg-primary">{{ $role->name }}</span>
                                                     @endforeach
                                                 </div>
                                                 <small class="text-muted">
-                                                    @php
-                                                        $permissionCount = 0;
-                                                        foreach ($user->roles as $role) {
-                                                            $permissionCount += $role->permissions->count();
-                                                        }
-                                                    @endphp
-                                                    {{ $permissionCount }} perms
+                                                    {{ $user->permissions_count ?? 0 }} permissions
                                                 </small>
                                             </td>
                                             <td>
-                                                <span class="text-highlight">
-                                                    {{ $user->department ?? 'N/A' }}
-                                                </span>
+                                                <span class="fw-medium">{{ $user->department ?? 'N/A' }}</span>
                                             </td>
                                             <td>
-                                                <span
-                                                    class="badge-sm {{ $user->status ? 'badge-success-light' : 'badge-danger-light' }}">
-                                                    <i class='bx bx-{{ $user->status ? 'check' : 'x' }} me-1'></i>
+                                                <span class="badge {{ $user->status ? 'bg-success' : 'bg-danger' }}">
+                                                    <i class="fas fa-{{ $user->status ? 'check' : 'times' }} me-1"></i>
                                                     {{ $user->status ? 'Active' : 'Inactive' }}
                                                 </span>
                                                 @if ($user->is_online)
-                                                    <span class="badge-sm badge-success-light mt-1 d-block">
-                                                        <i class='bx bx-wifi'></i> Online
-                                                    </span>
+                                                    <span class="badge bg-success ms-1">Online</span>
                                                 @endif
                                             </td>
                                             <td>
-                                                <div class="last-login">
-                                                    @if ($user->last_login_at)
-                                                        <div class="last-login-time">
-                                                            {{ $user->last_login_at->format('M j') }}
-                                                        </div>
-                                                        <small class="text-muted">
-                                                            {{ $user->last_login_at->format('g:i A') }}
-                                                        </small>
-                                                    @else
-                                                        <span class="text-muted">Never</span>
-                                                    @endif
-                                                </div>
+                                                @if ($user->last_login_at)
+                                                    <span class="text-muted small"
+                                                        title="{{ $user->last_login_at->format('M j, Y g:i A') }}">
+                                                        {{ $user->last_login_at->diffForHumans() }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-muted small">Never</span>
+                                                @endif
                                             </td>
                                             <td>
-                                                <div class="action-buttons d-flex justify-content-end gap-1">
+                                                <div class="action-buttons">
                                                     @can('view users')
                                                         <a href="{{ route('admin.users.show', $user->id) }}"
-                                                            class="btn btn-info btn-xs action-btn" data-bs-toggle="tooltip"
-                                                            title="View">
-                                                            <i class='bx bx-show'></i>
+                                                            class="btn btn-info btn-sm action-btn" title="View Details">
+                                                            <i class="menu-icon tf-icons bx bx-eye"></i>
                                                         </a>
                                                     @endcan
 
                                                     @can('impersonate users')
                                                         @if ($user->id != auth()->id() && !$user->hasRole('Super Admin'))
                                                             <a href="{{ route('admin.users.impersonate', $user->id) }}"
-                                                                class="btn btn-warning btn-xs action-btn"
-                                                                data-bs-toggle="tooltip" title="Impersonate"
-                                                                onclick="return confirm('Impersonate {{ $user->name }}?')">
-                                                                <i class='bx bx-user-voice'></i>
+                                                                class="btn btn-success btn-sm action-btn impersonate-btn"
+                                                                title="Impersonate User"
+                                                                onclick="return confirm('Impersonate {{ $user->name }}? You can return to your account using the banner at the top.')">
+
+                                                                <i class="menu-icon tf-icons bx bx-shield"></i>
                                                             </a>
                                                         @endif
                                                     @endcan
 
                                                     @can('edit users')
                                                         <a href="{{ route('admin.users.edit', $user->id) }}"
-                                                            class="btn btn-primary btn-xs action-btn" data-bs-toggle="tooltip"
-                                                            title="Edit"
+                                                            class="btn btn-primary btn-sm action-btn" title="Edit User"
                                                             {{ $user->hasRole('Super Admin') && !auth()->user()->hasRole('Super Admin') ? 'disabled' : '' }}>
-                                                            <i class='bx bx-edit'></i>
+
+                                                            <i class="menu-icon tf-icons bx bx-edit"></i>
                                                         </a>
                                                     @endcan
 
                                                     @can('delete users')
                                                         @if ($user->id != auth()->id() && !$user->hasRole('Super Admin'))
-                                                            <button type="button"
-                                                                class="btn btn-danger btn-xs action-btn delete-btn"
-                                                                data-bs-toggle="tooltip" title="Delete"
-                                                                data-user-id="{{ $user->id }}"
-                                                                data-user-name="{{ $user->name }}">
-                                                                <i class='bx bx-trash'></i>
-                                                            </button>
+                                                            <form method="POST"
+                                                                action="{{ route('admin.users.destroy', $user->id) }}"
+                                                                class="d-inline"
+                                                                onsubmit="return confirm('Are you sure you want to delete {{ $user->name }}?')">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit"
+                                                                    class="btn btn-danger btn-sm action-btn"
+                                                                    title="Delete User">
+
+                                                                    <i class="menu-icon tf-icons bx bx-trash"></i>
+                                                                </button>
+                                                            </form>
                                                         @endif
                                                     @endcan
                                                 </div>
+
+                                                @if ($user->isImpersonated())
+                                                    <small class="text-warning d-block mt-1">
+                                                        <i class="fas fa-user-switch"></i> Being impersonated
+                                                    </small>
+                                                @endif
                                             </td>
                                         </tr>
                                     @empty
@@ -755,14 +442,12 @@
                                             <td colspan="{{ auth()->user()->canAny(['edit users', 'delete users', 'impersonate users'])? 8: 7 }}"
                                                 class="text-center py-4">
                                                 <div class="empty-state">
-                                                    <i class='bx bx-user-x empty-state-icon'></i>
-                                                    <h6 class="mb-2 text-highlight">No Users Found</h6>
-                                                    <p class="text-muted small mb-3">No users match your search criteria.
-                                                    </p>
+                                                    <i class="fas fa-users-slash"></i>
+                                                    <h4 class="mt-3">No Users Found</h4>
+                                                    <p class="text-muted">No users match your search criteria.</p>
                                                     @can('create users')
-                                                        <a href="{{ route('admin.users.create') }}"
-                                                            class="btn btn-sm btn-primary">
-                                                            <i class='bx bx-plus me-1'></i> Create User
+                                                        <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
+                                                            <i class="fas fa-plus me-1"></i> Create First User
                                                         </a>
                                                     @endcan
                                                 </div>
@@ -778,42 +463,14 @@
                             <div class="d-flex justify-content-between align-items-center mt-3">
                                 <div class="text-muted small">
                                     Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of
-                                    {{ $users->total() }}
+                                    {{ $users->total() }} entries
                                 </div>
                                 <div>
-                                    {{ $users->onEachSide(1)->links('pagination::bootstrap-5') }}
+                                    {{ $users->links('pagination::bootstrap-5') }}
                                 </div>
                             </div>
                         @endif
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-0 pb-0">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center py-3">
-                    <i class='bx bx-trash text-danger mb-3' style="font-size: 3rem;"></i>
-                    <h5 class="mb-2 text-highlight">Delete User?</h5>
-                    <p class="text-muted mb-0">Are you sure you want to delete <strong id="deleteUserName"></strong>?</p>
-                    <small class="text-danger d-block mt-1">This action cannot be undone.</small>
-                </div>
-                <div class="modal-footer border-0 pt-0">
-                    <button type="button" class="btn btn-outline-secondary btn-sm"
-                        data-bs-dismiss="modal">Cancel</button>
-                    <form id="deleteForm" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            <i class='bx bx-trash me-1'></i> Delete
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -823,168 +480,190 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Elements
+            // Select all checkbox functionality
             const selectAll = document.getElementById('selectAll');
-            const selectAllTable = document.getElementById('selectAllTable');
             const userCheckboxes = document.querySelectorAll('.user-checkbox');
             const bulkActionForm = document.getElementById('bulkActionForm');
             const bulkActionBtn = document.getElementById('bulkActionBtn');
-            const selectedCount = document.getElementById('selectedCount');
-            const deleteButtons = document.querySelectorAll('.delete-btn');
-            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-            const deleteForm = document.getElementById('deleteForm');
-            const deleteUserName = document.getElementById('deleteUserName');
 
-            // Tooltips
-            const tooltips = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-                .map(el => new bootstrap.Tooltip(el));
-
-            // Select All functionality
-            function setupSelectAll(source, targets) {
-                if (source) {
-                    source.addEventListener('change', function() {
-                        targets.forEach(cb => {
-                            if (!cb.disabled) cb.checked = this.checked;
-                        });
-                        updateSelection();
+            // Select all checkboxes
+            if (selectAll) {
+                selectAll.addEventListener('change', function() {
+                    const isChecked = this.checked;
+                    userCheckboxes.forEach(checkbox => {
+                        if (!checkbox.disabled) {
+                            checkbox.checked = isChecked;
+                        }
                     });
-                }
+                    updateBulkActionButton();
+                });
             }
 
-            setupSelectAll(selectAll, userCheckboxes);
-            setupSelectAll(selectAllTable, userCheckboxes);
-
-            // Individual checkbox change
-            userCheckboxes.forEach(cb => {
-                cb.addEventListener('change', updateSelection);
+            // Update individual checkbox states
+            userCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updateSelectAllCheckbox();
+                    updateBulkActionButton();
+                });
             });
 
-            // Update selection counters
-            function updateSelection() {
-                const selected = Array.from(userCheckboxes).filter(cb => cb.checked && !cb.disabled);
-                selectedCount.textContent = selected.length;
+            // Update select all checkbox state
+            function updateSelectAllCheckbox() {
+                if (!selectAll) return;
 
-                // Update bulk action button
-                if (bulkActionBtn) {
-                    bulkActionBtn.disabled = selected.length === 0;
+                const enabledCheckboxes = Array.from(userCheckboxes).filter(cb => !cb.disabled);
+                const checkedEnabled = enabledCheckboxes.filter(cb => cb.checked);
+
+                selectAll.checked = checkedEnabled.length === enabledCheckboxes.length && enabledCheckboxes.length >
+                    0;
+                selectAll.indeterminate = checkedEnabled.length > 0 && checkedEnabled.length < enabledCheckboxes
+                    .length;
+            }
+
+            // Update bulk action button state
+            function updateBulkActionButton() {
+                if (!bulkActionBtn) return;
+
+                const checkedCount = Array.from(userCheckboxes).filter(cb => cb.checked && !cb.disabled).length;
+                if (checkedCount > 0) {
+                    bulkActionBtn.disabled = false;
+                    bulkActionBtn.textContent = `Apply to ${checkedCount} Selected`;
+                } else {
+                    bulkActionBtn.disabled = true;
+                    bulkActionBtn.textContent = 'Apply Action';
                 }
-
-                // Update select all checkboxes
-                const enabled = Array.from(userCheckboxes).filter(cb => !cb.disabled);
-                const allSelected = selected.length === enabled.length && enabled.length > 0;
-                const indeterminate = selected.length > 0 && selected.length < enabled.length;
-
-                [selectAll, selectAllTable].forEach(cb => {
-                    if (cb) {
-                        cb.checked = allSelected;
-                        cb.indeterminate = indeterminate;
-                    }
-                });
             }
 
             // Bulk action form validation
             if (bulkActionForm) {
                 bulkActionForm.addEventListener('submit', function(e) {
-                    const selected = Array.from(userCheckboxes).filter(cb => cb.checked && !cb.disabled);
+                    const checkedBoxes = Array.from(userCheckboxes).filter(cb => cb.checked && !cb
+                        .disabled);
                     const action = this.querySelector('select[name="action"]').value;
 
-                    if (selected.length === 0) {
+                    if (checkedBoxes.length === 0) {
                         e.preventDefault();
-                        showToast('Please select at least one user.', 'warning');
+                        showAlert('Please select at least one user.', 'warning');
                         return false;
                     }
 
                     if (!action) {
                         e.preventDefault();
-                        showToast('Please select an action.', 'warning');
+                        showAlert('Please select an action to perform.', 'warning');
                         return false;
                     }
 
-                    if (action === 'delete' && !confirm(`Delete ${selected.length} user(s)?`)) {
-                        e.preventDefault();
-                        return false;
+                    if (action === 'delete') {
+                        if (!confirm(
+                                `Are you sure you want to delete ${checkedBoxes.length} user(s)? This action cannot be undone.`
+                            )) {
+                            e.preventDefault();
+                            return false;
+                        }
                     }
 
-                    if (action === 'impersonate' && selected.length > 1) {
-                        e.preventDefault();
-                        showToast('Can only impersonate one user.', 'warning');
-                        return false;
-                    }
-                });
-            }
-
-            // Delete button handlers
-            deleteButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const userId = this.dataset.userId;
-                    const userName = this.dataset.userName;
-
-                    deleteUserName.textContent = userName;
-                    deleteForm.action = `/admin/users/${userId}`;
-                    deleteModal.show();
-                });
-            });
-
-            // Auto-submit filters on change
-            document.querySelectorAll('#searchForm select').forEach(select => {
-                select.addEventListener('change', function() {
-                    this.form.submit();
-                });
-            });
-
-            // Collapsible advanced filters
-            const advancedFilters = document.getElementById('advancedFilters');
-            if (advancedFilters) {
-                const urlParams = new URLSearchParams(window.location.search);
-                const hasAdvancedFilters = ['date_from', 'date_to', 'online_status'].some(param => urlParams.has(
-                    param));
-
-                if (hasAdvancedFilters) {
-                    const bsCollapse = new bootstrap.Collapse(advancedFilters, {
-                        toggle: false
-                    });
-                    bsCollapse.show();
-                }
-            }
-
-            // Row click for selection (optional)
-            document.querySelectorAll('tbody tr').forEach(row => {
-                row.addEventListener('click', function(e) {
-                    if (!e.target.closest('a') && !e.target.closest('button') && !e.target.closest(
-                            'input')) {
-                        const checkbox = this.querySelector('.user-checkbox');
-                        if (checkbox && !checkbox.disabled) {
-                            checkbox.checked = !checkbox.checked;
-                            checkbox.dispatchEvent(new Event('change'));
+                    if (action === 'impersonate') {
+                        if (checkedBoxes.length > 1) {
+                            e.preventDefault();
+                            showAlert('You can only impersonate one user at a time.', 'warning');
+                            return false;
                         }
                     }
                 });
-            });
-
-            // Toast notification
-            function showToast(message, type = 'info') {
-                const toast = document.createElement('div');
-                toast.className = `toast align-items-center text-bg-${type} border-0 position-fixed`;
-                toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999;';
-                toast.innerHTML = `
-            <div class="d-flex">
-                <div class="toast-body">
-                    <i class='bx bx-${type === 'warning' ? 'error' : 'info-circle'} me-2'></i>
-                    ${message}
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-            </div>
-        `;
-                document.body.appendChild(toast);
-
-                const bsToast = new bootstrap.Toast(toast);
-                bsToast.show();
-
-                toast.addEventListener('hidden.bs.toast', () => toast.remove());
             }
 
+            // Show toast notification
+            function showAlert(message, type = 'info') {
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+                alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+                alert.innerHTML = `
+            <i class="fas fa-${type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+                document.body.appendChild(alert);
+
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.remove();
+                    }
+                }, 5000);
+            }
+
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+            const tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+
+
+
+                    // Advanced Search Form Handling
+            const searchForm = document.getElementById('searchForm');
+            if (searchForm) {
+                // Auto-submit form when certain filters change
+                const autoSubmitFields = searchForm.querySelectorAll('select[name="status"], select[name="role"], select[name="department"], select[name="online_status"]');
+                autoSubmitFields.forEach(field => {
+                    field.addEventListener('change', function() {
+                        searchForm.submit();
+                    });
+                });
+
+                // Date validation
+                const dateFrom = searchForm.querySelector('input[name="date_from"]');
+                const dateTo = searchForm.querySelector('input[name="date_to"]');
+
+                if (dateFrom && dateTo) {
+                    dateFrom.addEventListener('change', function() {
+                        if (dateTo.value && this.value > dateTo.value) {
+                            dateTo.value = this.value;
+                        }
+                    });
+
+                    dateTo.addEventListener('change', function() {
+                        if (dateFrom.value && this.value < dateFrom.value) {
+                            dateFrom.value = this.value;
+                        }
+                    });
+                }
+            }
+
+            // Clear all filters
+            const clearFiltersBtn = document.querySelector('a[href="{{ route('admin.users.index') }}"]');
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', function(e) {
+                    if (window.location.search) {
+                        e.preventDefault();
+                        window.location.href = "{{ route('admin.users.index') }}";
+                    }
+                });
+            }
+
+            // Pagination preservation
+            function preservePagination() {
+                const paginationLinks = document.querySelectorAll('.pagination a');
+                paginationLinks.forEach(link => {
+                    const url = new URL(link.href);
+                    const currentUrl = new URL(window.location.href);
+
+                    // Preserve all search parameters
+                    currentUrl.searchParams.forEach((value, key) => {
+                        if (key !== 'page') {
+                            url.searchParams.set(key, value);
+                        }
+                    });
+
+                    link.href = url.toString();
+                });
+            }
+
+            preservePagination();
+
             // Initialize
-            updateSelection();
+            updateBulkActionButton();
+            updateSelectAllCheckbox();
         });
     </script>
 @endpush

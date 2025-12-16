@@ -108,7 +108,7 @@ class UserController extends Controller
         $roles = Role::pluck('name', 'name');
 
         // Paginate results - ensure proper pagination
-        $users = $query->paginate(12)->withQueryString();
+        $users = $query->paginate(5)->withQueryString();
 
         return view('admin.users.index', compact(
             'users',
@@ -138,7 +138,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'phone' => 'nullable|string|max:20',
-            'dise_code' => 'nullable|string|min:2|max:11|regex:/^[0-9]+$/',
+            'dise_code' => 'nullable|string|size:11|regex:/^[0-9]{11}$/',
             'department' => 'nullable|string|max:255',
             'designation' => 'nullable|string|max:255',
             'password' => [
@@ -150,9 +150,8 @@ class UserController extends Controller
             'role' => 'required|string|exists:roles,name'
         ], [
             'password.regex' => 'The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
-            'dise_code.min' => 'DISE code must be at least 2 digits.',
-            'dise_code.max' => 'DISE code cannot exceed 11 digits.',
-            'dise_code.regex' => 'DISE code must contain only numbers (0-9).',
+            'dise_code.size' => 'The DISE code must be exactly 11 digits.',
+            'dise_code.regex' => 'The DISE code must contain only numbers.',
             'role.required' => 'Please select a role for the user.'
         ]);
 
@@ -279,17 +278,8 @@ class UserController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        // Get roles with proper ordering and exclude Super Admin if needed
-        $roles = Role::orderBy('name')->get();
-
-        // If user is not Super Admin, filter out Super Admin role
-        if (!auth()->user()->hasRole('Super Admin')) {
-            $roles = $roles->filter(function ($role) {
-                return $role->name !== 'Super Admin';
-            });
-        }
-
-        $userRole = $user->roles->pluck('name')->toArray();
+        $roles = Role::where('name', '!=', 'Super Admin')->pluck('name', 'name')->all();
+        $userRole = $user->roles->pluck('name', 'name')->all();
 
         return view('admin.users.edit', compact('user', 'roles', 'userRole'));
     }
@@ -312,7 +302,7 @@ class UserController extends Controller
             'department' => 'nullable|string|max:255',
             'designation' => 'nullable|string|max:255',
             'password' => 'nullable|same:confirm-password',
-            'role' => 'required',
+            'roles' => 'required',
             'status' => 'boolean'
         ]);
 
@@ -331,7 +321,7 @@ class UserController extends Controller
             $oldData = $user->toArray(); // Store old data for sync
 
             $user->update($input);
-            $user->syncRoles($request->input('role'));
+            $user->syncRoles($request->input('roles'));
 
             // Sync update to central app if user has sso_id
             if ($user->sso_id && !empty($input['password'])) {
