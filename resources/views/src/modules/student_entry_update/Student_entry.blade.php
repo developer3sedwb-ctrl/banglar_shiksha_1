@@ -42,7 +42,14 @@
     $bs_class_section_master = DB::table('bs_class_section_master')->pluck('name', 'id')->toArray(); 
 
     $bs_stream_master = DB::table('bs_stream_master')->pluck('name', 'id')->toArray(); 
-    $bs_school_medium = DB::table('bs_school_medium')->pluck('id', 'id')->toArray();
+ 
+    //============================================
+    $bs_school_medium = DB::table('bs_school_master as sm')
+    ->join('bs_medium_master as mm', 'mm.id', '=', 'sm.id')
+    ->where('mm.id', 1)
+    ->pluck('mm.name', 'mm.id')
+    ->toArray();
+
     $bs_school_classwise_section = DB::table('bs_school_classwise_section')->pluck('class_code_fk', 'id')->toArray();  
 
     $bs_admission_type_master = DB::table('bs_admission_type_master')->pluck('name', 'id')->toArray(); 

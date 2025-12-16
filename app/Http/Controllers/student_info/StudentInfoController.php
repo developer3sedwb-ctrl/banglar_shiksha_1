@@ -1184,6 +1184,313 @@ class StudentInfoController extends Controller
     }
 
 
+    public function StudentDetailsByStudentCode(Request $request)
+    {
+        $student = StudentInfo::where('student_code', $request->student_code)->first();
+
+        if (!$student) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Student not found'
+            ]);
+        }
+
+        return response()->json([
+            'status' => true,
+            'student' => $student
+        ]);
+    }
+
+
+
+    // =========================
+
+
+     public function getStudentEditDetailsByStudentCode()
+    {
+        try {
+            $data = [];
+            $schoolId = 1;  // <-- get from login or session or URL
+
+            // ---------------------------------------------
+            // 1. Load master data (Dropdowns)
+            // ---------------------------------------------
+        $draft = DB::table('bs_student_entry_draft_tracker')
+            ->where('status', 1)
+            ->where('school_id_fk', $schoolId)
+            ->orderByDesc('step_number')
+            ->first();
+
+        // Default step = 1 if no record found
+        $data['current_step'] = $draft ? $draft->step_number : 0;
+            $data['stateScholarships'] = DB::table('bs_name_and_code_of_state_scholarships_master')
+                                            ->where('status', 1)
+                                            ->orderBy('id')
+                                            ->get();
+
+            $data['centralScholarships'] = DB::table('bs_name_and_code_of_central_scholarships_master')
+                                                ->where('status', 1)
+                                            ->orderBy('id')
+                                            ->get();
+
+
+
+
+        // 1.============================StudentInfo=======================================
+        $student_basic_info = StudentInfo::where('school_id_fk', $schoolId)->first();
+        // dd($student_basic_info);
+
+            if ($student_basic_info) {
+            $data['basic_info'] = [
+            'student_name'                => $student_basic_info->studentname,
+            'student_name_as_per_aadhaar' => $student_basic_info->studentname_as_per_aadhaar,
+            'gender'                      => $student_basic_info->gender_code_fk,
+            'dob'                         => $student_basic_info->dob,
+            'father_name'                 => $student_basic_info->fathername,
+            'mother_name'                 => $student_basic_info->mothername,
+            'guardian_name'               => $student_basic_info->guardian_name,
+            'aadhaar_child'               => $student_basic_info->aadhaar_number,
+            'mother_tongue'               => $student_basic_info->mothertonge_code_fk,
+            'social_category'             => $student_basic_info->social_category_code_fk,
+            'religion'                    => $student_basic_info->religion_code_fk,
+            'nationality'                 => $student_basic_info->nationality_code_fk,
+            'blood_group'                 => $student_basic_info->blood_group_code_fk,
+            'bpl_beneficiary'             => $student_basic_info->bpl_y_n,
+            'antyodaya_anna_yojana'       => $student_basic_info->bpl_aay_beneficiary_y_n,
+            'bpl_number'                  => $student_basic_info->bpl_no,
+            'disadvantaged_group'         => $student_basic_info->disadvantaged_group_y_n,
+            'cwsn'                        => $student_basic_info->cwsn_y_n,
+            'type_of_impairment'          => $student_basic_info->cwsn_disability_type_code_fk,
+            'disability_percentage'       => $student_basic_info->disability_percentage,
+            'out_of_school'               => $student_basic_info->out_of_sch_child_y_n,
+            'mainstreamed'                => $student_basic_info->child_mainstreamed,
+            'birth_reg_no'                => $student_basic_info->birth_registration_number,
+            'identification_mark'         => $student_basic_info->identification_mark,
+            'health_id'                   => $student_basic_info->health_id,
+            'relationship_with_guardian'  => $student_basic_info->stu_guardian_relationship,
+            'family_income'               => $student_basic_info->guardian_family_income,
+            'guardian_qualifications'     => $student_basic_info->guardian_qualification,
+            'student_height'              => $student_basic_info->stu_height_in_cms,
+            'student_weight'              => $student_basic_info->stu_weight_in_kgs,
+            ];
+
+            }
+            // 2 . ====================Enrollment========================================
+
+            $student_enrollment_info = StudentEnrollmentInfo::where('school_id_fk', $schoolId)->first();
+            // dd($student_enrollment_info);
+            if ($student_enrollment_info) {
+
+                $data['enrollment_info'] = [
+                    'admission_no'              => $student_enrollment_info->admission_no,
+                    'status_pre_year'           => $student_enrollment_info->status_pre_year,
+                    'prev_class_appeared_exam'  => $student_enrollment_info->prev_class_appeared_exam,
+                    'prev_class_exam_result'    => $student_enrollment_info->prev_class_exam_result,
+                    'prev_class_marks_percent'  => $student_enrollment_info->prev_class_marks_percent,
+                    'attendention_pre_year'     => $student_enrollment_info->attendention_pre_year,
+
+                    'pre_class_code_fk'         => $student_enrollment_info->pre_class_code_fk,
+                    'pre_section_code_fk'       => $student_enrollment_info->pre_section_code_fk,
+                    'pre_stream_code_fk'        => $student_enrollment_info->pre_stream_code_fk,
+                    'pre_roll_number'           => $student_enrollment_info->pre_roll_number,
+
+                    'cur_class_code_fk'         => $student_enrollment_info->cur_class_code_fk,
+                    'academic_year'             => $student_enrollment_info->academic_year,
+                    'cur_section_code_fk'       => $student_enrollment_info->cur_section_code_fk,
+                    'medium_code_fk'            => $student_enrollment_info->medium_code_fk,
+                    'cur_roll_number'           => $student_enrollment_info->cur_roll_number,
+                    'admission_date'            => $student_enrollment_info->admission_date,
+                    'cur_stream_code'            => $student_enrollment_info->cur_stream_code_fk,
+
+                    'admission_type_code_fk'    => $student_enrollment_info->admission_type_code_fk,
+                ];
+            }
+
+            // 3 . ==================== Facility & Others Detail========================================
+
+
+            $facility = StudentFacilityAndOtherDetails::where('school_id_fk', $schoolId)->first();
+
+
+            if ($facility) {
+
+                $data['facility'] = [
+                    // Facilities Provided
+                    'facilities_provided_for_the_yeear' => $facility->facilities_provided_y_n,
+                    'free_uniforms'                     => $facility->free_uniform_y_n,
+                    'free_transport_facility'           => $facility->free_transport_facility_y_n,
+                    'free_escort'                       => $facility->free_escort_y_n,
+                    'free_host_facility'                => $facility->free_hostel_y_n,
+                    'free_bicycle'                      => $facility->free_cycle_y_n,
+                    'free_shoe'                         => $facility->free_shoe_y_n,
+                    'free_exercise_book'                => $facility->free_exercise_book_y_n,
+                    'complete_free_books'               => $facility->complete_set_of_free_books_y_n,
+
+                    // Scholarships
+                    'central_scholarship'               => $facility->central_scholarship_rcv_y_n,
+                    'central_scholarship_name'          => $facility->central_scholarship_code_fk,
+                    'central_scholarship_amount'        => $facility->central_scholarship_amount,
+
+                    'state_scholarship'                 => $facility->state_scholarship_rcv_y_n,
+                    'state_scholarship_name'            => $facility->state_scholarship_code_fk,
+                    'state_scholarship_amount'          => $facility->state_scholarship_amount,
+
+                    'other_scholarship'                 => $facility->other_scholarship_rcv_y_n,
+                    'other_scholarship_amount'          => $facility->other_scholarship_amount,
+
+                    // Gifted fields
+                    'child_hyperactive_disorder'        => $facility->screened_for_attention_deficit_hyperactive_disorder_y_n,
+                    'stu_extracurricular_activity'      => $facility->extracurricular_activity_involved_y_n,
+                    'gifted_math'                       => $facility->gifted_talented_child_in_mathematics,
+                    'gifted_language'                   => $facility->gifted_talented_child_in_language,
+                    'gifted_science'                    => $facility->gifted_talented_child_in_science,
+                    'gifted_technical'                  => $facility->gifted_talented_child_in_technical,
+                    'gifted_sports'                     => $facility->gifted_talented_child_in_sports,
+                    'gifted_art'                        => $facility->gifted_talented_child_in_art,
+
+                    // Other details
+                    'provided_mentors'                  => $facility->provided_mentors_y_n,
+                    'whether_participated_nurturance_camp' => $facility->participated_in_nurturance_camps_y_n,
+                    'state_nurturance'                  => $facility->state_level_y_n,
+                    'national_nurturance'               => $facility->national_level_y_n,
+                    'participated_competitions'         => $facility->appeared_state_olympiads_national_level_competition_y_n,
+                    'ncc_nss_guides'                    => $facility->participate_in_ncc_nss_scouts_guides_y_n,
+                    'rte_free_education'                => $facility->free_education_as_per_rte_act_y_n,
+                    'homeless'                          => $facility->child_homeless,
+                    'special_training'                  => $facility->special_training_facility_y_n,
+
+                    // Digital
+                    'able_to_handle_devices'            => $facility->digital_device_inc_internet_yn,
+                    'internet_access'                   => $facility->digital_device_inc_internet_fk,
+                ];
+            }
+            else {
+                $data['facility'] = null;   // No saved data
+            }
+
+
+            // 4 . ==================== Vocational Details ========================================
+
+            $vocational = StudentVocationalDetails::where('school_id_fk', $schoolId)->first();
+
+            if ($vocational) {
+                $data['vocational'] = [
+                    'exposure'               => $vocational->exposure_vocational_activities_y_n,
+                    'undertook'              => $vocational->undertake_vocational_course_y_n,
+
+                    'trade_sector'           => $vocational->vocational_trade_sector_code_fk,
+                    'job_role'               => $vocational->vocational_job_role_code_fk,
+
+                    'theory_hours'           => $vocational->vocational_class_attended_theory,
+                    'practical_hours'        => $vocational->vocational_class_attended_practical,
+                    'industry_hours'         => $vocational->vocational_class_attended_industry_training,
+                    'field_visit_hours'      => $vocational->vocational_class_attended_field_visit,
+
+                    'appeared_exam'          => $vocational->prev_class_exam_appeared_fk,
+                    'marks_obtained'         => $vocational->prev_class_marks_percent_voc,
+
+                    'placement_applied'      => $vocational->applied_for_placement_code_fk,
+                    'apprenticeship_applied' => $vocational->applied_for_apprenticeship_code_fk,
+
+                    'nsqf_level'             => $vocational->vocational_nsqf_level_code_fk,
+                    'employment_status'      => $vocational->vocational_placement_status_code_fk,
+                    'salary_offered'         => $vocational->vocational_salary_offered,
+                ];
+            } else {
+                $data['vocational'] = null;
+            }
+      
+
+
+            
+            // 5 . ==================== Contact Details ========================================
+
+            $student_contact = StudentContactInfo::where('school_id_fk', $schoolId)->first();
+
+            if ($student_contact) {
+                $data['student_contact'] = [
+                'stu_country_code'     => $student_contact->stu_country_code_fk,
+                'stu_contact_address'     => $student_contact->stu_contact_address,
+                'stu_contact_district'    => $student_contact->stu_contact_district,
+                'stu_contact_panchayat'   => $student_contact->stu_contact_panchayat,
+                'stu_police_station'      => $student_contact->stu_police_station,
+                'stu_mobile_no'           => $student_contact->stu_mobile_no,
+                'stu_state_code'       => $student_contact->stu_state_code_fk,
+                'stu_contact_habitation'  => $student_contact->stu_contact_habitation,
+                'stu_contact_block'       => $student_contact->stu_contact_block,
+                'stu_post_office'         => $student_contact->stu_post_office,
+                'stu_pin_code'            => $student_contact->stu_pin_code,
+                'stu_email'               => $student_contact->stu_email,
+
+                // ---- Guardian contact fields ----
+                'guardian_country_code'    => $student_contact->guardian_country_code_fk,
+                'guardian_contact_address'    => $student_contact->guardian_contact_address,
+                'guardian_contact_district'   => $student_contact->guardian_contact_district,
+                'guardian_contact_panchayat'  => $student_contact->guardian_contact_panchayat,
+                'guardian_police_station'     => $student_contact->guardian_police_station,
+                'guardian_mobile_no'          => $student_contact->guardian_mobile_no,
+                'guardian_state_code'      => $student_contact->guardian_state_code_fk,
+                'guardian_contact_habitation' => $student_contact->guardian_contact_habitation,
+                'guardian_contact_block'      => $student_contact->guardian_contact_block,
+                'guardian_post_office'        => $student_contact->guardian_post_office,
+                'guardian_pin_code'           => $student_contact->guardian_pin_code,
+                'guardian_email'              => $student_contact->guardian_email,
+                ];
+                } else {
+                    $data['student_contact'] = null;
+                }
+
+
+
+             // 6 . ==================== Bank Details ========================================
+
+            $student_bank_details = EntryStudentBankInfo::where('school_id_fk', $schoolId)->first();
+
+            if ($student_bank_details) {
+                $data['student_bank_details'] = [
+                'bank_id_fk'      => $student_bank_details -> bank_id_fk,
+                'branch_id_fk'    => $student_bank_details -> branch_id_fk,
+                'bank_ifsc'       => $student_bank_details -> bank_ifsc,
+                'stu_bank_acc_no' => $student_bank_details -> stu_bank_acc_no,
+          
+                ];
+            } else {
+                $data['student_bank_details'] = null;
+            }
+
+
+
+            // 7 . ==================== Addi Details ========================================
+
+            $student_additional_details = StudentAdditionalInfo::where('school_id_fk', $schoolId)->first();
+
+            if ($student_additional_details) {
+                $data['student_additional_details'] = [
+                'rte_entitlement_claimed_amount'      => $student_additional_details -> rte_entitlement_claimed_amount,
+                'stu_residance_sch_distance_code_fk'    => $student_additional_details -> stu_residance_sch_distance_code_fk,
+                'cur_class_appeared_exam'       => $student_additional_details -> cur_class_appeared_exam,
+                'cur_class_marks_percent' => $student_additional_details -> cur_class_marks_percent,
+                'attendention_cur_year' => $student_additional_details -> attendention_cur_year,
+                ];
+            } else {
+                $data['student_additional_details'] = null;
+            }
+      
+      
+            return view('src.modules.student_entry_update.Student_edit', compact('data'));
+
+        }
+        catch (\Exception $e) {
+
+            Log::error('Error in getStudentEntry: '.$e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error while fetching data',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
 
 
 }
