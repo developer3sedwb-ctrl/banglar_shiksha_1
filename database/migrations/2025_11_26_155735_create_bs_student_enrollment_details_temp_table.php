@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreign('school_id_fk')->references('id')->on('bs_school_master');
             // Admission fields
             $table->string('admission_no', 100);
-            $table->date('admission_date')->nullable(); 
+            $table->date('admission_date'); 
             // Previous year status
             $table->smallInteger('status_pre_year');
             $table->foreign('status_pre_year')->references('id')->on('bs_previous_schooling_type_master');
@@ -30,20 +30,20 @@ return new class extends Migration
             $table->smallInteger('attendention_pre_year')->nullable(); 
             // Previous class details
             $table->smallInteger('pre_roll_number')->nullable();
-            $table->smallInteger('pre_class_code_fk');
+            $table->smallInteger('pre_class_code_fk')->nullable();
             $table->foreign('pre_class_code_fk')->references('id')->on('bs_class_master');
-            $table->smallInteger('pre_section_code_fk');
+            $table->smallInteger('pre_section_code_fk')->nullable();
             $table->foreign('pre_section_code_fk')->references('id')->on('bs_class_section_master');
             $table->smallInteger('pre_stream_code_fk')->nullable(); 
             $table->foreign('pre_stream_code_fk')->references('id')->on('bs_stream_master');
             // Present class details
-            $table->smallInteger('cur_class_code_fk')->nullable(); 
+            $table->smallInteger('cur_class_code_fk'); 
             $table->foreign('cur_class_code_fk')->references('id')->on('bs_class_master');
-            $table->smallInteger('cur_section_code_fk')->nullable(); 
+            $table->smallInteger('cur_section_code_fk'); 
             $table->foreign('cur_section_code_fk')->references('id')->on('bs_class_section_master');
             $table->smallInteger('cur_stream_code_fk')->nullable(); 
             $table->foreign('cur_stream_code_fk')->references('id')->on('bs_stream_master');
-            $table->smallInteger('cur_roll_number')->nullable(); 
+            $table->smallInteger('cur_roll_number'); 
             // Academic year + Medium + Admission type
             $table->smallInteger('academic_year');
             $table->smallInteger('medium_code_fk');
@@ -56,6 +56,7 @@ return new class extends Migration
             $table->timestamps();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('update_by_stake_cd')->nullable();
             $table->softDeletes();
         });
     }

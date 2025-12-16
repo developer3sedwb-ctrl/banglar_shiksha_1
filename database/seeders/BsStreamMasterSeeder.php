@@ -13,15 +13,16 @@ class BsStreamMasterSeeder extends Seeder
         $now = Carbon::now();
 
         $streams = [
-            ['name' => 'ARTS', 'rank' => 10],
-            ['name' => 'SCIENCE', 'rank' => 20],
-            ['name' => 'COMMERCE', 'rank' => 30],
-            ['name' => 'VOCATIONAL', 'rank' => 40],
-            ['name' => 'OTHER STREAMS', 'rank' => 50],
-            ['name' => 'NOT APPLICABLE', 'rank' => 60],
+            ['id' => 1,'name' => 'ARTS'],
+            ['id' => 2,'name' => 'SCIENCE'],
+            ['id' => 2,'name' => 'COMMERCE'],
+            ['id' => 4,'name' => 'VOCATIONAL'],
+            ['id' => 6,'name' => 'OTHER STREAMS'],
+            ['id' => 999,'name' => 'NOT APPLICABLE'],
         ];
 
         $data = array_map(fn($stream) => [
+            'id' => $stream['id'],
             'name' => $stream['name'],
             'created_at' => $now,
             'updated_at' => $now,

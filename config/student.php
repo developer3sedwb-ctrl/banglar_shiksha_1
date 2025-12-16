@@ -64,7 +64,7 @@ return [
 
     'yes_no' => [
         1 => 'Yes',
-        0 => 'No',
+        2 => 'No',
     ],
 
     'relationship_with_guardian' => [
