@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
     :root {
-        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --primary-gradient: linear-gradient(135deg, #0d6efd 0%, #0d6efd 100%);
         --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
         --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
@@ -374,7 +374,7 @@
         <div class="gradient-header">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h5 class="mb-1 fw-bold"><i class="fas fa-search me-2"></i> School Search & Filters</h5>
+                    <p class="mb-1 fw-bold" style="font-size: 22px; font-weight: 700; color: white;"><i class="fas fa-search me-2"></i> School Search & Filters</p>
                     <p class="mb-0 opacity-75">Find schools using advanced filters</p>
                 </div>
                 <i class="fas fa-filter fa-2x opacity-50"></i>
