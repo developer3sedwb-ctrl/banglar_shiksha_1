@@ -109,92 +109,19 @@
       <!-- PAGE HEADING -->
   <div class="page-header mb-3 d-flex justify-content-between align-items-center">
         <div class="page-header mb-3">
-          <h4 class="fw-bold"><i class="bx bx-user"></i> Add Student</h4>
+          <h4 class="fw-bold"><i class="bx bx-user"></i> Adwd wStudent</h4>
         </div>
           <div class="d-flex gap-2">
-          <a href="" 
-            class="d-flex align-items-center gap-2 p-2 rounded border text-decoration-none"
-            data-bs-toggle="tooltip" 
-            title="Download Student DCF">
-              <span class="d-inline d-md-none"></span>
-              <img src="{{ asset('images/pdf.png') }}" alt="PDF" style="height: 24px;">
-              <span class="fw-semibold d-none d-md-inline"> Guideline</span>
-          </a>
+          
           <!-- ============================================= -->
             {{-- Bulk Upload Button --}}
-            <a href="{{ route('student.bulk.upload') }}" class="btn btn-success">
-
-                {{-- MOBILE: show "Bulk" --}}
-                <span class="d-inline d-md-none">Bulk Upload</span>
-
-                {{-- DESKTOP: show icon + full text --}}
-                <span class="d-none d-md-inline">
-                    <i class="bx bx-upload"></i>
-                    Student Bulk Upload
-                </span>
-            </a>
-
+           
             {{-- Back Button --}}
-            <a href="{{ route('dashboard') }}" class="btn btn-primary">
-
-                {{-- MOBILE: icon only --}}
-                <span class="d-inline d-md-none">
-                    <i class="bx bx-arrow-back"></i>
-                </span>
-                {{-- DESKTOP: icon + full text --}}
-                <span class="d-none d-md-inline">
-                    <i class="bx bx-arrow-back"></i>
-                    Back
-                </span>
-            </a>
+            
           </div>
         </div>
   
-    <div class="alert-container">
-          @if(isset($data['current_step']) && $data['current_step'] >= 1)
-        <div class="entry-alert-box">
-            <span class="entry-alert-text">
-                <i class="bx bx-info-circle"></i>
-                <strong> Resume Entry ?</strong>
-                <span class="d-none d-md-inline">
-                    You have a student entry that is still incomplete at Step {{ $data['current_step'] }}.
-                </span>
-            </span>
-
-            <div class="entry-alert-actions">
-            <button id="resumeEntryBtn" class="btn btn-success">
-
-              {{-- MOBILE TEXT ONLY --}}
-              <span class="d-inline d-md-none">
-                  <i class="bx bx-play-circle"></i> Resume
-              </span>
-
-              {{-- DESKTOP FULL TEXT --}}
-              <span class="d-none d-md-inline">
-                  <i class="bx bx-play-circle"></i>
-                  Resume from Step {{ $data['current_step'] }}
-              </span>
-            </button>
-
-
-              <button id="startNewEntryBtn" class="btn btn-danger">
-
-                {{-- ICON (mobile only) --}}
-                <span class="d-inline d-md-none">
-                    <i class="bx bx-trash"></i> 
-                </span>
-
-                {{-- FULL TEXT (desktop only) --}}
-                <span class="d-none d-md-inline">
-                    Start New Entry
-                </span>
-
-              </button>
-
-            </div>
-        </div>
-      @endif
-    </div>
+    
 
     <!-- CARD WITH TABS -->
      <div class="card card-full">
@@ -273,13 +200,13 @@
 
       <div class="card-body">
         <div class="tab-content" id="studentTabContent">
-          @include('src.modules.student_entry_update.student_edit_tabs.general-info')
+          <!-- @include('src.modules.student_entry_update.student_edit_tabs.general-info')
           @include('src.modules.student_entry_update.student_edit_tabs.enrollment-details')
           @include('src.modules.student_entry_update.student_edit_tabs.facility-details')
           @include('src.modules.student_entry_update.student_edit_tabs.vocational-details')
           @include('src.modules.student_entry_update.student_edit_tabs.contact-info')
           @include('src.modules.student_entry_update.student_edit_tabs.bank-details')
-          @include('src.modules.student_entry_update.student_edit_tabs.additional-details')
+          @include('src.modules.student_entry_update.student_edit_tabs.additional-details') -->
       </div>
     </div>
   </div>

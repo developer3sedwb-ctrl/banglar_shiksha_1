@@ -88,7 +88,7 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
         Route::post( '/student/student_additional_details', [StudentInfoController::class, 'StudentAdditionalDetails'])->name('student.student_additional_details');
 
         Route::get('/student-edit', [StudentInfoController::class, 'getStudentEditDetailsByStudentCode'])->name('student.edit');
-        Route::get('/get_studet_details_by_stu_code', [StudentInfoController::class, 'StudentDetailsByStudentCode']);
+        // Route::get('/get_studet_details_by_stu_code', [StudentInfoController::class, 'StudentDetailsByStudentCode']);
     });
 
 
