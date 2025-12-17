@@ -375,7 +375,6 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <p class="mb-1 fw-bold" style="font-size: 22px; font-weight: 700; color: white;"><i class="fas fa-search me-2"></i> School Search & Filters</p>
-
                 </div>
                 <i class="fas fa-filter fa-2x opacity-50"></i>
             </div>
