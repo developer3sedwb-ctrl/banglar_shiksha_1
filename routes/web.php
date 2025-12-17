@@ -99,7 +99,7 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
 
 
 
-     
+
     // Route::view('/student-edit', 'src.modules.student_entry_update.Student_edit')
     //     ->name('student.edit');
 
@@ -385,6 +385,7 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
     // ALP - Route
     Route::view('/alp/download', 'working-in-progress')->name('alp.download');
     // ============ END OF NEW ROUTES ============
+
 
 
 
