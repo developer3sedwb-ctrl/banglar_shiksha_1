@@ -85,7 +85,7 @@ class SchoolManagementController extends Controller
 
             // Apply district filter if provided
             if ($district_id) {
-                $query->where('district_id', $district_id);
+                $query->where('district_code_fk', $district_id);
             }
 
             // Apply management filter if provided
