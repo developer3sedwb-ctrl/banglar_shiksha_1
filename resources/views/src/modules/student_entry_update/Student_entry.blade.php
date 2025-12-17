@@ -1034,11 +1034,17 @@ $(document).ready(function () {
             if (res && res.status) {
                 alert(res.message);
                 document.querySelector('[data-bs-target="#vocational_tab"]').click();
-                  document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 3 } }));
+                document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 3 } }));
                 $btn.prop('disabled', false).text('Save & Next');
+            }
+            else
+            {
+              alert('Error saving vocational details. Please try again.');
+              $btn.prop('disabled', false).text('Save & Next');
             }
         })
         .catch(err => {
+            $btn.prop('disabled', false).text('Save & Next');
             console.error("Error saving vocational details:", err);
       });
     }
@@ -1140,11 +1146,16 @@ $(document).ready(function () {
               if (res && res.status) {
                   alert(res.message);
                   document.querySelector('[data-bs-target="#contact_info_tab"]').click();
-                    document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 4 } }));
+                  document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 4 } }));
                   $btn.prop('disabled', false).text('Save & Next');
+              }
+              else{
+                alert('Error saving vocational details. Please try again.');
+                $btn.prop('disabled', false).text('Save & Next');
               }
           })
           .catch(err => {
+              $btn.prop('disabled', false).text('Save & Next');
               console.error("Error saving vocational details:", err);
       });
     }
