@@ -90,7 +90,7 @@ class SchoolManagementController extends Controller
 
             // Apply management filter if provided
             if ($management_id) {
-                $query->where('management_id', $management_id);
+                $query->where('school_management_code_fk', $management_id);
             }
 
             // Apply search if provided
