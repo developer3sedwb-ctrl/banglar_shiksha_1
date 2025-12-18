@@ -11,24 +11,7 @@
   </div>
 
   <!-- STUDENT SEARCH -->
-  <div class="card mb-3">
-    <div class="card-header bg-primary text-white py-2">Student Search</div>
-    <div class="card-body p-">
-      <div class="row align-items-center">
-       <div class="col-md-11 mb-2">
-          <div class="input-group">
-            <span class="input-group-text"><i class="bx bx-id-card"></i></span>
-            <input type="text" class="form-control" placeholder="Student Code">
-          </div>
-        </div>
-        <div class="col-md-1 mb-2 text-end">
-          <button class="btn btn-primary w-100">Search</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-    
+  @include('src.modules.student_delete_deactivate.student_search')
   
  <!-- Table card -->
 <div class="card card-full mb-4">
@@ -333,8 +316,6 @@
 @endsection
 
 @push('styles')
-
-
   <!-- Local DataTables CSS -->
   <link rel="stylesheet" href="{{ asset('css/datatables.min.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/common.css') }}">

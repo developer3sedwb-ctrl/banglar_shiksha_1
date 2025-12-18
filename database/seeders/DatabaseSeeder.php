@@ -100,6 +100,8 @@ class DatabaseSeeder extends Seeder
             // BsVocationalJobRoleMaster::class,
             BankCodeNameMasterSeeder::class,
             BsReasonMasterNotTransferredInMasterSeeder::class,
+            BsReasonStudentDeactivationMasterSeeder::class,
+            BsStudentDeleteReasonMasterSeeder::class,
 
 
 
