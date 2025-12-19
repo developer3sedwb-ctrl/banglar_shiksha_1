@@ -520,12 +520,14 @@
                 <form method="GET" action="{{ route('students.list') }}" id="filterForm">
                     <div class="row g-3">
                         <!-- District -->
+                        <!-- District -->
                         <div class="col-md-3">
                             <label class="form-label fw-semibold text-muted mb-2">
                                 <i class="fas fa-map-marked-alt me-2"></i>District
                             </label>
                             <select class="form-select form-select-lg" name="district_id" id="districtSelect"
-                                style="border-radius: 12px; height: 52px; border: 2px solid #e2e8f0;">
+                                style="border-radius: 12px; height: 52px; border: 2px solid #e2e8f0;"
+                                {{ $is_school_user ? 'disabled' : '' }}>
                                 <option value="">All Districts</option>
                                 @foreach ($data['districts'] as $district)
                                     <option value="{{ Crypt::encrypt($district->id) }}"
@@ -534,9 +536,13 @@
                                     </option>
                                 @endforeach
                             </select>
+                            @if ($is_school_user)
+                                <small class="text-muted mt-1 d-block">
+                                    <i class="fas fa-info-circle"></i> Restricted to your school's district
+                                </small>
+                            @endif
                         </div>
 
-                        <!-- Block -->
                         <!-- Circle -->
                         <div class="col-md-3">
                             <label class="form-label fw-semibold text-muted mb-2">
@@ -544,10 +550,10 @@
                             </label>
                             <select class="form-select form-select-lg" name="circle_id" id="circleSelect"
                                 style="border-radius: 12px; height: 52px; border: 2px solid #e2e8f0;"
-                                {{ !$selected_district_id ? 'disabled' : '' }}>
+                                {{ $is_school_user ? 'disabled' : (!$selected_district_id ? 'disabled' : '') }}>
                                 <option value="">All Circles</option>
                                 @if ($selected_district_id && isset($data['circles']))
-                                    @foreach ($data['circles']->where('district_id', $selected_district_id) as $circle)
+                                    @foreach ($data['circles'] as $circle)
                                         <option value="{{ Crypt::encrypt($circle->id) }}"
                                             {{ $selected_circle_id == $circle->id ? 'selected' : '' }}>
                                             {{ $circle->name }}
@@ -555,6 +561,11 @@
                                     @endforeach
                                 @endif
                             </select>
+                            @if ($is_school_user)
+                                <small class="text-muted mt-1 d-block">
+                                    <i class="fas fa-info-circle"></i> Restricted to your school's circle
+                                </small>
+                            @endif
                         </div>
 
                         <!-- Management -->
@@ -563,7 +574,8 @@
                                 <i class="fas fa-university me-2"></i>Management
                             </label>
                             <select class="form-select form-select-lg" name="management_id"
-                                style="border-radius: 12px; height: 52px; border: 2px solid #e2e8f0;">
+                                style="border-radius: 12px; height: 52px; border: 2px solid #e2e8f0;"
+                                {{ $is_school_user ? 'disabled' : '' }}>
                                 <option value="">All Management</option>
                                 @foreach ($data['managements'] as $management)
                                     <option value="{{ Crypt::encrypt($management->id) }}"
@@ -572,6 +584,11 @@
                                     </option>
                                 @endforeach
                             </select>
+                            @if ($is_school_user)
+                                <small class="text-muted mt-1 d-block">
+                                    <i class="fas fa-info-circle"></i> Restricted to your school's management
+                                </small>
+                            @endif
                         </div>
 
                         <!-- School -->
@@ -581,7 +598,7 @@
                             </label>
                             <select class="form-select form-select-lg" name="school_id" id="schoolSelect"
                                 style="border-radius: 12px; height: 52px; border: 2px solid #e2e8f0;"
-                                {{ !$selected_district_id ? 'disabled' : '' }}>
+                                {{ $is_school_user ? 'disabled' : (!$selected_district_id ? 'disabled' : '') }}>
                                 <option value="">All Schools</option>
                                 @if ($selected_district_id && $data['schools']->count() > 0)
                                     @foreach ($data['schools'] as $school)
@@ -592,6 +609,11 @@
                                     @endforeach
                                 @endif
                             </select>
+                            @if ($is_school_user)
+                                <small class="text-muted mt-1 d-block">
+                                    <i class="fas fa-info-circle"></i> Restricted to your school only
+                                </small>
+                            @endif
                         </div>
 
                         <!-- Gender -->
