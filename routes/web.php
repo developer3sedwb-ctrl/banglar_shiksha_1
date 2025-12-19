@@ -10,6 +10,9 @@ use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Api\CommonController;
 use App\Http\Controllers\AccessControl\ModuleController;
 use App\Http\Controllers\student_info\StudentInfoController;
+
+use App\Http\Controllers\student_delete_deactivate\StudentDeleteDeacivateController;
+
 // use App\Http\Controllers\AccessControl\PermissionController;
 // use App\Http\Controllers\AccessControl\RoleController;
 use App\Http\Controllers\{
@@ -95,6 +98,10 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
 
 
         Route::get('/get_studet_details_by_stu_code', [StudentInfoController::class, 'StudentDetailsByStudentCode']);
+
+
+        // added by aziza parvin
+        Route::get('/student-search-by-student-code/{student_code}', [StudentDeleteDeacivateController::class, 'searchStudentByStudentCode'])->name('search.student.by.student_code');
     });
 
 

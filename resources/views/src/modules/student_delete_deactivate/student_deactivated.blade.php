@@ -32,7 +32,7 @@
     
     <div class="card-body">
       <div class="table-responsive">
-      <table id="# class="table table-striped">
+      <table id="example" class="table table-striped">
         <thead>
             <tr>
                 <th>Student Code</th>
@@ -145,6 +145,46 @@
       table.button('.buttons-pdf').trigger();
     });
   });
+</script>
+<script>
+    $(document).ready(function() {
+        $("#btn_search_student").on("click", function (e) {
+          e.preventDefault();
+          let student_code = $("#student_code").val().trim();
+          if (!validateRequiredFields("#student_facility_other_dtls_form")) {
+            return;
+          }
+          let $btn = $(this);
+          $btn.prop('disabled', true).text('Saving...');
+          let url = "{{ route('hoi.student.facility') }}";
+
+
+          if (validateRequiredFields("#student_facility_other_dtls_form")) {
+            sendRequest(url, "POST", "#student_facility_other_dtls_form")
+              .then(res => {
+                  if (res && res.status) {
+                      alert(res.message);
+                      document.querySelector('[data-bs-target="#vocational_tab"]').click();
+                      document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 3 } }));
+                      $btn.prop('disabled', false).text('Save & Next');
+                  }
+                  else
+                  {
+                    alert('Error saving vocational details. Please try again.');
+                    $btn.prop('disabled', false).text('Save & Next');
+                  }
+              })
+              .catch(err => {
+                  $btn.prop('disabled', false).text('Save & Next');
+                  console.error("Error saving vocational details:", err);
+            });
+          }
+          else
+          {
+            $btn.prop('disabled', false).text('Save & Next');
+          }
+        });
+    });
 </script>
 @endpush
 

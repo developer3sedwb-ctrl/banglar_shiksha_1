@@ -1,26 +1,40 @@
   <div class="card mb-3">
     <div class="card-header bg-primary text-white py-2">Student Search</div>
     <div class="card-body p-2">
-      <div class="row align-items-center text-center">
+      <form>
+        <div class="row align-items-center text-center">
         <div class="col-md-3"></div>
        <div class="col-md-5 mb-2">
           <div class="input-group">
             <span class="input-group-text"><i class="bx bx-id-card"></i></span>
-            <input type="text" class="form-control" placeholder="Student Code">
+            <input
+                type="text"
+                class="form-control"
+                id="student_code"
+                name="student_code"
+                placeholder="Enter 14 Digit Student Code"
+                maxlength="14"
+                minlength="14"
+                pattern="[0-9]{14}"
+                inputmode="numeric"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                required
+            >
           </div>
         </div>
         <div class="col-md-1 mb-2 text-end">
-          <button class="btn btn-primary w-100">Search</button>
+          <button type="submit" class="btn btn-primary w-100" id="btn_search_student">Search</button>
         </div>
         <div class="col-md-3"></div>
         
-      </div>
+        </div>
+      </form>
     </div>
   </div>
   <div class="card mb-3">
     <div class="card-header bg-primary text-white py-2">Student Details</div>
     <div class="card-body p-2">
-         <table id="example" class="table table-striped">
+         <table id="#" class="table table-striped">
         <thead>
             <tr>
                 <th>Student Code</th>
