@@ -109,6 +109,14 @@ class User extends Authenticatable
     }
 
     /**
+     * school master relationship
+     */
+    public function schoolMaster()
+    {
+        return $this->belongsTo(SchoolMaster::class, 'user_id', 'id');
+    }
+
+    /**
      * Get the user who is impersonating this user
      */
     public function impersonator()

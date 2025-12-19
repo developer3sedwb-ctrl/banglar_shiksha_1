@@ -114,6 +114,22 @@ class StudentMaster extends Model
     }
 
     /**
+     * Relationship with Circle
+     */
+    public function circle()
+    {
+        return $this->belongsTo(CircleMaster::class, 'circle_code_fk', 'id');
+    }
+
+    /**
+     * Relationship with Subdivision
+     */
+    public function subdivision()
+    {
+        return $this->belongsTo(SubdivisionMaster::class, 'subdivision_code_fk','id');
+    }
+
+    /**
      * Relationship with Block (using circle_code_fk)
      */
     public function block()
@@ -126,14 +142,22 @@ class StudentMaster extends Model
      */
     public function school()
     {
-        return $this->belongsTo(SchoolMaster::class, 'school_id_fk', 'id');
+        return $this->belongsTo(SchoolMaster::class, 'school_code_fk', 'id');
+    }
+
+    /**
+     * Relationship with Gender
+     */
+    public function gender()
+    {
+        return $this->belongsTo(GenderMaster::class, 'gender_code_fk', 'id');
     }
 
 
-    // public function currentClass()
-    // {
-    //     return $this->belongsTo(ClassMaster::class, 'cur_class_code_fk', 'id');
-    // }
+    public function currentClass()
+    {
+        return $this->belongsTo(ClassMaster::class, 'cur_class_code_fk', 'id');
+    }
 
     // public function category()
     // {

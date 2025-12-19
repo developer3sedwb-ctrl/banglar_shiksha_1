@@ -4,12 +4,13 @@ namespace App\Http\Controllers\student_info;
 
 use Exception;
 use App\Models\BlockMaster;
+use App\Models\CircleMaster;
 use App\Models\SchoolMaster;
 use Illuminate\Http\Request;
 use App\Models\StudentMaster;
-use App\Models\CategoryMaster;
 use App\Models\DistrictMaster;
 use App\Models\ManagementMaster;
+use App\Models\SubdivisionMaster;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -33,6 +34,7 @@ use App\Models\student_info\StudentEntryDraftTracker;
 use App\Models\student_info\StudentVocationalDetails;
 use App\Http\Requests\StoreUserRequestStudentContactInfo;
 use App\Models\student_info\StudentFacilityAndOtherDetails;
+use App\Models\{CategoryMaster, GenderMaster, ClassMaster};
 use App\Http\Requests\StoreUserRequestStudentVocationalDetails;
 use App\Http\Requests\StoreUserRequestStudentFacilityAndOtherDetails;
 
@@ -1470,7 +1472,7 @@ class StudentInfoController extends Controller
 
 
             return view('src.modules.student_entry_update.Student_edit', compact('data'));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             Log::error('Error in getStudentEntry: ' . $e->getMessage());
 
@@ -1488,17 +1490,53 @@ class StudentInfoController extends Controller
     /**
      * Display student list with filters
      */
+
     public function studentList(Request $request)
     {
         try {
             // ===============================
-            // Filter parameters
+            // Get user's school information if available
+            // ===============================
+            $userSchool = Auth::user()->schoolMaster ?? null;
+
+            // ===============================
+            // Filter parameters - Set defaults from user's school
             // ===============================
             $district_id = null;
-            $block_id = null;
+            $subdivision_id = null;
+            $circle_id = null;
             $management_id = null;
             $school_id = null;
 
+            // If user has associated school, set default values
+            if ($userSchool) {
+                // Set district from user's school if not already set by request
+                if (!$request->filled('district_id') && $userSchool->district_code_fk) {
+                    $district_id = $userSchool->district_code_fk;
+                }
+
+                // Set circle from user's school if not already set by request
+                if (!$request->filled('circle_id') && $userSchool->circle_code_fk) {
+                    $circle_id = $userSchool->circle_code_fk;
+                }
+
+                // Set subdivision from user's school if not already set by request
+                if (!$request->filled('subdivision_id') && $userSchool->subdivision_code_fk) {
+                    $subdivision_id = $userSchool->subdivision_code_fk;
+                }
+
+                // Set school from user's school if not already set by request
+                if (!$request->filled('school_id') && $userSchool->id) {
+                    $school_id = $userSchool->id;
+                }
+
+                // Set management from user's school if not already set by request
+                if (!$request->filled('management_id') && $userSchool->school_management_code_fk) {
+                    $management_id = $userSchool->school_management_code_fk;
+                }
+            }
+
+            // Override with request values if provided
             $search_param        = $request->search ?? '';
             $gender_param        = $request->gender ?? '';
             $class_param         = $request->class ?? '';
@@ -1509,9 +1547,9 @@ class StudentInfoController extends Controller
             $per_page            = $request->per_page ?? 20;
 
             // ===============================
-            // Decrypt IDs safely
+            // Decrypt IDs safely (from request, overrides school defaults)
             // ===============================
-            foreach (['district_id', 'block_id', 'management_id', 'school_id'] as $field) {
+            foreach (['district_id', 'subdivision_id', 'circle_id', 'management_id', 'school_id'] as $field) {
                 if ($request->filled($field)) {
                     try {
                         ${$field} = Crypt::decrypt($request->$field);
@@ -1520,18 +1558,14 @@ class StudentInfoController extends Controller
                     }
                 }
             }
+
             $data = [];
 
             // ===============================
-            // MASTER DATA (NO CACHE)
+            // MASTER DATA
             // ===============================
             $data['districts'] = DistrictMaster::where('status', 1)
                 ->select('id', 'name')
-                ->orderBy('name')
-                ->get();
-
-            $data['blocks'] = BlockMaster::where('status', 1)
-                ->select('id', 'name', 'district_id')
                 ->orderBy('name')
                 ->get();
 
@@ -1540,21 +1574,54 @@ class StudentInfoController extends Controller
                 ->orderBy('name')
                 ->get();
 
-            // $data['genders'] = GenderMaster::where('status', 1)
-            //     ->select('id', 'name')
-            //     ->orderBy('id')
-            //     ->get();
-            $data['genders'] = [];
-            // $data['classes'] = ClassMaster::where('status', 1)
-            //     ->select('id', 'name')
-            //     ->orderBy('id')
-            //     ->get();
-            $data['classes'] = [];
-
             $data['categories'] = CategoryMaster::where('status', 1)
                 ->select('id', 'name')
                 ->orderBy('id')
                 ->get();
+
+            // Get subdivisions based on selected district
+            if ($district_id) {
+                $data['subdivisions'] = SubdivisionMaster::where('status', 1)
+                    ->where('district_id', $district_id)
+                    ->select('id', 'name', 'district_id')
+                    ->orderBy('name')
+                    ->get();
+            } else {
+                $data['subdivisions'] = collect();
+            }
+
+            // Get circles based on selected district
+            if ($district_id) {
+                $data['circles'] = CircleMaster::where('status', 1)
+                    ->where('district_id', $district_id)
+                    ->select('id', 'name', 'district_id')
+                    ->orderBy('name')
+                    ->get();
+            } else {
+                $data['circles'] = collect();
+            }
+
+            // Get schools based on selected district and circle
+            if ($district_id) {
+                $schoolQuery = SchoolMaster::where('district_code_fk', $district_id)
+                    ->where('status', 1);
+
+                if ($circle_id) {
+                    $schoolQuery->where('circle_code_fk', $circle_id);
+                }
+
+                // If user is from a specific school and no other filters set, show only their school
+                if ($userSchool && $school_id == $userSchool->id && !$request->filled('search')) {
+                    $schoolQuery->where('id', $school_id);
+                }
+
+                $data['schools'] = $schoolQuery
+                    ->select('id', 'school_name', 'schcd')
+                    ->orderBy('school_name')
+                    ->get();
+            } else {
+                $data['schools'] = collect();
+            }
 
             // Academic years
             $data['academic_years'] = StudentMaster::select('academic_year')
@@ -1563,38 +1630,30 @@ class StudentInfoController extends Controller
                 ->pluck('academic_year');
 
             // ===============================
-            // STUDENT QUERY
+            // MAIN QUERY WITH ELOQUENT RELATIONSHIPS
             // ===============================
             $query = StudentMaster::with([
                 'district:id,name',
-                'block:id,name',
-                // 'management:id,name',
-                'school:id,school_name,schcd',
-                // 'gender:id,name',
-                // 'currentClass:id,name',
-                // 'category:id,name'
+                'circle:id,name',
+                'school:id,school_name,schcd,school_management_code_fk',
+                'school.management:id,name',
+                'gender:id,name',
             ])->where('status', 1);
 
-            // District filter (partition key)
+            // ===============================
+            // APPLY FILTERS
+            // ===============================
             if ($district_id) {
                 $query->where('district_code_fk', $district_id);
-
-                $data['schools'] = SchoolMaster::where('district_id', $district_id)
-                    ->where('status', 1)
-                    ->select('id', 'school_name', 'schcd')
-                    ->orderBy('school_name')
-                    ->get();
-            } else {
-                $data['schools'] = collect();
             }
 
-            if ($block_id) {
-                $query->where('circle_code_fk', $block_id);
+            if ($circle_id) {
+                $query->where('circle_code_fk', $circle_id);
             }
 
             if ($management_id) {
                 $query->whereHas('school', function ($q) use ($management_id) {
-                    $q->where('management_id', $management_id);
+                    $q->where('school_management_code_fk', $management_id);
                 });
             }
 
@@ -1648,11 +1707,7 @@ class StudentInfoController extends Controller
                         });
                 });
             }
-            // dd($query
-            //                 ->orderBy('student_code', 'desc')
-            //                 ->paginate($per_page)
-            //                 ->withQueryString()
-            //                 ->onEachSide(1));
+
             // ===============================
             // PAGINATION
             // ===============================
@@ -1665,10 +1720,48 @@ class StudentInfoController extends Controller
             // ===============================
             // STATISTICS
             // ===============================
-            $statsQuery = StudentMaster::where('status', 1);
+            $statsQuery = StudentMaster::query();
 
             if ($district_id) {
                 $statsQuery->where('district_code_fk', $district_id);
+            }
+
+            if ($circle_id) {
+                $statsQuery->where('circle_code_fk', $circle_id);
+            }
+
+            if ($management_id) {
+                $statsQuery->whereHas('school', function ($q) use ($management_id) {
+                    $q->where('school_management_code_fk', $management_id);
+                });
+            }
+
+            if ($school_id) {
+                $statsQuery->where('school_code_fk', $school_id);
+            }
+
+            if ($gender_param) {
+                $statsQuery->where('gender_code_fk', $gender_param);
+            }
+
+            if ($class_param) {
+                $statsQuery->where('cur_class_code_fk', $class_param);
+            }
+
+            if ($category_param) {
+                $statsQuery->where('social_category_code_fk', $category_param);
+            }
+
+            if ($academic_year_param) {
+                $statsQuery->where('academic_year', $academic_year_param);
+            }
+
+            if ($bpl_param !== '') {
+                $statsQuery->where('bpl_y_n', $bpl_param);
+            }
+
+            if ($cwsn_param !== '') {
+                $statsQuery->where('cwsn_y_n', $cwsn_param);
             }
 
             $data['total_students']  = $statsQuery->count();
@@ -1677,25 +1770,55 @@ class StudentInfoController extends Controller
             $data['bpl_students']    = (clone $statsQuery)->where('bpl_y_n', 1)->count();
             $data['cwsn_students']   = (clone $statsQuery)->where('cwsn_y_n', 2)->count();
 
-            $data['class_distribution'] = (clone $statsQuery)
-                ->select('cur_class_code_fk', DB::raw('COUNT(*) as count'))
-                ->groupBy('cur_class_code_fk')
-                // ->with('currentClass:id,name')
-                ->get();
-
             $data['category_distribution'] = (clone $statsQuery)
                 ->select('social_category_code_fk', DB::raw('COUNT(*) as count'))
                 ->groupBy('social_category_code_fk')
-                // ->with('category:id,name')
                 ->get();
-            // dd($data);
+
+            // ===============================
+            // GET GENDERS AND CLASSES
+            // ===============================
+            $data['class_distribution'] = ClassMaster::where('status', 1)->count();
+
+            $data['genders'] = GenderMaster::where('status', 1)
+                ->select('id', 'name')
+                ->orderBy('id')
+                ->get();
+
+            $data['classes'] = ClassMaster::where('status', 1)
+                ->select('id', 'name')
+                ->orderBy('id')
+                ->get();
+
+            // ===============================
+            // Prepare encrypted params for view
+            // ===============================
+            $encrypted_params = [];
+            if ($district_id) {
+                $encrypted_params['district_id'] = Crypt::encrypt($district_id);
+            }
+            if ($circle_id) {
+                $encrypted_params['circle_id'] = Crypt::encrypt($circle_id);
+            }
+            if ($subdivision_id) {
+                $encrypted_params['subdivision_id'] = Crypt::encrypt($subdivision_id);
+            }
+            if ($management_id) {
+                $encrypted_params['management_id'] = Crypt::encrypt($management_id);
+            }
+            if ($school_id) {
+                $encrypted_params['school_id'] = Crypt::encrypt($school_id);
+            }
+
             // ===============================
             // VIEW
             // ===============================
             return view('src.modules.student_information.student_list', [
                 'data' => $data,
+                'user_school' => $userSchool, // Pass user's school info to view
                 'selected_district_id'   => $district_id,
-                'selected_block_id'      => $block_id,
+                'selected_subdivision_id'  => $subdivision_id,
+                'selected_circle_id'      => $circle_id,
                 'selected_management_id' => $management_id,
                 'selected_school_id'     => $school_id,
                 'search_param'           => $search_param,
@@ -1706,12 +1829,7 @@ class StudentInfoController extends Controller
                 'cwsn_param'             => $cwsn_param,
                 'academic_year_param'    => $academic_year_param,
                 'per_page'               => $per_page,
-                'encrypted_params'       => $request->only([
-                    'district_id',
-                    'block_id',
-                    'management_id',
-                    'school_id'
-                ])
+                'encrypted_params'       => $encrypted_params
             ]);
         } catch (\Exception $e) {
             Log::error('Student list error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
@@ -1720,44 +1838,121 @@ class StudentInfoController extends Controller
     }
 
 
-    public function getBlocksByDistrict(Request $request)
+
+    public function getSubDivisionByDistrict(Request $request)
     {
-        $district_id = Crypt::decrypt($request->district_id);
+        try {
+            $district_id = Crypt::decrypt($request->district_id);
 
-        $blocks = BlockMaster::where('district_id', $district_id)
-            ->where('status', 1)
-            ->select('id', 'name')
-            ->orderBy('name')
-            ->get()
-            ->map(function ($block) {
-                return [
-                    'id' => $block->id,
-                    'encrypted_id' => Crypt::encrypt($block->id),
-                    'name' => $block->name
-                ];
-            });
+            $subdivisions = SubdivisionMaster::where('district_id', $district_id)
+                ->where('status', 1)
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get()
+                ->map(function ($subdivision) {
+                    return [
+                        'id' => $subdivision->id,
+                        'encrypted_id' => Crypt::encrypt($subdivision->id),
+                        'name' => $subdivision->name
+                    ];
+                });
 
-        return response()->json($blocks);
+            return response()->json($subdivisions);
+        } catch (\Exception $e) {
+            return response()->json([]);
+        }
     }
 
+    public function getBlocksByDistrictSubDivision(Request $request)
+    {
+        try {
+            $district_id    = Crypt::decrypt($request->district_id);
+            $subdivision_id = Crypt::decrypt($request->subdivision_id);
+
+            $blocks = BlockMaster::where('district_id', $district_id)
+                ->where('subdivision_id', $subdivision_id)
+                ->where('status', 1)
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get()
+                ->map(function ($block) {
+                    return [
+                        'id'            => $block->id,
+                        'encrypted_id'  => Crypt::encrypt($block->id),
+                        'name'          => $block->name,
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'data'    => $blocks
+            ]);
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid encrypted parameters'
+            ], 400);
+        }
+    }
+
+    /**
+     * Get circles by district
+     */
+    public function getCirclesByDistrict(Request $request)
+    {
+        try {
+            $district_id = Crypt::decrypt($request->district_id);
+
+            $circles = CircleMaster::where('district_id', $district_id)
+                ->where('status', 1)
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get()
+                ->map(function ($circle) {
+                    return [
+                        'id' => $circle->id,
+                        'encrypted_id' => Crypt::encrypt($circle->id),
+                        'name' => $circle->name
+                    ];
+                });
+
+            return response()->json($circles);
+        } catch (\Exception $e) {
+            return response()->json([]);
+        }
+    }
+
+    /**
+     * Get schools by filters
+     */
     public function getSchoolsByFilters(Request $request)
     {
-        $district_id = Crypt::decrypt($request->district_id);
+        try {
+            $district_id = Crypt::decrypt($request->district_id);
+            $circle_id = $request->filled('circle_id') ? Crypt::decrypt($request->circle_id) : null;
 
-        $schools = SchoolMaster::where('district_id', $district_id)
-            ->where('status', 1)
-            ->select('id', 'school_name', 'schcd')
-            ->orderBy('school_name')
-            ->get()
-            ->map(function ($school) {
-                return [
-                    'id' => $school->id,
-                    'encrypted_id' => Crypt::encrypt($school->id),
-                    'name' => $school->school_name,
-                    'code' => $school->schcd
-                ];
-            });
+            $query = SchoolMaster::where('district_code_fk', $district_id)
+                ->where('status', 1);
 
-        return response()->json($schools);
+            if ($circle_id) {
+                $query->where('circle_code_fk', $circle_id);
+            }
+
+            $schools = $query->select('id', 'school_name', 'schcd')
+                ->orderBy('school_name')
+                ->get()
+                ->map(function ($school) {
+                    return [
+                        'id' => $school->id,
+                        'encrypted_id' => Crypt::encrypt($school->id),
+                        'name' => $school->school_name . ' (' . $school->schcd . ')',
+                        'code' => $school->schcd
+                    ];
+                });
+
+            return response()->json($schools);
+        } catch (\Exception $e) {
+            return response()->json([]);
+        }
     }
 }
