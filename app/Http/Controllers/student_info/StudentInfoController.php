@@ -1498,6 +1498,7 @@ class StudentInfoController extends Controller
             // Get user's school information if available
             // ===============================
             $userSchool = Auth::user()->schoolMaster ?? null;
+            $isSchoolUser = $userSchool ? true : false;
 
             // ===============================
             // Filter parameters - Set defaults from user's school
@@ -1508,35 +1509,20 @@ class StudentInfoController extends Controller
             $management_id = null;
             $school_id = null;
 
-            // If user has associated school, set default values
-            if ($userSchool) {
-                // Set district from user's school if not already set by request
-                if (!$request->filled('district_id') && $userSchool->district_code_fk) {
-                    $district_id = $userSchool->district_code_fk;
-                }
+            // If user has associated school, restrict to their school only
+            if ($isSchoolUser) {
+                // Force set to user's school data
+                $district_id = $userSchool->district_code_fk;
+                $circle_id = $userSchool->circle_code_fk;
+                $subdivision_id = $userSchool->subdivision_code_fk;
+                $school_id = $userSchool->id;
+                $management_id = $userSchool->school_management_code_fk;
 
-                // Set circle from user's school if not already set by request
-                if (!$request->filled('circle_id') && $userSchool->circle_code_fk) {
-                    $circle_id = $userSchool->circle_code_fk;
-                }
-
-                // Set subdivision from user's school if not already set by request
-                if (!$request->filled('subdivision_id') && $userSchool->subdivision_code_fk) {
-                    $subdivision_id = $userSchool->subdivision_code_fk;
-                }
-
-                // Set school from user's school if not already set by request
-                if (!$request->filled('school_id') && $userSchool->id) {
-                    $school_id = $userSchool->id;
-                }
-
-                // Set management from user's school if not already set by request
-                if (!$request->filled('management_id') && $userSchool->school_management_code_fk) {
-                    $management_id = $userSchool->school_management_code_fk;
-                }
+                // Disable other district/circle selection for school users
+                // They can only see their own school's data
             }
 
-            // Override with request values if provided
+            // Override with request values if provided (but for school users, restrict to their school)
             $search_param        = $request->search ?? '';
             $gender_param        = $request->gender ?? '';
             $class_param         = $request->class ?? '';
@@ -1547,14 +1533,16 @@ class StudentInfoController extends Controller
             $per_page            = $request->per_page ?? 20;
 
             // ===============================
-            // Decrypt IDs safely (from request, overrides school defaults)
+            // Decrypt IDs safely (from request, but for school users ignore other schools)
             // ===============================
-            foreach (['district_id', 'subdivision_id', 'circle_id', 'management_id', 'school_id'] as $field) {
-                if ($request->filled($field)) {
-                    try {
-                        ${$field} = Crypt::decrypt($request->$field);
-                    } catch (\Throwable $e) {
-                        ${$field} = null;
+            if (!$isSchoolUser) {
+                foreach (['district_id', 'subdivision_id', 'circle_id', 'management_id', 'school_id'] as $field) {
+                    if ($request->filled($field)) {
+                        try {
+                            ${$field} = Crypt::decrypt($request->$field);
+                        } catch (\Throwable $e) {
+                            ${$field} = null;
+                        }
                     }
                 }
             }
@@ -1562,72 +1550,106 @@ class StudentInfoController extends Controller
             $data = [];
 
             // ===============================
-            // MASTER DATA
+            // MASTER DATA - RESTRICTED FOR SCHOOL USERS
             // ===============================
-            $data['districts'] = DistrictMaster::where('status', 1)
-                ->select('id', 'name')
-                ->orderBy('name')
-                ->get();
+            if ($isSchoolUser) {
+                // School users only see their own school's data
+                $data['districts'] = DistrictMaster::where('id', $district_id)
+                    ->where('status', 1)
+                    ->select('id', 'name')
+                    ->get();
 
-            $data['managements'] = ManagementMaster::where('status', 1)
-                ->select('id', 'name')
-                ->orderBy('name')
-                ->get();
+                $data['circles'] = CircleMaster::where('id', $circle_id)
+                    ->where('status', 1)
+                    ->select('id', 'name')
+                    ->get();
 
+                $data['subdivisions'] = $subdivision_id ?
+                    SubdivisionMaster::where('id', $subdivision_id)
+                    ->where('status', 1)
+                    ->select('id', 'name')
+                    ->get() : collect();
+
+                $data['schools'] = SchoolMaster::where('id', $school_id)
+                    ->where('status', 1)
+                    ->select('id', 'school_name', 'schcd')
+                    ->get();
+
+                $data['managements'] = ManagementMaster::where('id', $management_id)
+                    ->where('status', 1)
+                    ->select('id', 'name')
+                    ->get();
+            } else {
+                // Admin/other users see all data
+                $data['districts'] = DistrictMaster::where('status', 1)
+                    ->select('id', 'name')
+                    ->orderBy('name')
+                    ->get();
+
+                $data['managements'] = ManagementMaster::where('status', 1)
+                    ->select('id', 'name')
+                    ->orderBy('name')
+                    ->get();
+
+                // Get circles based on selected district
+                if ($district_id) {
+                    $data['circles'] = CircleMaster::where('status', 1)
+                        ->where('district_id', $district_id)
+                        ->select('id', 'name', 'district_id')
+                        ->orderBy('name')
+                        ->get();
+                } else {
+                    $data['circles'] = collect();
+                }
+
+                // Get subdivisions based on selected district
+                if ($district_id) {
+                    $data['subdivisions'] = SubdivisionMaster::where('status', 1)
+                        ->where('district_id', $district_id)
+                        ->select('id', 'name', 'district_id')
+                        ->orderBy('name')
+                        ->get();
+                } else {
+                    $data['subdivisions'] = collect();
+                }
+
+                // Get schools based on selected district and circle
+                if ($district_id) {
+                    $schoolQuery = SchoolMaster::where('district_code_fk', $district_id)
+                        ->where('status', 1);
+
+                    if ($circle_id) {
+                        $schoolQuery->where('circle_code_fk', $circle_id);
+                    }
+
+                    $data['schools'] = $schoolQuery
+                        ->select('id', 'school_name', 'schcd')
+                        ->orderBy('school_name')
+                        ->get();
+                } else {
+                    $data['schools'] = collect();
+                }
+            }
+
+            // These are always available to all users
             $data['categories'] = CategoryMaster::where('status', 1)
                 ->select('id', 'name')
                 ->orderBy('id')
                 ->get();
 
-            // Get subdivisions based on selected district
-            if ($district_id) {
-                $data['subdivisions'] = SubdivisionMaster::where('status', 1)
-                    ->where('district_id', $district_id)
-                    ->select('id', 'name', 'district_id')
-                    ->orderBy('name')
-                    ->get();
+            // Academic years (restrict to user's school data if school user)
+            if ($isSchoolUser) {
+                $data['academic_years'] = StudentMaster::where('school_code_fk', $school_id)
+                    ->select('academic_year')
+                    ->distinct()
+                    ->orderBy('academic_year', 'desc')
+                    ->pluck('academic_year');
             } else {
-                $data['subdivisions'] = collect();
+                $data['academic_years'] = StudentMaster::select('academic_year')
+                    ->distinct()
+                    ->orderBy('academic_year', 'desc')
+                    ->pluck('academic_year');
             }
-
-            // Get circles based on selected district
-            if ($district_id) {
-                $data['circles'] = CircleMaster::where('status', 1)
-                    ->where('district_id', $district_id)
-                    ->select('id', 'name', 'district_id')
-                    ->orderBy('name')
-                    ->get();
-            } else {
-                $data['circles'] = collect();
-            }
-
-            // Get schools based on selected district and circle
-            if ($district_id) {
-                $schoolQuery = SchoolMaster::where('district_code_fk', $district_id)
-                    ->where('status', 1);
-
-                if ($circle_id) {
-                    $schoolQuery->where('circle_code_fk', $circle_id);
-                }
-
-                // If user is from a specific school and no other filters set, show only their school
-                if ($userSchool && $school_id == $userSchool->id && !$request->filled('search')) {
-                    $schoolQuery->where('id', $school_id);
-                }
-
-                $data['schools'] = $schoolQuery
-                    ->select('id', 'school_name', 'schcd')
-                    ->orderBy('school_name')
-                    ->get();
-            } else {
-                $data['schools'] = collect();
-            }
-
-            // Academic years
-            $data['academic_years'] = StudentMaster::select('academic_year')
-                ->distinct()
-                ->orderBy('academic_year', 'desc')
-                ->pluck('academic_year');
 
             // ===============================
             // MAIN QUERY WITH ELOQUENT RELATIONSHIPS
@@ -1641,26 +1663,33 @@ class StudentInfoController extends Controller
             ])->where('status', 1);
 
             // ===============================
-            // APPLY FILTERS
+            // APPLY FILTERS - RESTRICTED FOR SCHOOL USERS
             // ===============================
-            if ($district_id) {
-                $query->where('district_code_fk', $district_id);
-            }
-
-            if ($circle_id) {
-                $query->where('circle_code_fk', $circle_id);
-            }
-
-            if ($management_id) {
-                $query->whereHas('school', function ($q) use ($management_id) {
-                    $q->where('school_management_code_fk', $management_id);
-                });
-            }
-
-            if ($school_id) {
+            if ($isSchoolUser) {
+                // School users can only see their own school's students
                 $query->where('school_code_fk', $school_id);
+            } else {
+                // Admin/other users can apply all filters
+                if ($district_id) {
+                    $query->where('district_code_fk', $district_id);
+                }
+
+                if ($circle_id) {
+                    $query->where('circle_code_fk', $circle_id);
+                }
+
+                if ($management_id) {
+                    $query->whereHas('school', function ($q) use ($management_id) {
+                        $q->where('school_management_code_fk', $management_id);
+                    });
+                }
+
+                if ($school_id) {
+                    $query->where('school_code_fk', $school_id);
+                }
             }
 
+            // Common filters for all users
             if ($gender_param) {
                 $query->where('gender_code_fk', $gender_param);
             }
@@ -1686,7 +1715,7 @@ class StudentInfoController extends Controller
             }
 
             // ===============================
-            // SEARCH
+            // SEARCH (within school for school users)
             // ===============================
             if ($search_param) {
                 $search = trim($search_param);
@@ -1718,28 +1747,36 @@ class StudentInfoController extends Controller
                 ->onEachSide(1);
 
             // ===============================
-            // STATISTICS
+            // STATISTICS (restricted to user's school if school user)
             // ===============================
-            $statsQuery = StudentMaster::query();
+            if ($isSchoolUser) {
+                // School users statistics only for their school
+                $statsQuery = StudentMaster::where('school_code_fk', $school_id)
+                    ->where('status', 1);
+            } else {
+                // Admin/other users statistics with filters
+                $statsQuery = StudentMaster::query()->where('status', 1);
 
-            if ($district_id) {
-                $statsQuery->where('district_code_fk', $district_id);
+                if ($district_id) {
+                    $statsQuery->where('district_code_fk', $district_id);
+                }
+
+                if ($circle_id) {
+                    $statsQuery->where('circle_code_fk', $circle_id);
+                }
+
+                if ($management_id) {
+                    $statsQuery->whereHas('school', function ($q) use ($management_id) {
+                        $q->where('school_management_code_fk', $management_id);
+                    });
+                }
+
+                if ($school_id) {
+                    $statsQuery->where('school_code_fk', $school_id);
+                }
             }
 
-            if ($circle_id) {
-                $statsQuery->where('circle_code_fk', $circle_id);
-            }
-
-            if ($management_id) {
-                $statsQuery->whereHas('school', function ($q) use ($management_id) {
-                    $q->where('school_management_code_fk', $management_id);
-                });
-            }
-
-            if ($school_id) {
-                $statsQuery->where('school_code_fk', $school_id);
-            }
-
+            // Apply common filters to statistics
             if ($gender_param) {
                 $statsQuery->where('gender_code_fk', $gender_param);
             }
@@ -1776,7 +1813,7 @@ class StudentInfoController extends Controller
                 ->get();
 
             // ===============================
-            // GET GENDERS AND CLASSES
+            // GET GENDERS AND CLASSES (available to all)
             // ===============================
             $data['class_distribution'] = ClassMaster::where('status', 1)->count();
 
@@ -1815,7 +1852,8 @@ class StudentInfoController extends Controller
             // ===============================
             return view('src.modules.student_information.student_list', [
                 'data' => $data,
-                'user_school' => $userSchool, // Pass user's school info to view
+                'user_school' => $userSchool,
+                'is_school_user' => $isSchoolUser,
                 'selected_district_id'   => $district_id,
                 'selected_subdivision_id'  => $subdivision_id,
                 'selected_circle_id'      => $circle_id,
@@ -1836,7 +1874,6 @@ class StudentInfoController extends Controller
             return redirect()->back()->with('error', 'An error occurred while loading student list.');
         }
     }
-
 
 
     public function getSubDivisionByDistrict(Request $request)
