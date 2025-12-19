@@ -147,45 +147,75 @@
   });
 </script>
 <script>
-    $(document).ready(function() {
-        $("#btn_search_student").on("click", function (e) {
-          e.preventDefault();
-          let student_code = $("#student_code").val().trim();
-          if (!validateRequiredFields("#student_facility_other_dtls_form")) {
+$(document).ready(function () {
+
+    $("#btn_search_student").on("click", function (e) {
+        e.preventDefault();
+
+        if (!validateRequiredFields("#student_search_form")) {
             return;
-          }
-          let $btn = $(this);
-          $btn.prop('disabled', true).text('Saving...');
-          let url = "{{ route('hoi.student.facility') }}";
+        }
 
+        let $btn = $(this);
+        $btn.prop('disabled', true).text('Searching...');
 
-          if (validateRequiredFields("#student_facility_other_dtls_form")) {
-            sendRequest(url, "POST", "#student_facility_other_dtls_form")
-              .then(res => {
-                  if (res && res.status) {
-                      alert(res.message);
-                      document.querySelector('[data-bs-target="#vocational_tab"]').click();
-                      document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 3 } }));
-                      $btn.prop('disabled', false).text('Save & Next');
-                  }
-                  else
-                  {
-                    alert('Error saving vocational details. Please try again.');
-                    $btn.prop('disabled', false).text('Save & Next');
-                  }
-              })
-              .catch(err => {
-                  $btn.prop('disabled', false).text('Save & Next');
-                  console.error("Error saving vocational details:", err);
+        let url = "{{ route('search.student.by.student_code') }}";
+
+        sendRequest(url, "POST", "#student_search_form")
+            .then(res => {
+
+                $btn.prop('disabled', false).text('Search');
+
+                if (res.status === 'success') {
+                    populateStudentRow(res.data);
+                } else {
+                    showEmptyRow(res.message || 'Student not found');
+                }
+            })
+            .catch(err => {
+                $btn.prop('disabled', false).text('Search');
+                console.error(err);
+                showEmptyRow('Something went wrong');
             });
-          }
-          else
-          {
-            $btn.prop('disabled', false).text('Save & Next');
-          }
-        });
     });
+
+    function populateStudentRow(d) {
+      console.log(d);
+
+        let row = `
+            <tr>
+                <td>${d.student_code ?? '-'}</td>
+                <td>${d.studentname ?? '-'}</td>
+                <td>${d.dob ?? '-'}</td>
+                <td>${d.guardian_name ?? '-'}</td>
+                <td>${d.current_class ?? '-'}</td>
+                <td>${d.current_section ?? '-'}</td>
+                <td>${d.cur_roll_number ?? '-'}</td>
+                <td>${d.deactivation_reason ?? '-'}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary">
+                        Deativate
+                    </button>
+                </td>
+            </tr>
+        `;
+
+        $("#student_result_body").html(row); // replace old data
+    }
+
+    function showEmptyRow(message) {
+        $("#student_result_body").html(`
+            <tr>
+                <td colspan="10" class="text-center text-danger">
+                    ${message}
+                </td>
+            </tr>
+        `);
+    }
+
+});
 </script>
+
 @endpush
 
 

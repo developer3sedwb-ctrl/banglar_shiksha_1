@@ -158,7 +158,10 @@ class StudentMaster extends Model
     {
         return $this->belongsTo(ClassMaster::class, 'cur_class_code_fk', 'id');
     }
-
+    public function currentSection()
+    {
+        return $this->belongsTo(ClassSectionMaster::class, 'cur_section_code_fk', 'id');
+    }
     // public function category()
     // {
     //     return $this->belongsTo(SocialCategoryMaster::class, 'social_category_code_fk', 'id');

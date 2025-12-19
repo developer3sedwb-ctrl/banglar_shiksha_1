@@ -1,7 +1,7 @@
   <div class="card mb-3">
     <div class="card-header bg-primary text-white py-2">Student Search</div>
     <div class="card-body p-2">
-      <form>
+      <form id="student_search_form">
         <div class="row align-items-center text-center">
         <div class="col-md-3"></div>
        <div class="col-md-5 mb-2">
@@ -34,7 +34,7 @@
   <div class="card mb-3">
     <div class="card-header bg-primary text-white py-2">Student Details</div>
     <div class="card-body p-2">
-         <table id="#" class="table table-striped">
+      <table class="table table-striped">
         <thead>
             <tr>
                 <th>Student Code</th>
@@ -44,15 +44,18 @@
                 <th>Present Class</th>
                 <th>Present Section</th>
                 <th>Present Roll No.</th>
-                <th>Student Status</th>
                 <th>Reason for Deactivation</th>
                 <th>Action</th>
             </tr>
         </thead>
-
-        <tbody>
+        <tbody id="student_result_body">
+            <tr>
+                <td colspan="10" class="text-center text-muted">
+                    Search student to view details
+                </td>
+            </tr>
         </tbody>
-
       </table>
+
     </div>
   </div>

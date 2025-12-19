@@ -107,7 +107,7 @@
                     @canany(['view deactivate', 'manage deactivate'])
                         <li class="menu-item {{ request()->routeIs('student_deactivated') ? 'active' : '' }}">
                             <a href="{{ route('student_deactivated') }}" class="menu-link">
-                                <div>Enrollment Deactivate</div>
+                                <div>Student Deactivate</div>
                             </a>
                         </li>
                     @endcanany

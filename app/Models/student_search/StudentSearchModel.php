@@ -8,4 +8,5 @@ class StudentSearchModel extends Model
 {
     //
     protected $table = 'bs_student_master';
+    
 }

@@ -101,7 +101,7 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
 
 
         // added by aziza parvin
-        Route::get('/student-search-by-student-code/{student_code}', [StudentDeleteDeacivateController::class, 'searchStudentByStudentCode'])->name('search.student.by.student_code');
+        Route::post('/student-search-by-student-code', [StudentDeleteDeacivateController::class, 'searchStudentByStudentCode'])->name('search.student.by.student_code');
     });
 
 
