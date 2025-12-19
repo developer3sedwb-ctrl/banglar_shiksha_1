@@ -14,6 +14,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        // dd(Auth::user()->schoolMaster->school_name);
         $user = Auth::user();
         $user = Session::get(config('sso.session.user'));
         $session = Session::get(config('sso.session.session_data'));

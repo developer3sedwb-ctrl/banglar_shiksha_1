@@ -145,7 +145,8 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
     });
 
     // AJAX routes for dynamic loading
-    Route::get('/get-blocks', [StudentInfoController::class, 'getBlocksByDistrict'])->name('get.blocks');
+      Route::get('/get-subdivisions', [StudentInfoController::class, 'getSubDivisionByDistrict'])->name('get.subdivisions');
+    Route::get('/get-circles', [StudentInfoController::class, 'getCirclesByDistrict'])->name('get.circles');
     Route::get('/get-schools', [StudentInfoController::class, 'getSchoolsByFilters'])->name('get.schools');
 
     Route::view('/enrollment-report', 'src.modules.student_information.enrollment_report')
