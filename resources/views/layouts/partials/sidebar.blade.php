@@ -89,7 +89,7 @@
         <!-- Student Delete / Deactivate -->
         @canany(['view delete', 'manage delete', 'view deactivate', 'manage deactivate'])
             <li
-                class="menu-item {{ request()->routeIs('student_delete') || request()->routeIs('student_deactivated') ? 'active open' : '' }}">
+                class="menu-item {{ request()->routeIs('student_delete') || request()->routeIs('student.deactivate.view') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-data"></i>
                     <div>Student Delete / Deactivate</div>
@@ -105,8 +105,8 @@
                     @endcanany
 
                     @canany(['view deactivate', 'manage deactivate'])
-                        <li class="menu-item {{ request()->routeIs('student_deactivated') ? 'active' : '' }}">
-                            <a href="{{ route('student_deactivated') }}" class="menu-link">
+                        <li class="menu-item {{ request()->routeIs('student.deactivate.view') ? 'active' : '' }}">
+                            <a href="{{ route('student.deactivate.view') }}" class="menu-link">
                                 <div>Student Deactivate</div>
                             </a>
                         </li>
@@ -120,7 +120,11 @@
         @canany(['view entry', 'create entry', 'edit entry', 'view profile', 'edit profile', 'download profile', 'update
             basic', 'update deactivation', 'update aadhar', 'manage mapping', 'update identity', 'manage additional', 'update section', 'bulk
             upload', 'update polling'])
-            <li class="menu-item {{ request()->routeIs('student.*') ? 'active open' : '' }}">
+            <li class="menu-item {{ request()->routeIs('student.entry*')
+                                    || request()->routeIs('student.edit*')
+                                    || request()->routeIs('student.update*')
+                                    || request()->routeIs('student.bulk*')
+                                    ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-user"></i>
                     <div>Student Entry / Update</div>

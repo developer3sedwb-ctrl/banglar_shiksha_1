@@ -148,74 +148,93 @@
 </script>
 <script>
 $(document).ready(function () {
+  $("#btn_search_student").on("click", function (e) {
+      e.preventDefault();
 
-    $("#btn_search_student").on("click", function (e) {
-        e.preventDefault();
+      if (!validateRequiredFields("#student_search_form")) {
+          return;
+      }
 
-        if (!validateRequiredFields("#student_search_form")) {
-            return;
-        }
+      let $btn = $(this);
+      $btn.prop('disabled', true).text('Searching...');
 
-        let $btn = $(this);
-        $btn.prop('disabled', true).text('Searching...');
+      let url = "{{ route('search.student.by.student_code') }}";
 
-        let url = "{{ route('search.student.by.student_code') }}";
+      sendRequest(url, "POST", "#student_search_form")
+          .then(res => {
 
-        sendRequest(url, "POST", "#student_search_form")
-            .then(res => {
+              $btn.prop('disabled', false).text('Search');
 
-                $btn.prop('disabled', false).text('Search');
-
-                if (res.status === 'success') {
-                    populateStudentRow(res.data);
-                } else {
-                    showEmptyRow(res.message || 'Student not found');
-                }
-            })
-            .catch(err => {
-                $btn.prop('disabled', false).text('Search');
-                console.error(err);
-                showEmptyRow('Something went wrong');
-            });
-    });
-
-    function populateStudentRow(d) {
+              if (res.status === 'success') {
+                  populateStudentRow(res.data);
+              } else {
+                  showEmptyRow(res.message || 'Student not found');
+              }
+          })
+          .catch(err => {
+              $btn.prop('disabled', false).text('Search');
+              console.error(err);
+              showEmptyRow('Something went wrong');
+          });
+  });
+  function populateStudentRow(d) {
       console.log(d);
 
-        let row = `
-            <tr>
-                <td>${d.student_code ?? '-'}</td>
-                <td>${d.studentname ?? '-'}</td>
-                <td>${d.dob ?? '-'}</td>
-                <td>${d.guardian_name ?? '-'}</td>
-                <td>${d.current_class ?? '-'}</td>
-                <td>${d.current_section ?? '-'}</td>
-                <td>${d.cur_roll_number ?? '-'}</td>
-                <td>${d.deactivation_reason ?? '-'}</td>
-                <td>
-                    <button class="btn btn-sm btn-primary">
-                        Deativate
-                    </button>
-                </td>
-            </tr>
-        `;
+      // Build dropdown options
+      let reasonOptions = '<option value="">Select Reason</option>';
 
-        $("#student_result_body").html(row); // replace old data
-    }
+      if (Array.isArray(d.deactivation_reasons)) {
+          d.deactivation_reasons.forEach(r => {
+              reasonOptions += `
+                  <option value="${r.id}">
+                      ${r.name}
+                  </option>`;
+          });
+      }
 
-    function showEmptyRow(message) {
-        $("#student_result_body").html(`
-            <tr>
-                <td colspan="10" class="text-center text-danger">
-                    ${message}
-                </td>
-            </tr>
-        `);
-    }
+      let row = `
+          <tr>
+              <td>${d.student_code ?? '-'}</td>
+              <td>${d.studentname ?? '-'}</td>
+              <td>${d.dob ?? '-'}</td>
+              <td>${d.guardian_name ?? '-'}</td>
+              <td>${d.current_class ?? '-'}</td>
+              <td>${d.current_section ?? '-'}</td>
+              <td>${d.cur_roll_number ?? '-'}</td>
 
+              <td>
+                  <select class="form-select form-select-sm deactivation-reason"
+                          data-student-code="${d.student_code}">
+                      ${reasonOptions}
+                  </select>
+              </td>
+
+              <td>
+                  <button class="btn btn-sm btn-warning deactivate-btn"
+                          data-student-code="${d.student_code}" id="btn_deactivate">
+                      Deactivate
+                  </button>
+              </td>
+          </tr>
+      `;
+
+      $("#student_result_body").html(row); // replace old data
+  }
+  function showEmptyRow(message) {
+      $("#student_result_body").html(`
+          <tr>
+              <td colspan="10" class="text-center text-danger">
+                  ${message}
+              </td>
+          </tr>
+      `);
+  }
+  $('#btn_deactivate').on('click', function(e) {
+      e.preventDefault();
+      alert('Deactivate button clicked');
+  });
 });
 </script>
-
 @endpush
 
 

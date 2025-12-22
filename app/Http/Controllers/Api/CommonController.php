@@ -11,7 +11,8 @@ use App\Models\{
     WardMaster,
     SchoolMaster,
     VocationalTradeSectorMaster,
-    VocationalJobRoleMaster
+    VocationalJobRoleMaster,
+    ReasonForDeactivationMaster
 };
 use Illuminate\Http\Request;
 
@@ -173,19 +174,64 @@ class CommonController extends Controller
         }
     }
     public function getVocationalTradeSector(){
-        $result = VocationalTradeSectorMaster::where('status', 1)->get();
-        return response()->json(['data' => $result]);
+        try
+        {
+            $result = VocationalTradeSectorMaster::where('status', 1)->get();
+            return response()->json(['data' => $result]);
+        }
+        catch (\Throwable $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ], 500);
+        }
+        
     }
     public function getJobRoleByVocationalTradeSector(Request $request)
     {
-        $roles = VocationalJobRoleMaster::where('status', 1)
-                    ->where('sector_code_fk', $request->sector_id)
-                    ->get();
+        try
+        {
+            $roles = VocationalJobRoleMaster::where('status', 1)
+                        ->where('sector_code_fk', $request->sector_id)
+                        ->get();
 
-        return response()->json([
-            'status' => true,
-            'data'   => $roles
-        ]);
+            return response()->json([
+                'status' => true,
+                'data'   => $roles
+            ]);
+        }
+        catch (\Throwable $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ], 500);
+        }
+
+    }
+    public function getReasonForDeactivation(Request $request)
+    {
+        try
+        {
+            $reasons = ReasonForDeactivationMaster::where('status', 1)->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $reasons
+            ]);
+        }
+        catch (\Throwable $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ], 500);
+        }
+
     }
 
 }

@@ -98,10 +98,6 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
 
 
         Route::get('/get_studet_details_by_stu_code', [StudentInfoController::class, 'StudentDetailsByStudentCode']);
-
-
-        // added by aziza parvin
-        Route::post('/student-search-by-student-code', [StudentDeleteDeacivateController::class, 'searchStudentByStudentCode'])->name('search.student.by.student_code');
     });
 
 
@@ -145,7 +141,7 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
     });
 
     // AJAX routes for dynamic loading
-      Route::get('/get-subdivisions', [StudentInfoController::class, 'getSubDivisionByDistrict'])->name('get.subdivisions');
+    Route::get('/get-subdivisions', [StudentInfoController::class, 'getSubDivisionByDistrict'])->name('get.subdivisions');
     Route::get('/get-circles', [StudentInfoController::class, 'getCirclesByDistrict'])->name('get.circles');
     Route::get('/get-schools', [StudentInfoController::class, 'getSchoolsByFilters'])->name('get.schools');
 
@@ -171,10 +167,7 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
 
     // Route for the Enrollment Deactivate page
     // (If the blade file is different for this view, change the view string accordingly)
-    Route::view(
-        '/student/student-deactivate',
-        'src.modules.student_delete_deactivate.student_deactivated'
-    )->name('student_deactivated');
+
 
     Route::view(
         '/employee-management/employee-list',
@@ -284,6 +277,10 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
         Route::get('/total-students', [SiController::class, 'totalStudents'])->name('si.total_students');
         Route::get('/total-teacher', [SiController::class, 'totalTeacher'])->name('si.total_teacher');
         Route::get('/school-class-gender-wise-enrollment', [SiController::class, 'schoolClassGenderWiseEnrollmentReport'])->name('si.school_class_gender_wise_enrollment_report');
+    });
+    Route::prefix('student')->group(function () {
+        Route::get('/student-deactivate', [StudentDeleteDeacivateController::class, 'deactivateStudentView'])->name('student.deactivate.view');
+        Route::post('/student-search-by-student-code', [StudentDeleteDeacivateController::class, 'searchStudentByStudentCode'])->name('search.student.by.student_code');
     });
 
 
