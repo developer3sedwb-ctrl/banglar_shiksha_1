@@ -159,10 +159,10 @@ class StudentMaster extends Model
         return $this->belongsTo(ClassMaster::class, 'cur_class_code_fk', 'id');
     }
 
-    // public function category()
-    // {
-    //     return $this->belongsTo(SocialCategoryMaster::class, 'social_category_code_fk', 'id');
-    // }
+    public function category()
+    {
+        return $this->belongsTo(CategoryMaster::class, 'social_category_code_fk', 'id');
+    }
 
     /**
      * Relationship with Management (via School)

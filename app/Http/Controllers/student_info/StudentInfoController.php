@@ -1660,6 +1660,8 @@ class StudentInfoController extends Controller
                 'school:id,school_name,schcd,school_management_code_fk',
                 'school.management:id,name',
                 'gender:id,name',
+                'currentClass:id,name',
+                'category:id,name',
             ])->where('status', 1);
 
             // ===============================
@@ -1751,63 +1753,69 @@ class StudentInfoController extends Controller
             // ===============================
             if ($isSchoolUser) {
                 // School users statistics only for their school
-                $statsQuery = StudentMaster::where('school_code_fk', $school_id)
-                    ->where('status', 1);
+                $statsBaseQuery = StudentMaster::where('school_code_fk', $school_id);
             } else {
                 // Admin/other users statistics with filters
-                $statsQuery = StudentMaster::query()->where('status', 1);
+                $statsBaseQuery = StudentMaster::query();
 
                 if ($district_id) {
-                    $statsQuery->where('district_code_fk', $district_id);
+                    $statsBaseQuery->where('district_code_fk', $district_id);
                 }
 
                 if ($circle_id) {
-                    $statsQuery->where('circle_code_fk', $circle_id);
+                    $statsBaseQuery->where('circle_code_fk', $circle_id);
                 }
 
                 if ($management_id) {
-                    $statsQuery->whereHas('school', function ($q) use ($management_id) {
+                    $statsBaseQuery->whereHas('school', function ($q) use ($management_id) {
                         $q->where('school_management_code_fk', $management_id);
                     });
                 }
 
                 if ($school_id) {
-                    $statsQuery->where('school_code_fk', $school_id);
+                    $statsBaseQuery->where('school_code_fk', $school_id);
                 }
             }
 
+            // Active students (status = 1)
+            $activeQuery = (clone $statsBaseQuery)->where('status', 1);
+            // Deactivated students (status = 2)
+            $deactivatedQuery = (clone $statsBaseQuery)->where('status', 2);
+
             // Apply common filters to statistics
             if ($gender_param) {
-                $statsQuery->where('gender_code_fk', $gender_param);
+                $activeQuery->where('gender_code_fk', $gender_param);
             }
 
             if ($class_param) {
-                $statsQuery->where('cur_class_code_fk', $class_param);
+                $activeQuery->where('cur_class_code_fk', $class_param);
             }
 
             if ($category_param) {
-                $statsQuery->where('social_category_code_fk', $category_param);
+                $activeQuery->where('social_category_code_fk', $category_param);
             }
 
             if ($academic_year_param) {
-                $statsQuery->where('academic_year', $academic_year_param);
+                $activeQuery->where('academic_year', $academic_year_param);
             }
 
             if ($bpl_param !== '') {
-                $statsQuery->where('bpl_y_n', $bpl_param);
+                $activeQuery->where('bpl_y_n', $bpl_param);
             }
 
             if ($cwsn_param !== '') {
-                $statsQuery->where('cwsn_y_n', $cwsn_param);
+                $activeQuery->where('cwsn_y_n', $cwsn_param);
             }
 
-            $data['total_students']  = $statsQuery->count();
-            $data['male_students']   = (clone $statsQuery)->where('gender_code_fk', 1)->count();
-            $data['female_students'] = (clone $statsQuery)->where('gender_code_fk', 2)->count();
-            $data['bpl_students']    = (clone $statsQuery)->where('bpl_y_n', 1)->count();
-            $data['cwsn_students']   = (clone $statsQuery)->where('cwsn_y_n', 2)->count();
+            $data['total_students'] = $activeQuery->count();
+            $data['deactivated_students'] = $deactivatedQuery->count();
 
-            $data['category_distribution'] = (clone $statsQuery)
+            $data['male_students']   = (clone $activeQuery)->where('gender_code_fk', 1)->count();
+            $data['female_students'] = (clone $activeQuery)->where('gender_code_fk', 2)->count();
+            $data['bpl_students']    = (clone $activeQuery)->where('bpl_y_n', 1)->count();
+            $data['cwsn_students']   = (clone $activeQuery)->where('cwsn_y_n', 1)->count();
+
+            $data['category_distribution'] = (clone $activeQuery)
                 ->select('social_category_code_fk', DB::raw('COUNT(*) as count'))
                 ->groupBy('social_category_code_fk')
                 ->get();

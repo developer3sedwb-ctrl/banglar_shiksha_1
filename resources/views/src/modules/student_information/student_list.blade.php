@@ -446,6 +446,16 @@
                     <div class="stats-label">Total Students</div>
                 </div>
             </div>
+
+            <div class="col-md-2 col-sm-6">
+                <div class="stats-card" style="background: linear-gradient(135deg, #ff996620 0%, #ff5e6220 100%);">
+                    <div class="stats-icon" style="background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);">
+                        <i class="fas fa-user-slash"></i>
+                    </div>
+                    <div class="stats-number">{{ number_format($data['deactivated_students'] ?? 0) }}</div>
+                    <div class="stats-label">Deactivated</div>
+                </div>
+            </div>
             <div class="col-md-2 col-sm-6">
                 <div class="stats-card">
                     <div class="stats-icon male">
@@ -482,15 +492,7 @@
                     <div class="stats-label">CWSN Students</div>
                 </div>
             </div>
-            <div class="col-md-2 col-sm-6">
-                <div class="stats-card">
-                    <div class="stats-icon class">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <div class="stats-number">{{ $data['class_distribution'] ?? 0 }}</div>
-                    <div class="stats-label">Classes</div>
-                </div>
-            </div>
+
         </div>
 
         <!-- Advanced Filters Card -->
@@ -705,8 +707,8 @@
                             <select class="form-select form-select-lg" name="cwsn"
                                 style="border-radius: 12px; height: 52px; border: 2px solid #e2e8f0;">
                                 <option value="">All</option>
-                                <option value="2" {{ $cwsn_param == '2' ? 'selected' : '' }}>CWSN</option>
-                                <option value="0" {{ $cwsn_param == '0' ? 'selected' : '' }}>Non-CWSN</option>
+                                <option value="1" {{ $cwsn_param == '1' ? 'selected' : '' }}>CWSN</option>
+                                <option value="2" {{ $cwsn_param == '2' ? 'selected' : '' }}>Non-CWSN</option>
                             </select>
                         </div>
 
@@ -1081,7 +1083,7 @@
                                             <small class="text-muted d-block mt-1">
                                                 <i class="fas fa-map-marker-alt me-1"></i>
                                                 {{ $student->district->name ?? 'N/A' }},
-                                                {{ $student->block->name ?? 'N/A' }}
+                                                {{ $student->circle->name ?? 'N/A' }}
                                             </small>
                                         </td>
                                         <td>
@@ -1123,7 +1125,7 @@
                                                     <i class="fas fa-heart"></i> BPL
                                                 </span>
                                             @endif
-                                            @if ($student->cwsn_y_n == 2)
+                                            @if ($student->cwsn_y_n == 1)
                                                 <span class="badge rounded-pill mt-1"
                                                     style="
                                     background: linear-gradient(135deg, #f093fb20 0%, #f5576c20 100%);
