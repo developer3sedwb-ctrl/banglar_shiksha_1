@@ -7,16 +7,16 @@
 
  <!-- PAGE HEADING -->
   <div class="page-header mb-3 d-flex justify-content-between align-items-center">
-    <h5 class="fw-bold mb-0">Student Information</h5>
+    <h5 class="fw-bold mb-0">Search Student for Deletion</h5>
   </div>
 
   <!-- STUDENT SEARCH -->
   @include('src.modules.student_delete_deactivate.student_search')
-  
+
  <!-- Table card -->
 <div class="card card-full mb-4">
     <div class="custom-header-data-table">
-        <span class="fw-semibold">Delete/Reject Student List</span>
+        <span class="fw-semibold">Deleted Student's List</span>
         
          <div class="btn-group float-end ">
               <button type="button" class="btn btn-success dropdown-toggle btn-export " data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-export"></i> Export</button>
@@ -35,280 +35,37 @@
       <table id="example" class="table table-striped">
         <thead>
             <tr>
-                <th class="text-center">SL No.</th>
+                <th>Student Code</th>
                 <th>Name</th>
-                <th>Position</th>
-                <th>Office</th>
-                <th class="text-center">Start date</th>
-                <th class="text-center">Salary</th>
-                <!-- <th class="text-center">Actions</th> -->
-                 <th class="text-center no-export">Actions</th>
-
+                <th>DOB</th>
+                <th>Guardian Name</th>
+                <th>Present Class</th>
+                <th>Present Section</th>
+                <th>Present Roll No.</th>
+                <th>Student Status</th>
+                <th>Delete Reason</th>
             </tr>
         </thead>
+
         <tbody>
-            <tr>
-                <td class="text-center">2</td>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td class="text-center">2011-04-25</td>
-                <td class="text-center">$320,800</td>
-                <td class="text-center">
-                    <div class="dropdown">
-                      <button class="btn table-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-edit"></i>  Details</a>
-						<a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-box"></i> Archive</a>
-						<a href="javascript:;" class="dropdown-item text-danger table-dropdown"><i class="bx bxs-trash"></i> Delete</a>
-                      </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="text-center">2</td>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td class="text-center">2011-04-25</td>
-                <td class="text-center">$320,800</td>
-                <td class="text-center">
-                    <div class="dropdown">
-                      <button class="btn table-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-edit"></i>  Details</a>
-						<a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-box"></i> Archive</a>
-						<a href="javascript:;" class="dropdown-item text-danger table-dropdown"><i class="bx bxs-trash"></i> Delete</a>
-                      </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="text-center">2</td>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td class="text-center">2011-04-25</td>
-                <td class="text-center">$320,800</td>
-                <td class="text-center">
-                    <div class="dropdown">
-                      <button class="btn table-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-edit"></i>  Details</a>
-						<a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-box"></i> Archive</a>
-						<a href="javascript:;" class="dropdown-item text-danger table-dropdown"><i class="bx bxs-trash"></i> Delete</a>
-                      </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="text-center">2</td>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td class="text-center">2011-04-25</td>
-                <td class="text-center">$320,800</td>
-                <td class="text-center">
-                    <div class="dropdown">
-                      <button class="btn table-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-edit"></i>  Details</a>
-						<a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-box"></i> Archive</a>
-						<a href="javascript:;" class="dropdown-item text-danger table-dropdown"><i class="bx bxs-trash"></i> Delete</a>
-                      </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="text-center">2</td>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td class="text-center">2011-04-25</td>
-                <td class="text-center">$320,800</td>
-                <td class="text-center">
-                    <div class="dropdown">
-                      <button class="btn table-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-edit"></i>  Details</a>
-						<a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-box"></i> Archive</a>
-						<a href="javascript:;" class="dropdown-item text-danger table-dropdown"><i class="bx bxs-trash"></i> Delete</a>
-                      </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="text-center">2</td>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td class="text-center">2011-04-25</td>
-                <td class="text-center">$320,800</td>
-                <td class="text-center">
-                    <div class="dropdown">
-                      <button class="btn table-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-edit"></i>  Details</a>
-						<a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-box"></i> Archive</a>
-						<a href="javascript:;" class="dropdown-item text-danger table-dropdown"><i class="bx bxs-trash"></i> Delete</a>
-                      </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="text-center">2</td>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td class="text-center">2011-04-25</td>
-                <td class="text-center">$320,800</td>
-                <td class="text-center">
-                    <div class="dropdown">
-                      <button class="btn table-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-edit"></i>  Details</a>
-						<a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-box"></i> Archive</a>
-						<a href="javascript:;" class="dropdown-item text-danger table-dropdown"><i class="bx bxs-trash"></i> Delete</a>
-                      </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="text-center">2</td>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td class="text-center">2011-04-25</td>
-                <td class="text-center">$320,800</td>
-                <td class="text-center">
-                    <div class="dropdown">
-                      <button class="btn table-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-edit"></i>  Details</a>
-						<a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-box"></i> Archive</a>
-						<a href="javascript:;" class="dropdown-item text-danger table-dropdown"><i class="bx bxs-trash"></i> Delete</a>
-                      </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="text-center">2</td>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td class="text-center">2011-04-25</td>
-                <td class="text-center">$320,800</td>
-                <td class="text-center">
-                    <div class="dropdown">
-                      <button class="btn table-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-edit"></i>  Details</a>
-						<a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-box"></i> Archive</a>
-						<a href="javascript:;" class="dropdown-item text-danger table-dropdown"><i class="bx bxs-trash"></i> Delete</a>
-                      </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="text-center">2</td>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td class="text-center">2011-04-25</td>
-                <td class="text-center">$320,800</td>
-                <td class="text-center">
-                    <div class="dropdown">
-                      <button class="btn table-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-edit"></i>  Details</a>
-						<a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-box"></i> Archive</a>
-						<a href="javascript:;" class="dropdown-item text-danger table-dropdown"><i class="bx bxs-trash"></i> Delete</a>
-                      </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="text-center">2</td>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td class="text-center">2011-04-25</td>
-                <td class="text-center">$320,800</td>
-                <td class="text-center">
-                    <div class="dropdown">
-                      <button class="btn table-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-edit"></i>  Details</a>
-						<a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-box"></i> Archive</a>
-						<a href="javascript:;" class="dropdown-item text-danger table-dropdown"><i class="bx bxs-trash"></i> Delete</a>
-                      </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="text-center">2</td>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td class="text-center">2011-04-25</td>
-                <td class="text-center">$320,800</td>
-                <td class="text-center">
-                    <div class="dropdown">
-                      <button class="btn table-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-edit"></i>  Details</a>
-						<a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-box"></i> Archive</a>
-						<a href="javascript:;" class="dropdown-item text-danger table-dropdown"><i class="bx bxs-trash"></i> Delete</a>
-                      </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="text-center">2</td>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td class="text-center">2011-04-25</td>
-                <td class="text-center">$320,800</td>
-                <td class="text-center">
-                    <div class="dropdown">
-                      <button class="btn table-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-edit"></i>  Details</a>
-						<a href="javascript:;" class="dropdown-item table-dropdown"><i class="bx bx-box"></i> Archive</a>
-						<a href="javascript:;" class="dropdown-item text-danger table-dropdown"><i class="bx bxs-trash"></i> Delete</a>
-                      </div>
-                    </div>
-                </td>
-            </tr>
+          @if(!empty($deactive_students) && $deactive_students->count() > 0)
+              @foreach($deactive_students as $student)
+                  <tr>
+                      <td>{{ $student->student_code }}</td>
+                      <td>{{ $student->studentInfo->studentname ?? 'N/A' }}</td>
+                      <td>{{ $student->studentInfo->dob ?? 'N/A' }}</td>
+                      <td>{{ $student->studentInfo->guardian_name ?? 'N/A' }}</td>
+                      <td>{{ $student->currentClass->name ?? 'N/A'}}</td>
+                      <td>{{ $student->currentSection->name ?? 'N/A'}}</td>
+                      <td>{{ $student->studentInfo->cur_roll_number ?? 'N/A' }}</td>
+                      <td>{{ $student->prev_status }}</td>
+                      <td>{{ $student->deleteReason->name ?? 'N/A' }}</td>
+                  </tr>
+              @endforeach
+          @endif
         </tbody>
-    </table>
+
+      </table>
       </div>
     </div>
   </div>
@@ -316,6 +73,8 @@
 @endsection
 
 @push('styles')
+
+
   <!-- Local DataTables CSS -->
   <link rel="stylesheet" href="{{ asset('css/datatables.min.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/common.css') }}">
@@ -337,6 +96,7 @@
 <!-- Buttons HTML5 / Print -->
 <script src="{{ asset('js/buttons.html5.min.js') }}"></script>
 <script src="{{ asset('js/buttons.print.min.js') }}"></script>
+<script src="{{ asset('assets/js/common.js') }}"></script>
 
 <script>
   $(document).ready(function() {
@@ -400,6 +160,131 @@
       table.button('.buttons-pdf').trigger();
     });
   });
+</script>
+<script>
+$(document).ready(function () {
+  $("#btn_search_student").on("click", function (e) {
+      e.preventDefault();
+
+      if (!validateRequiredFields("#student_search_form")) {
+          return;
+      }
+
+      let $btn = $(this);
+      $btn.prop('disabled', true).text('Searching...');
+
+      let url = "{{ route('search.student.by.student_code') }}";
+
+      sendRequest(url, "POST", "#student_search_form")
+          .then(res => {
+
+              $btn.prop('disabled', false).text('Search');
+
+              if (res.status === 'success') {
+                  populateStudentRow(res.data);
+              } else {
+                  showEmptyRow(res.message || 'Student not found');
+              }
+          })
+          .catch(err => {
+              $btn.prop('disabled', false).text('Search');
+              console.error(err);
+              showEmptyRow('Something went wrong');
+      });
+  });
+  function populateStudentRow(d) {
+      console.log(d);
+
+      // Build dropdown options
+      let reasonOptions = '<option value="">Select Reason</option>';
+
+      if (Array.isArray(d.deactivation_reasons)) {
+          d.deactivation_reasons.forEach(r => {
+              reasonOptions += `
+                  <option value="${r.id}">
+                      ${r.name}
+                  </option>`;
+          });
+      }
+
+      let row = `
+          <tr>
+              <td>${d.student_code ?? '-'}</td>
+              <td>${d.studentname ?? '-'}</td>
+              <td>${d.dob ?? '-'}</td>
+              <td>${d.guardian_name ?? '-'}</td>
+              <td>${d.current_class ?? '-'}</td>
+              <td>${d.current_section ?? '-'}</td>
+              <td>${d.cur_roll_number ?? '-'}</td>
+
+              <td>
+                  <select class="form-select form-select-sm deactivation-reason"
+                          data-student-code="${d.student_code}">
+                      ${reasonOptions}
+                  </select>
+              </td>
+
+              <td>
+                  <button class="btn btn-sm btn-warning deactivate-btn"
+                          data-student-code="${d.student_code}" id="btn_deactivate">
+                      Deactivate
+                  </button>
+              </td>
+          </tr>
+      `;
+
+      $("#student_result_body").html(row); // replace old data
+  }
+  function showEmptyRow(message) {
+      $("#student_result_body").html(`
+          <tr>
+              <td colspan="10" class="text-center text-danger">
+                  ${message}
+              </td>
+          </tr>
+      `);
+  }
+$(document).on('click', '#btn_deactivate', function (e) {
+    e.preventDefault();
+
+    let $btn = $(this);
+    $btn.prop('disabled', true).text('Deactivating...');
+
+    // collect values (example: from hidden inputs)
+    let student_code              = $('input[name="student_code"]').val();
+
+    let deactivate_reason_code_fk = $('select.deactivation-reason').val();
+
+    if (!deactivate_reason_code_fk) {
+        alert('Please select a deactivation reason');
+        $btn.prop('disabled', false).text('Deactivate');
+        return;
+    }
+
+    let url = "{{ route('student.deactivate') }}";
+
+    sendRequest(url, "POST", null,{
+        student_code,
+        deactivate_reason_code_fk,
+        _token: "{{ csrf_token() }}"
+    })
+    .then(res => {
+        $btn.prop('disabled', false).text('Deactivate');
+
+        if (res.status === true) {
+            alert(res.message);
+        } else {
+            alert(res.message || 'Failed to deactivate student');
+        }
+    })
+    .catch(err => {
+        $btn.prop('disabled', false).text('Deactivate');
+        console.error(err);
+        alert('Something went wrong');
+    });
+});
+
+});
 </script>
 @endpush
 

@@ -42,12 +42,25 @@
                 <th>Present Class</th>
                 <th>Present Section</th>
                 <th>Present Roll No.</th>
-                <th>Student Status</th>
                 <th>Deactivation Reason</th>
             </tr>
         </thead>
 
         <tbody>
+          @if(!empty($deactive_students) && $deactive_students->count() > 0)
+              @foreach($deactive_students as $student)
+                  <tr>
+                      <td>{{ $student->student_code }}</td>
+                      <td>{{ $student->studentInfo->getAttributes()['studentname'] ?? 'N/A' }}</td>
+                      <td>{{ $student->studentInfo->dob ?? 'N/A' }}</td>
+                      <td>{{ $student->studentInfo->guardian_name ?? 'N/A' }}</td>
+                      <td>{{ $student->currentClass->name ?? 'N/A'}}</td>
+                      <td>{{ $student->currentSection->name ?? 'N/A'}}</td>
+                      <td>{{ $student->studentInfo->cur_roll_number ?? 'N/A' }}</td>
+                      <td>{{ $student->deleteReason->name ?? 'N/A' }}</td>
+                  </tr>
+              @endforeach
+          @endif
         </tbody>
 
       </table>
@@ -175,7 +188,7 @@ $(document).ready(function () {
               $btn.prop('disabled', false).text('Search');
               console.error(err);
               showEmptyRow('Something went wrong');
-          });
+      });
   });
   function populateStudentRow(d) {
       console.log(d);
@@ -229,10 +242,46 @@ $(document).ready(function () {
           </tr>
       `);
   }
-  $('#btn_deactivate').on('click', function(e) {
-      e.preventDefault();
-      alert('Deactivate button clicked');
-  });
+$(document).on('click', '#btn_deactivate', function (e) {
+    e.preventDefault();
+
+    let $btn = $(this);
+    $btn.prop('disabled', true).text('Deactivating...');
+
+    // collect values (example: from hidden inputs)
+    let student_code              = $('input[name="student_code"]').val();
+
+    let deactivate_reason_code_fk = $('select.deactivation-reason').val();
+
+    if (!deactivate_reason_code_fk) {
+        alert('Please select a deactivation reason');
+        $btn.prop('disabled', false).text('Deactivate');
+        return;
+    }
+
+    let url = "{{ route('student.deactivate') }}";
+
+    sendRequest(url, "POST", null,{
+        student_code,
+        deactivate_reason_code_fk,
+        _token: "{{ csrf_token() }}"
+    })
+    .then(res => {
+        $btn.prop('disabled', false).text('Deactivate');
+
+        if (res.status === true) {
+            alert(res.message);
+        } else {
+            alert(res.message || 'Failed to deactivate student');
+        }
+    })
+    .catch(err => {
+        $btn.prop('disabled', false).text('Deactivate');
+        console.error(err);
+        alert('Something went wrong');
+    });
+});
+
 });
 </script>
 @endpush

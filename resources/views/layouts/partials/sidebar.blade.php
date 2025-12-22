@@ -89,7 +89,7 @@
         <!-- Student Delete / Deactivate -->
         @canany(['view delete', 'manage delete', 'view deactivate', 'manage deactivate'])
             <li
-                class="menu-item {{ request()->routeIs('student_delete') || request()->routeIs('student.deactivate.view') ? 'active open' : '' }}">
+                class="menu-item {{ request()->routeIs('student.delete.view') || request()->routeIs('student.deactivate.view') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-data"></i>
                     <div>Student Delete / Deactivate</div>
@@ -97,8 +97,8 @@
 
                 <ul class="menu-sub">
                     @canany(['view delete', 'manage delete'])
-                        <li class="menu-item {{ request()->routeIs('student_delete') ? 'active' : '' }}">
-                            <a href="{{ route('student_delete') }}" class="menu-link">
+                        <li class="menu-item {{ request()->routeIs('student.delete.view') ? 'active' : '' }}">
+                            <a href="{{ route('student.delete.view') }}" class="menu-link">
                                 <div>Students Delete</div>
                             </a>
                         </li>

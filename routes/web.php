@@ -157,14 +157,6 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
         'src.modules.uniform_scms.uniform_delivery_status_1st_set'
     )->name('uniform_scms.uniform_delivery_status_1st_set');
 
-
-
-    // Route for the Student Delete page
-    Route::view(
-        '/student/delete',
-        'src.modules.student_delete_deactivate.student_delete'
-    )->name('student_delete');
-
     // Route for the Enrollment Deactivate page
     // (If the blade file is different for this view, change the view string accordingly)
 
@@ -281,6 +273,9 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
     Route::prefix('student')->group(function () {
         Route::get('/student-deactivate', [StudentDeleteDeacivateController::class, 'deactivateStudentView'])->name('student.deactivate.view');
         Route::post('/student-search-by-student-code', [StudentDeleteDeacivateController::class, 'searchStudentByStudentCode'])->name('search.student.by.student_code');
+        Route::post('/deactivate', [StudentDeleteDeacivateController::class, 'deactivateStudent'])->name('student.deactivate');
+        Route::get('/delete/list', [StudentDeleteDeacivateController::class, 'deletedStudentView'])->name('student.delete.view');
+        Route::post('/delete', [StudentDeleteDeacivateController::class, 'deleteStudent'])->name('student.delete');
     });
 
 

@@ -2,7 +2,13 @@
 
 namespace App\Models\student_delete_deactivate;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\ReasonStudentDeactivationMaster;
+use App\Models\StudentMaster;
+use App\Models\ClassMaster;
+use App\Models\ClassSectionMaster;
 
 class StudentDeactivateModel extends Model
 {
@@ -10,6 +16,7 @@ class StudentDeactivateModel extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
+        'student_code',
         'school_code_fk',
         'district_code_fk',
         'circle_code_fk',
@@ -22,5 +29,21 @@ class StudentDeactivateModel extends Model
         'operation_ip',
         'prev_status'
     ];
+    public function deleteReason()
+    {
+        return $this->belongsTo(ReasonStudentDeactivationMaster::class, 'deactivate_reason_code_fk','id');
+    }
+    public function studentInfo()
+    {
+        return $this->belongsTo(StudentMaster::class, 'student_code','student_code');
+    }
+        public function currentClass()
+    {
+        return $this->belongsTo(ClassMaster::class, 'cur_class_code_fk', 'id');
+    }
+    public function currentSection()
+    {
+        return $this->belongsTo(ClassSectionMaster::class, 'cur_section_code_fk', 'id');
+    }
 
 }
