@@ -1223,17 +1223,7 @@ class StudentInfoController extends Controller
             $data = [];
             $schoolId = 1;  // <-- get from login or session or URL
 
-            // ---------------------------------------------
-            // 1. Load master data (Dropdowns)
-            // ---------------------------------------------
-        $draft = DB::table('bs_student_entry_draft_tracker')
-            ->where('status', 1)
-            ->where('school_id_fk', $schoolId)
-            ->orderByDesc('step_number')
-            ->first();
 
-        // Default step = 1 if no record found
-        $data['current_step'] = $draft ? $draft->step_number : 0;
             $data['stateScholarships'] = DB::table('bs_name_and_code_of_state_scholarships_master')
                                             ->where('status', 1)
                                             ->orderBy('id')
@@ -1488,7 +1478,7 @@ class StudentInfoController extends Controller
             }
       
       
-            return view('src.modules.student_entry_update.student_entry', compact('data'));
+            return view('src.modules.student_entry_update.student_edit', compact('data'));
 
         }
         catch (\Exception $e) {

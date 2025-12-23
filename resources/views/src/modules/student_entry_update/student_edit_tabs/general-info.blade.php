@@ -4,7 +4,7 @@
 
               @csrf
               <h6 class=" card-header bg-heading-primary text-white py-2">
-              GENERAL INFORMATION OF THE STUDENT
+              GENERAL INssFORMATION OF THE STUDENT
               </h6>
               <div class="row form-row-gap">
                 <div class="col-md-6">

@@ -105,111 +105,127 @@
     $admission_type_master = $bs_admission_type_master;
 @endphp
 
-<div class="container-fluid full-width-content">
+    <div class="container-fluid full-width-content">
       <!-- PAGE HEADING -->
-  <div class="page-header mb-3 d-flex justify-content-between align-items-center">
-        <div class="page-header mb-3">
-          <h4 class="fw-bold"><i class="bx bx-user"></i> Adwd wStudent</h4>
-        </div>
+        <div class="page-header mb-3 d-flex justify-content-between align-items-center">
+          <div class="page-header mb-3">
+            <h4 class="fw-bold"><i class="bx bx-user"></i> Edit Student</h4>
+          </div>
           <div class="d-flex gap-2">
           
-          <!-- ============================================= -->
-            {{-- Bulk Upload Button --}}
-           
             {{-- Back Button --}}
-            
+            <a href="{{ route('dashboard') }}" class="btn btn-primary">
+            <i class="bx bx-arrow-back"></i> Back
+             </a>
           </div>
         </div>
-  
+        <!-- STUDENT SEARCH -->
+        <div class="card mb-3">
+          <div class="card-header bg-primary text-white py-2">Student Search</div>
+          <div class="card-body p-3">
+            <div class="row align-items-center">
+              <div class="col-md-11 mb-2">
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bx bx-id-card"></i></span>
+                  <input type="text" id="student_code" class="form-control" placeholder="Student Code">
+                </div>
+              </div>
+              <div class="col-md-1 mb-2 text-end">
+                <button class="btn btn-primary w-100" id="searchStudentBtn">
+                  Search
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
     
 
-    <!-- CARD WITH TABS -->
-     <div class="card card-full">
+        <!-- CARD WITH TABS -->
+          <div class="card card-full">
+            <div class="card-header d-flex align-items-center justify-content-between border-bottom">
+              @php
+                  $current = $data['current_step'] ?? 1;
+              @endphp
 
+              <ul class="nav nav-tabs mb-0" id="studentTab" role="tablist">
 
-      <div class="card-header d-flex align-items-center justify-content-between border-bottom">
-        @php
-            $current = $data['current_step'] ?? 1;
-        @endphp
+                  {{-- STEP 1 --}}
+                  <li class="nav-item" role="presentation">
+                      <button class="nav-link {{ $current >= 1 ? '' : '' }} active"
+                          id="general_info-tab" data-bs-toggle="tab"
+                          data-bs-target="#general_info" type="button" role="tab">
+                          General Info
+                      </button>
+                  </li>
 
-        <ul class="nav nav-tabs mb-0" id="studentTab" role="tablist">
+                  {{-- STEP 2 --}}
+                  <li class="nav-item" role="presentation">
+                      <button class="nav-link {{ $current >= 2 ? '' : '' }}"
+                          id="enrollment_details-tab" data-bs-toggle="tab"
+                          data-bs-target="#enrollment_details" type="button" role="tab">
+                          Enrollment Details
+                      </button>
+                  </li>
 
-            {{-- STEP 1 --}}
-            <li class="nav-item" role="presentation">
-                <button class="nav-link {{ $current >= 1 ? '' : '' }} active"
-                    id="general_info-tab" data-bs-toggle="tab"
-                    data-bs-target="#general_info" type="button" role="tab">
-                    General Info
-                </button>
-            </li>
+                  {{-- STEP 3 --}}
+                  <li class="nav-item" role="presentation">
+                      <button class="nav-link {{ $current >= 3 ? '' : '' }}"
+                          id="facility-other-dtls-tab" data-bs-toggle="tab"
+                          data-bs-target="#facility_other_dtls_tab" type="button" role="tab">
+                          Facilities & Other Details
+                      </button>
+                  </li>
 
-            {{-- STEP 2 --}}
-            <li class="nav-item" role="presentation">
-                <button class="nav-link {{ $current >= 2 ? '' : '' }}"
-                    id="enrollment_details-tab" data-bs-toggle="tab"
-                    data-bs-target="#enrollment_details" type="button" role="tab">
-                    Enrollment Details
-                </button>
-            </li>
+                  {{-- STEP 4 --}}
+                  <li class="nav-item" role="presentation">
+                      <button class="nav-link {{ $current >= 4 ? '' : '' }}"
+                          id="vocational-tab" data-bs-toggle="tab"
+                          data-bs-target="#vocational_tab" type="button" role="tab">
+                          Vocational Details
+                      </button>
+                  </li>
 
-            {{-- STEP 3 --}}
-            <li class="nav-item" role="presentation">
-                <button class="nav-link {{ $current >= 3 ? '' : '' }}"
-                    id="facility-other-dtls-tab" data-bs-toggle="tab"
-                    data-bs-target="#facility_other_dtls_tab" type="button" role="tab">
-                    Facilities & Other Details
-                </button>
-            </li>
+                  {{-- STEP 5 --}}
+                  <li class="nav-item" role="presentation">
+                      <button class="nav-link {{ $current >= 5 ? '' : '' }}"
+                          id="contact_info_tab-tab" data-bs-toggle="tab"
+                          data-bs-target="#contact_info_tab" type="button" role="tab">
+                          Contact Info
+                      </button>
+                  </li>
 
-            {{-- STEP 4 --}}
-            <li class="nav-item" role="presentation">
-                <button class="nav-link {{ $current >= 4 ? '' : '' }}"
-                    id="vocational-tab" data-bs-toggle="tab"
-                    data-bs-target="#vocational_tab" type="button" role="tab">
-                    Vocational Details
-                </button>
-            </li>
+                  {{-- STEP 6 --}}
+                  <li class="nav-item" role="presentation">
+                      <button class="nav-link {{ $current >= 6 ? '' : '' }}"
+                          id="bank_dtls-tab" data-bs-toggle="tab"
+                          data-bs-target="#bank_dtls_tab" type="button" role="tab">
+                          Bank Details
+                      </button>
+                  </li>
+                    {{-- STEP 7 --}}
+                  <li class="nav-item" role="presentation">
+                      <button class="nav-link {{ $current >= 7 ? '' : '' }}"
+                          id="additional_dtls" data-bs-toggle="tab"
+                          data-bs-target="#additional_dtls_tab" type="button" role="tab">
+                          Additional Details
+                      </button>
+                  </li>
+              </ul>
+            </div>
 
-            {{-- STEP 5 --}}
-            <li class="nav-item" role="presentation">
-                <button class="nav-link {{ $current >= 5 ? '' : '' }}"
-                    id="contact_info_tab-tab" data-bs-toggle="tab"
-                    data-bs-target="#contact_info_tab" type="button" role="tab">
-                    Contact Info
-                </button>
-            </li>
-
-            {{-- STEP 6 --}}
-            <li class="nav-item" role="presentation">
-                <button class="nav-link {{ $current >= 6 ? '' : '' }}"
-                    id="bank_dtls-tab" data-bs-toggle="tab"
-                    data-bs-target="#bank_dtls_tab" type="button" role="tab">
-                    Bank Details
-                </button>
-            </li>
-              {{-- STEP 7 --}}
-            <li class="nav-item" role="presentation">
-                <button class="nav-link {{ $current >= 7 ? '' : '' }}"
-                    id="additional_dtls" data-bs-toggle="tab"
-                    data-bs-target="#additional_dtls_tab" type="button" role="tab">
-                    Additional Details
-                </button>
-            </li>
-        </ul>
-      </div>
-
-      <div class="card-body">
-        <div class="tab-content" id="studentTabContent">
-          <!-- @include('src.modules.student_entry_update.student_edit_tabs.general-info')
-          @include('src.modules.student_entry_update.student_edit_tabs.enrollment-details')
-          @include('src.modules.student_entry_update.student_edit_tabs.facility-details')
-          @include('src.modules.student_entry_update.student_edit_tabs.vocational-details')
-          @include('src.modules.student_entry_update.student_edit_tabs.contact-info')
-          @include('src.modules.student_entry_update.student_edit_tabs.bank-details')
-          @include('src.modules.student_entry_update.student_edit_tabs.additional-details') -->
-      </div>
+            <div class="card-body">
+              <div class="tab-content" id="studentTabContent">
+                @include('src.modules.student_entry_update.student_edit_tabs.general-info')
+                @include('src.modules.student_entry_update.student_edit_tabs.enrollment-details')
+                @include('src.modules.student_entry_update.student_edit_tabs.facility-details')
+                @include('src.modules.student_entry_update.student_edit_tabs.vocational-details')
+                @include('src.modules.student_entry_update.student_edit_tabs.contact-info')
+                @include('src.modules.student_entry_update.student_edit_tabs.bank-details')
+                @include('src.modules.student_entry_update.student_edit_tabs.additional-details')
+            </div>
+          </div>
     </div>
-  </div>
 
 
 
@@ -1726,6 +1742,8 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
   // If you prefer, you can use the helper __markTabSaved(n) in place of dispatch.
 
 })(); 
+
+
 
 </script>
 
