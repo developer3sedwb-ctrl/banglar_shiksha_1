@@ -102,7 +102,7 @@ class DatabaseSeeder extends Seeder
             BsReasonMasterNotTransferredInMasterSeeder::class,
             BsReasonStudentDeactivationMasterSeeder::class,
             BsStudentDeleteReasonMasterSeeder::class,
-
+            BsStakeLevelTypeMaster::class,
 
 
 

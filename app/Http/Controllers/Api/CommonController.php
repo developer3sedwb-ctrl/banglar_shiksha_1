@@ -12,7 +12,8 @@ use App\Models\{
     SchoolMaster,
     VocationalTradeSectorMaster,
     VocationalJobRoleMaster,
-    ReasonForDeactivationMaster
+    ReasonStudentDeactivationMaster,
+    ReasonForStudentDeletionnMaster
 };
 use Illuminate\Http\Request;
 
@@ -216,7 +217,7 @@ class CommonController extends Controller
     {
         try
         {
-            $reasons = ReasonForDeactivationMaster::where('status', 1)->get();
+            $reasons = ReasonStudentDeactivationMaster::where('status', 1)->get();
 
             return response()->json([
                 'status' => true,
@@ -233,5 +234,25 @@ class CommonController extends Controller
         }
 
     }
+    public function getReasonForDeletion(Request $request)
+    {
+        try
+        {
+            $reasons = ReasonForStudentDeletionnMaster::where('status', 1)->get();
 
+            return response()->json([
+                'status' => true,
+                'data'   => $reasons
+            ]);
+        }
+        catch (\Throwable $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ], 500);
+        }
+
+    }
 }

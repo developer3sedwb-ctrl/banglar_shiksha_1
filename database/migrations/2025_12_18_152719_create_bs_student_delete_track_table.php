@@ -18,12 +18,11 @@ return new class extends Migration
             $table->integer('circle_code_fk')->nullable();
             $table->unsignedBigInteger('school_code_fk')->nullable();
             // Student Info
-            $table->char('student_code', 14);
+            $table->char('student_code',14)->unique();
             $table->string('student_name', 100)->nullable();
             // Delete Tracking
             $table->integer('delete_reason_code_fk')->nullable();
             $table->integer('delete_reject_status')->nullable();
-            $table->char('delete_status', 1)->nullable();
             $table->char('prev_delete_status', 1)->nullable();
             // Audit Fields
             $table->string('entry_ip', 15)->nullable();

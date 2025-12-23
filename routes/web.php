@@ -253,6 +253,8 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
 
         Route::get('/get-vocational-trade-sector', [CommonController::class, 'getVocationalTradeSector'])->name('get.vocational.trade.sector');
         Route::post('/get-vocational-job-role-by-trade-sector', [CommonController::class, 'getJobRoleByVocationalTradeSector'])->name('get.jobrole.by_vocational_trade.sector');
+        Route::get('/get-reason-for-deactivation', [CommonController::class, 'getReasonForDeactivation'])->name('get.reason.for.deactivation');
+        Route::get('/get-reason-for-deletion', [CommonController::class, 'getReasonForDeletion'])->name('get.reason.for.deletion');
     });
 
 

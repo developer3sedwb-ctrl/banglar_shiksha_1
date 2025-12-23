@@ -35,31 +35,23 @@
       <table id="example" class="table table-striped">
         <thead>
             <tr>
+                <th>SL No. </th>
                 <th>Student Code</th>
                 <th>Name</th>
-                <th>DOB</th>
-                <th>Guardian Name</th>
-                <th>Present Class</th>
-                <th>Present Section</th>
-                <th>Present Roll No.</th>
-                <th>Student Status</th>
                 <th>Delete Reason</th>
+                <th>Student Status</th>
             </tr>
         </thead>
 
         <tbody>
-          @if(!empty($deactive_students) && $deactive_students->count() > 0)
-              @foreach($deactive_students as $student)
+          @if(!empty($deleted_students) && $deleted_students->count() > 0)
+              @foreach($deleted_students as $student)
                   <tr>
+                      <td>{{ $loop->iteration }}</td>
                       <td>{{ $student->student_code }}</td>
-                      <td>{{ $student->studentInfo->studentname ?? 'N/A' }}</td>
-                      <td>{{ $student->studentInfo->dob ?? 'N/A' }}</td>
-                      <td>{{ $student->studentInfo->guardian_name ?? 'N/A' }}</td>
-                      <td>{{ $student->currentClass->name ?? 'N/A'}}</td>
-                      <td>{{ $student->currentSection->name ?? 'N/A'}}</td>
-                      <td>{{ $student->studentInfo->cur_roll_number ?? 'N/A' }}</td>
-                      <td>{{ $student->prev_status }}</td>
+                      <td>{{ $student->student_name ?? 'N/A' }}</td>
                       <td>{{ $student->deleteReason->name ?? 'N/A' }}</td>
+                      <td>{{ $student->student_status ?? 'N/A' }}</td>
                   </tr>
               @endforeach
           @endif
@@ -182,6 +174,7 @@ $(document).ready(function () {
 
               if (res.status === 'success') {
                   populateStudentRow(res.data);
+                  loadDeleteReasons();
               } else {
                   showEmptyRow(res.message || 'Student not found');
               }
@@ -192,21 +185,39 @@ $(document).ready(function () {
               showEmptyRow('Something went wrong');
       });
   });
+  function loadDeleteReasons() {
+
+    sendRequest(
+        "{{ route('get.reason.for.deletion') }}",
+        "GET"
+    )
+    .then(res => {
+
+        let $dropdown = $('#delete_reason');
+        $dropdown.empty();
+        $dropdown.append('<option value="">Select Reason</option>');
+
+        if (res.status && res.data.length > 0) {
+          console.log(res.data);
+            res.data.forEach(item => {
+                $dropdown.append(
+                    `<option value="${item.id}">
+                        ${item.name}
+                    </option>`
+                );
+            });
+
+        } else {
+            $dropdown.append('<option value="">No reasons available</option>');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+    });
+  }
+
   function populateStudentRow(d) {
       console.log(d);
-
-      // Build dropdown options
-      let reasonOptions = '<option value="">Select Reason</option>';
-
-      if (Array.isArray(d.deactivation_reasons)) {
-          d.deactivation_reasons.forEach(r => {
-              reasonOptions += `
-                  <option value="${r.id}">
-                      ${r.name}
-                  </option>`;
-          });
-      }
-
       let row = `
           <tr>
               <td>${d.student_code ?? '-'}</td>
@@ -216,18 +227,16 @@ $(document).ready(function () {
               <td>${d.current_class ?? '-'}</td>
               <td>${d.current_section ?? '-'}</td>
               <td>${d.cur_roll_number ?? '-'}</td>
-
               <td>
-                  <select class="form-select form-select-sm deactivation-reason"
+                  <select class="form-select form-select-sm delete-reason" id="delete_reason"
                           data-student-code="${d.student_code}">
-                      ${reasonOptions}
+                      <option value="">Select Option</option>
                   </select>
               </td>
-
               <td>
-                  <button class="btn btn-sm btn-warning deactivate-btn"
-                          data-student-code="${d.student_code}" id="btn_deactivate">
-                      Deactivate
+                  <button class="btn btn-sm btn-danger deactivate-btn"
+                          data-student-code="${d.student_code}" id="btn_delete">
+                      Delete
                   </button>
               </td>
           </tr>
@@ -244,41 +253,41 @@ $(document).ready(function () {
           </tr>
       `);
   }
-$(document).on('click', '#btn_deactivate', function (e) {
+$(document).on('click', '#btn_delete', function (e) {
     e.preventDefault();
 
     let $btn = $(this);
-    $btn.prop('disabled', true).text('Deactivating...');
+    $btn.prop('disabled', true).text('Deleting...');
 
     // collect values (example: from hidden inputs)
-    let student_code              = $('input[name="student_code"]').val();
+    let student_code = $('input[name="student_code"]').val();
 
-    let deactivate_reason_code_fk = $('select.deactivation-reason').val();
+    let delete_reason_code_fk = $('select.delete-reason').val();
 
-    if (!deactivate_reason_code_fk) {
-        alert('Please select a deactivation reason');
-        $btn.prop('disabled', false).text('Deactivate');
+    if (!delete_reason_code_fk) {
+        alert('Please select a delete reason');
+        $btn.prop('disabled', false).text('Delete');
         return;
     }
 
-    let url = "{{ route('student.deactivate') }}";
+    let url = "{{ route('student.delete') }}";
 
     sendRequest(url, "POST", null,{
         student_code,
-        deactivate_reason_code_fk,
+        delete_reason_code_fk,
         _token: "{{ csrf_token() }}"
     })
     .then(res => {
-        $btn.prop('disabled', false).text('Deactivate');
+        $btn.prop('disabled', false).text('Delete');
 
         if (res.status === true) {
             alert(res.message);
         } else {
-            alert(res.message || 'Failed to deactivate student');
+            alert(res.message || 'Failed to delete student');
         }
     })
     .catch(err => {
-        $btn.prop('disabled', false).text('Deactivate');
+        $btn.prop('disabled', false).text('Delete');
         console.error(err);
         alert('Something went wrong');
     });

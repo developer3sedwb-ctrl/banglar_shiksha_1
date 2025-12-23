@@ -12,6 +12,7 @@ use App\Models\ClassSectionMaster;
 
 class StudentDeactivateModel extends Model
 {
+    use HasFactory, SoftDeletes;
     protected $table = 'bs_student_activate_deactivate_track';
     protected $primaryKey = 'id';
 
@@ -37,7 +38,7 @@ class StudentDeactivateModel extends Model
     {
         return $this->belongsTo(StudentMaster::class, 'student_code','student_code');
     }
-        public function currentClass()
+    public function currentClass()
     {
         return $this->belongsTo(ClassMaster::class, 'cur_class_code_fk', 'id');
     }
