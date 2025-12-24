@@ -40,6 +40,11 @@ use App\Http\Requests\StoreUserRequestStudentFacilityAndOtherDetails;
 
 class StudentInfoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:view students', ['only' => ['studentList']]);
+    }
+
     // 1 . ======================Store Student Basic Details============================
     public function StoreStudentEntryStoreBasicDetails(StoreUserRequestStudentEntry $request)
     {
@@ -1495,13 +1500,38 @@ class StudentInfoController extends Controller
     {
         try {
             // ===============================
-            // Get user's school information if available
+            // Get user's role information
             // ===============================
-            $userSchool = Auth::user()->schoolMaster ?? null;
-            $isSchoolUser = $userSchool ? true : false;
+            $user = Auth::user();
+            $userRole = $user->roles()->first();
+            $roleName = $userRole ? $userRole->name : null;
 
             // ===============================
-            // Filter parameters - Set defaults from user's school
+            // Determine user role types
+            // ===============================
+            $user_role_info = [
+                'is_super_admin' => $roleName === 'Super Admin',
+                'is_hoi_primary' => $roleName === 'HOI Primary',
+                'is_school_admin' => $roleName === 'School Admin',
+                'is_circle_officer' => $roleName === 'Cirlcle', // Note: typo in role name 'Circle'
+                'is_district_officer' => $roleName === 'District Officer', // Add if you have this role
+                'is_school_user' => $roleName === 'School Admin' || $roleName === 'HOI Primary',
+            ];
+
+            // ===============================
+            // Get user's school information if available
+            // ===============================
+            $userSchool = $user->schoolMaster ?? null;
+            $isSchoolUser = $user_role_info['is_school_user'] && $userSchool ? true : false;
+
+            // For circle officers, get their circle
+            $userCircle = null;
+            if ($user_role_info['is_circle_officer']) {
+                $userCircle = $user ?? null;
+            }
+
+            // ===============================
+            // Filter parameters - Set defaults based on role
             // ===============================
             $district_id = null;
             $subdivision_id = null;
@@ -1509,20 +1539,24 @@ class StudentInfoController extends Controller
             $management_id = null;
             $school_id = null;
 
-            // If user has associated school, restrict to their school only
-            if ($isSchoolUser) {
-                // Force set to user's school data
+            // Role-based restrictions
+            if ($user_role_info['is_school_user'] && $userSchool) {
+                // School users (HOI Primary, School Admin) - restrict to their school
                 $district_id = $userSchool->district_code_fk;
                 $circle_id = $userSchool->circle_code_fk;
                 $subdivision_id = $userSchool->subdivision_code_fk;
                 $school_id = $userSchool->id;
                 $management_id = $userSchool->school_management_code_fk;
-
-                // Disable other district/circle selection for school users
-                // They can only see their own school's data
+            } elseif ($user_role_info['is_circle_officer'] && $userCircle) {
+                // Circle officers - restrict to their circle
+                $circle_id = $userCircle->id ?? 66;
+                $circle_id = 66;
+                $district_id = $userCircle->district_id ?? 1;
+                $district_id = 1;
             }
+            // Super Admin - no restrictions
 
-            // Override with request values if provided (but for school users, restrict to their school)
+            // Override with request values if provided (respecting role restrictions)
             $search_param        = $request->search ?? '';
             $gender_param        = $request->gender ?? '';
             $class_param         = $request->class ?? '';
@@ -1533,9 +1567,10 @@ class StudentInfoController extends Controller
             $per_page            = $request->per_page ?? 20;
 
             // ===============================
-            // Decrypt IDs safely (from request, but for school users ignore other schools)
+            // Decrypt IDs safely (respecting role restrictions)
             // ===============================
-            if (!$isSchoolUser) {
+            if (!$user_role_info['is_school_user'] && !$user_role_info['is_circle_officer']) {
+                // Only allow filter changes for Super Admin
                 foreach (['district_id', 'subdivision_id', 'circle_id', 'management_id', 'school_id'] as $field) {
                     if ($request->filled($field)) {
                         try {
@@ -1550,9 +1585,9 @@ class StudentInfoController extends Controller
             $data = [];
 
             // ===============================
-            // MASTER DATA - RESTRICTED FOR SCHOOL USERS
+            // MASTER DATA - RESTRICTED BY ROLE
             // ===============================
-            if ($isSchoolUser) {
+            if ($user_role_info['is_school_user'] && $userSchool) {
                 // School users only see their own school's data
                 $data['districts'] = DistrictMaster::where('id', $district_id)
                     ->where('status', 1)
@@ -1579,8 +1614,35 @@ class StudentInfoController extends Controller
                     ->where('status', 1)
                     ->select('id', 'name')
                     ->get();
+            } elseif ($user_role_info['is_circle_officer'] && $userCircle) {
+                // Circle officers see data within their circle
+                $data['districts'] = DistrictMaster::where('id', $district_id)
+                    ->where('status', 1)
+                    ->select('id', 'name')
+                    ->get();
+
+                $data['circles'] = CircleMaster::where('id', $circle_id)
+                    ->where('status', 1)
+                    ->select('id', 'name')
+                    ->get();
+
+                $data['subdivisions'] = SubdivisionMaster::where('district_id', $district_id)
+                    ->where('status', 1)
+                    ->select('id', 'name')
+                    ->get();
+
+                $data['schools'] = SchoolMaster::where('circle_code_fk', $circle_id)
+                    ->where('status', 1)
+                    ->select('id', 'school_name', 'schcd')
+                    ->orderBy('school_name')
+                    ->get();
+
+                $data['managements'] = ManagementMaster::where('status', 1)
+                    ->select('id', 'name')
+                    ->orderBy('name')
+                    ->get();
             } else {
-                // Admin/other users see all data
+                // Super Admin sees all data
                 $data['districts'] = DistrictMaster::where('status', 1)
                     ->select('id', 'name')
                     ->orderBy('name')
@@ -1637,9 +1699,15 @@ class StudentInfoController extends Controller
                 ->orderBy('id')
                 ->get();
 
-            // Academic years (restrict to user's school data if school user)
-            if ($isSchoolUser) {
+            // Academic years (restrict based on role)
+            if ($user_role_info['is_school_user'] && $school_id) {
                 $data['academic_years'] = StudentMaster::where('school_code_fk', $school_id)
+                    ->select('academic_year')
+                    ->distinct()
+                    ->orderBy('academic_year', 'desc')
+                    ->pluck('academic_year');
+            } elseif ($user_role_info['is_circle_officer'] && $circle_id) {
+                $data['academic_years'] = StudentMaster::where('circle_code_fk', $circle_id)
                     ->select('academic_year')
                     ->distinct()
                     ->orderBy('academic_year', 'desc')
@@ -1665,13 +1733,31 @@ class StudentInfoController extends Controller
             ])->where('status', 1);
 
             // ===============================
-            // APPLY FILTERS - RESTRICTED FOR SCHOOL USERS
+            // APPLY FILTERS - RESTRICTED BY ROLE
             // ===============================
-            if ($isSchoolUser) {
+            if ($user_role_info['is_school_user'] && $school_id) {
                 // School users can only see their own school's students
                 $query->where('school_code_fk', $school_id);
+            } elseif ($user_role_info['is_circle_officer'] && $circle_id) {
+                // Circle officers can only see students in their circle
+                $query->where('circle_code_fk', $circle_id);
+
+                // Apply additional filters if selected
+                if ($district_id) {
+                    $query->where('district_code_fk', $district_id);
+                }
+
+                if ($management_id) {
+                    $query->whereHas('school', function ($q) use ($management_id) {
+                        $q->where('school_management_code_fk', $management_id);
+                    });
+                }
+
+                if ($school_id) {
+                    $query->where('school_code_fk', $school_id);
+                }
             } else {
-                // Admin/other users can apply all filters
+                // Super Admin can apply all filters
                 if ($district_id) {
                     $query->where('district_code_fk', $district_id);
                 }
@@ -1689,6 +1775,7 @@ class StudentInfoController extends Controller
                 if ($school_id) {
                     $query->where('school_code_fk', $school_id);
                 }
+
             }
 
             // Common filters for all users
@@ -1717,7 +1804,7 @@ class StudentInfoController extends Controller
             }
 
             // ===============================
-            // SEARCH (within school for school users)
+            // SEARCH (within restrictions for each role)
             // ===============================
             if ($search_param) {
                 $search = trim($search_param);
@@ -1749,13 +1836,30 @@ class StudentInfoController extends Controller
                 ->onEachSide(1);
 
             // ===============================
-            // STATISTICS (restricted to user's school if school user)
+            // STATISTICS (restricted by role)
             // ===============================
-            if ($isSchoolUser) {
+            if ($user_role_info['is_school_user'] && $school_id) {
                 // School users statistics only for their school
                 $statsBaseQuery = StudentMaster::where('school_code_fk', $school_id);
+            } elseif ($user_role_info['is_circle_officer'] && $circle_id) {
+                // Circle officers statistics for their circle
+                $statsBaseQuery = StudentMaster::where('circle_code_fk', $circle_id);
+
+                if ($district_id) {
+                    $statsBaseQuery->where('district_code_fk', $district_id);
+                }
+
+                if ($management_id) {
+                    $statsBaseQuery->whereHas('school', function ($q) use ($management_id) {
+                        $q->where('school_management_code_fk', $management_id);
+                    });
+                }
+
+                if ($school_id) {
+                    $statsBaseQuery->where('school_code_fk', $school_id);
+                }
             } else {
-                // Admin/other users statistics with filters
+                // Super Admin statistics with filters
                 $statsBaseQuery = StudentMaster::query();
 
                 if ($district_id) {
@@ -1861,6 +1965,8 @@ class StudentInfoController extends Controller
             return view('src.modules.student_information.student_list', [
                 'data' => $data,
                 'user_school' => $userSchool,
+                'user_role_info' => $user_role_info, // Pass role info to view
+                'user_role_name' => $roleName,
                 'is_school_user' => $isSchoolUser,
                 'selected_district_id'   => $district_id,
                 'selected_subdivision_id'  => $subdivision_id,
@@ -1882,7 +1988,6 @@ class StudentInfoController extends Controller
             return redirect()->back()->with('error', 'An error occurred while loading student list.');
         }
     }
-
 
     public function getSubDivisionByDistrict(Request $request)
     {
