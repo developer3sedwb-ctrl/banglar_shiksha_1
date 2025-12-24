@@ -20,6 +20,7 @@ class StudentDeleteDeacivateController extends Controller
     public function deactivateStudentView()
     {
         try {
+            $auth_data = Auth::user()->schoolMaster;
             $deactive_students = StudentDeactivateModel::query()
                 ->with([
                     // Student basic info (LIMIT COLUMNS)
@@ -30,6 +31,8 @@ class StudentDeleteDeacivateController extends Controller
                     'currentClass:id,name',
                     'currentSection:id,name',
                 ])
+                ->where('district_code_fk', $auth_data->district_code_fk)
+                ->where('school_code_fk', $auth_data->school_code_fk)
                 ->where('status', 1)
                 ->get();
 
@@ -71,6 +74,7 @@ class StudentDeleteDeacivateController extends Controller
                 ])
                 ->where('district_code_fk', $auth_data->district_code_fk)
                 ->where('student_code', $student_code)
+                ->where('school_code_fk', $auth_data->school_code_fk)
                 ->where('status', 1);
             $student = $query->first();
             if (!$student) {
@@ -186,31 +190,33 @@ class StudentDeleteDeacivateController extends Controller
     }
     // =========================Deactivated Students View & Deactivate Student End==========================
     // =========================Deleted Students View & Delete Student Start================================
-public function deletedStudentView()
-{
-    try {
-        $deleted_students = StudentDeleteTrackModel::query()
-            ->with([
-                'studentInfo:student_code,studentname,dob,guardian_name,cur_roll_number'
-            ])
-            ->where('status', '1')   // 🔥 FIX HERE
-            ->get();
+    public function deletedStudentView()
+    {
+        try {
+            $auth_data = Auth::user()->schoolMaster;
+            $deleted_students = StudentDeleteTrackModel::query()
+                ->with([
+                    'studentInfo:student_code,studentname,dob,guardian_name,cur_roll_number'
+                ])
+                ->where('school_code_fk', $auth_data->school_code_fk)
+                ->where('district_code_fk', $auth_data->district_code_fk)
+                ->where('status', 1)                
+                ->get();
 
-        // dd($deleted_students);
+            // dd($deleted_students);
 
-        return view(
-            'src.modules.student_delete_deactivate.student_delete',
-            compact('deleted_students')
-        );
-    } catch (\Throwable $e) {
-        return response()->json([
-            'status'  => 'error',
-            'message' => 'An error occurred',
-            'error'   => $e->getMessage(),
-        ], 500);
+            return view(
+                'src.modules.student_delete_deactivate.student_delete',
+                compact('deleted_students')
+            );
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'An error occurred',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
-}
-
     public function deleteStudent(Request $request)
     {
 

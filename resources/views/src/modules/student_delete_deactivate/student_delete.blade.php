@@ -38,8 +38,12 @@
                 <th>SL No. </th>
                 <th>Student Code</th>
                 <th>Name</th>
+                <th>DOB</th>
+                <th>Guardian Name</th>
+                <th>Present Roll No.</th>
                 <th>Delete Reason</th>
                 <th>Student Status</th>
+                <th>Deleted On</th>
             </tr>
         </thead>
 
@@ -50,8 +54,30 @@
                       <td>{{ $loop->iteration }}</td>
                       <td>{{ $student->student_code }}</td>
                       <td>{{ $student->student_name ?? 'N/A' }}</td>
+                      <td>{{ $student->studentInfo->dob ?? 'N/A' }}</td>
+                      <td>{{ $student->studentInfo->guardian_name ?? 'N/A' }}</td>
+                      <td>{{ $student->studentInfo->cur_roll_number ?? 'N/A' }}</td>
                       <td>{{ $student->deleteReason->name ?? 'N/A' }}</td>
-                      <td>{{ $student->student_status ?? 'N/A' }}</td>
+                      <td>
+                          @switch($student->delete_reject_status)
+                              @case(1)
+                                  <span class="badge bg-primary">Sent to SI</span>
+                                  @break
+
+                              @case(2)
+                                  <span class="badge bg-danger">Deleted</span>
+                                  @break
+
+                              @case(3)
+                                  <span class="badge bg-warning text-dark">Rejected</span>
+                                  @break
+
+                              @default
+                                  <span class="badge bg-secondary">N/A</span>
+                          @endswitch
+                      </td>
+                      <td>{{ $student->created_at ?? 'N/A' }}</td>
+
                   </tr>
               @endforeach
           @endif
@@ -282,6 +308,8 @@ $(document).on('click', '#btn_delete', function (e) {
 
         if (res.status === true) {
             alert(res.message);
+            location.reload();
+
         } else {
             alert(res.message || 'Failed to delete student');
         }

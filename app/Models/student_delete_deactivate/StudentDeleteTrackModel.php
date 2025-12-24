@@ -41,6 +41,6 @@ class StudentDeleteTrackModel extends Model
     }
     public function studentInfo()
     {
-        return $this->belongsTo(StudentMaster::class, 'student_code','student_code');
+        return $this->belongsTo(StudentDeleteArchive::class, 'student_code','student_code');
     } 
 }

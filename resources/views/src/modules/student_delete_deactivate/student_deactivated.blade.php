@@ -35,6 +35,7 @@
       <table id="example" class="table table-striped">
         <thead>
             <tr>
+                <th>SL No.</th>
                 <th>Student Code</th>
                 <th>Name</th>
                 <th>DOB</th>
@@ -50,6 +51,7 @@
           @if(!empty($deactive_students) && $deactive_students->count() > 0)
               @foreach($deactive_students as $student)
                   <tr>
+                      <td>{{ $loop->iteration}}</td>
                       <td>{{ $student->student_code }}</td>
                       <td>{{ $student->studentInfo->getAttributes()['studentname'] ?? 'N/A' }}</td>
                       <td>{{ $student->studentInfo->dob ?? 'N/A' }}</td>
@@ -180,6 +182,7 @@ $(document).ready(function () {
 
               if (res.status === 'success') {
                   populateStudentRow(res.data);
+                  loadDeactivateReasons();
               } else {
                   showEmptyRow(res.message || 'Student not found');
               }
@@ -194,16 +197,6 @@ $(document).ready(function () {
       console.log(d);
 
       // Build dropdown options
-      let reasonOptions = '<option value="">Select Reason</option>';
-
-      if (Array.isArray(d.deactivation_reasons)) {
-          d.deactivation_reasons.forEach(r => {
-              reasonOptions += `
-                  <option value="${r.id}">
-                      ${r.name}
-                  </option>`;
-          });
-      }
 
       let row = `
           <tr>
@@ -216,9 +209,9 @@ $(document).ready(function () {
               <td>${d.cur_roll_number ?? '-'}</td>
 
               <td>
-                  <select class="form-select form-select-sm deactivation-reason"
+                  <select class="form-select form-select-sm deactivation-reason" id="deactivate_reason"
                           data-student-code="${d.student_code}">
-                      ${reasonOptions}
+                      <option value="">Select Option</option>
                   </select>
               </td>
 
@@ -232,6 +225,36 @@ $(document).ready(function () {
       `;
 
       $("#student_result_body").html(row); // replace old data
+  }
+  function loadDeactivateReasons() {
+
+    sendRequest(
+        "{{ route('get.reason.for.deactivation') }}",
+        "GET"
+    )
+    .then(res => {
+
+        let $dropdown = $('#deactivate_reason');
+        $dropdown.empty();
+        $dropdown.append('<option value="">Select Reason</option>');
+
+        if (res.status && res.data.length > 0) {
+          console.log(res.data);
+            res.data.forEach(item => {
+                $dropdown.append(
+                    `<option value="${item.id}">
+                        ${item.name}
+                    </option>`
+                );
+            });
+
+        } else {
+            $dropdown.append('<option value="">No reasons available</option>');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+    });
   }
   function showEmptyRow(message) {
       $("#student_result_body").html(`
@@ -271,6 +294,7 @@ $(document).on('click', '#btn_deactivate', function (e) {
 
         if (res.status === true) {
             alert(res.message);
+            location.reload();
         } else {
             alert(res.message || 'Failed to deactivate student');
         }
