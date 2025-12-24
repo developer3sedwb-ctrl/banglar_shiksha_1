@@ -22,6 +22,7 @@
             >
           </div>
         </div>
+        <input type="text" class="d-none" id="search_purpose" name="search_purpose" value="" required/>
         <div class="col-md-1 mb-2 text-end">
           <button type="submit" class="btn btn-primary w-100" id="btn_search_student">Search</button>
         </div>

@@ -163,6 +163,7 @@
 </script>
 <script>
 $(document).ready(function () {
+  $("#search_purpose").val('1');
   $("#btn_search_student").on("click", function (e) {
       e.preventDefault();
 

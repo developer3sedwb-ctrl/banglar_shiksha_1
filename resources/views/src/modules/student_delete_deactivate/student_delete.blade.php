@@ -181,6 +181,7 @@
 </script>
 <script>
 $(document).ready(function () {
+  $("#search_purpose").val('2');
   $("#btn_search_student").on("click", function (e) {
       e.preventDefault();
 
