@@ -618,6 +618,7 @@
                                         @endcanany
                                         <th width="60px">ID</th>
                                         <th>User</th>
+                                        <th>Dise Code</th>
                                         <th>Role</th>
                                         <th>Department</th>
                                         <th width="100px">Status</th>
@@ -655,6 +656,11 @@
                                                         @endif
                                                     </div>
                                                 </div>
+                                            </td>
+                                            <td>
+                                                <span class="text-highlight">
+                                                    {{ $user->dise_code ?? 'N/A' }}
+                                                </span>
                                             </td>
                                             <td>
                                                 <div class="d-flex flex-wrap gap-1">
