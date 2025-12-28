@@ -1503,20 +1503,8 @@ class StudentInfoController extends Controller
             // Get user's role information
             // ===============================
             $user = Auth::user();
-            $userRole = $user->roles()->first();
-            $roleName = $userRole ? $userRole->name : null;
-
-            // ===============================
-            // Determine user role types
-            // ===============================
-            $user_role_info = [
-                'is_super_admin' => $roleName === 'Super Admin',
-                'is_hoi_primary' => $roleName === 'HOI Primary',
-                'is_school_admin' => $roleName === 'School Admin',
-                'is_circle_officer' => $roleName === 'Cirlcle', // Note: typo in role name 'Circle'
-                'is_district_officer' => $roleName === 'District Officer', // Add if you have this role
-                'is_school_user' => $roleName === 'School Admin' || $roleName === 'HOI Primary',
-            ];
+            $user_role_info = user_roles_map();          // 🔥 from helper
+            $roleName       = $user_role_info['role_name'];
 
             // ===============================
             // Get user's school information if available
@@ -1550,7 +1538,7 @@ class StudentInfoController extends Controller
             } elseif ($user_role_info['is_circle_officer'] && $userCircle) {
                 // Circle officers - restrict to their circle
                 $circle_id = $userCircle->id ?? 66;
-                $circle_id =  66;
+                $circle_id = 66;
                 $district_id = $userCircle->district_id ?? 1;
                 $district_id = 1;
             }

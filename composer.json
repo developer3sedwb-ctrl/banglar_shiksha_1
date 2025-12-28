@@ -28,7 +28,7 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/global.php"
+            "app/Helpers/RoleHelper.php"
         ]
 
     },
