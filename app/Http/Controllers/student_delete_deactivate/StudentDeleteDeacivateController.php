@@ -29,19 +29,18 @@ class StudentDeleteDeacivateController extends Controller
                     'deleteReason:id,name',
                     'currentClass:id,name',
                     'currentSection:id,name',
-                ]);
+                    'schoolInfo:id,school_name'
+                ])
+                ->where('status', 3);;
             if (in_array($roleName, ['School Admin', 'HOI Primary'])) {
                 // School user → only their school
                 $userSchool = $user->schoolMaster;
                 $query->where('school_code_fk', $userSchool->id)
-                ->where('status', 1);
-
-            } elseif ($roleName === 'Cirlcle') {
+                    ->where('status', 3);
+            } elseif ($roleName === 'Circle') {
                 // Circle officer → district + circle
                 $query->where('district_code_fk', $user->district_code_fk ?? 23)
-                    ->where('circle_code_fk', $user->circle_code_fk ?? 52)
-                    ->where('status', 3);
-
+                    ->where('circle_code_fk', $user->circle_code_fk ?? 52);
             } elseif ($roleName === 'District Officer') {
                 // District officer → district only
                 $query->where('district_code_fk', $user->district_code_fk ?? 23);
@@ -51,13 +50,13 @@ class StudentDeleteDeacivateController extends Controller
 
             return view(
                 'src.modules.student_delete_deactivate.student_deactivated',
-                compact('deactive_students')
+                compact('deactive_students', 'user')
             );
         } catch (\Throwable $e) {
             return response()->json([
-                'status'  => 'error',
+                'status'  => false,
                 'message' => 'An error occurred',
-                'error'   => $e->getMessage(),
+                false   => $e->getMessage(),
             ], 500);
         }
     }
@@ -66,8 +65,10 @@ class StudentDeleteDeacivateController extends Controller
     {
         try {
             $user = Auth::user();
+            // dd($user);
             $roleName = optional($user->roles()->first())->name;
             $userSchool = $user->schoolMaster;
+            // dd($roleName);
 
             // -------------------------------
             // Validation
@@ -107,61 +108,39 @@ class StudentDeleteDeacivateController extends Controller
             // HOI / SCHOOL ADMIN
             // -------------------------------
             if (in_array($roleName, ['School Admin', 'HOI Primary']) && $userSchool) {
-
-                $query->where('school_code_fk', $userSchool->school_code_fk)
+                $query->where('school_code_fk', $userSchool->id)
                     ->where('status', 1);
 
                 // -------------------------------
                 // SI (CIRCLE OFFICER)
                 // -------------------------------
-            } elseif ($roleName === 'Cirlcle') {
-
+            } elseif ($roleName === 'Circle') {
                 $query->where('district_code_fk', $user->district_code_fk ?? 23)
-                    ->where('circle_code_fk', $user->circle_code_fk ?? 52)
-                    ->where('status', 2) // Sent to SI
-                    ->where(function ($q) use ($searchPurpose) {
-
-                        // 🔹 Deactivate
-                        if ($searchPurpose === 1) {
-                            $q->whereExists(function ($sub) {
-                                $sub->select(DB::raw(1))
-                                    ->from('bs_student_activate_deactivate_track')
-                                    ->whereColumn(
-                                        'bs_student_activate_deactivate_track.student_code',
-                                        'bs_student_master.student_code'
-                                    );
-                            });
-                        }
-
-                        // 🔹 Delete
-                        if ($searchPurpose === 2) {
-                            $q->whereExists(function ($sub) {
-                                $sub->select(DB::raw(1))
-                                    ->from('bs_student_delete_track')
-                                    ->whereColumn(
-                                        'bs_student_delete_track.student_code',
-                                        'bs_student_master.student_code'
-                                    );
-                            });
-                        }
-                    });
-
+                    ->where('circle_code_fk', $user->circle_code_fk ?? 52);
+                    if($searchPurpose === 2)
+                    {
+                        $query->where('status', 2);
+                    }
+                    else if($searchPurpose === 1)
+                    {
+                        $query->where('status', 3);
+                    }
                 // -------------------------------
                 // DISTRICT OFFICER
                 // -------------------------------
             } elseif ($roleName === 'District Officer') {
 
                 $query->where('district_code_fk', $user->district_code_fk)
-                    ->whereIn('status', [1, 2]);
+                    ->whereIn('status', [1,2,3]);
             }
             // dd($query);
-
             $student = $query->first();
+            // dd($student);
 
 
             if (!$student) {
                 return response()->json([
-                    'status'  => 'error',
+                    'status'  => false,
                     'message' => 'Student not found or not pending for selected action'
                 ], 200);
             }
@@ -170,10 +149,10 @@ class StudentDeleteDeacivateController extends Controller
             // Response
             // -------------------------------
             return response()->json([
-                'status' => 'success',
+                'status' => true,
                 'data'   => [
                     'student_code'    => $student->student_code,
-                    'studentname'     => $student->studentname,
+                    'studentname'     => $student->getAttributes()['studentname'],
                     'dob'             => $student->dob,
                     'guardian_name'   => $student->guardian_name,
                     'current_class'   => $student->currentClass?->name,
@@ -186,16 +165,16 @@ class StudentDeleteDeacivateController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
 
             return response()->json([
-                'status'  => 'error',
+                'status'  => false,
                 'message' => 'Validation failed',
                 'errors'  => $e->errors(),
             ], 422);
         } catch (\Throwable $e) {
 
             return response()->json([
-                'status'  => 'error',
+                'status'  => false,
                 'message' => 'An error occurred',
-                'error'   => $e->getMessage(),
+                false   => $e->getMessage(),
             ], 500);
         }
     }
@@ -203,7 +182,6 @@ class StudentDeleteDeacivateController extends Controller
     public function deactivateStudent(Request $request)
     {
         try {
-            DB::beginTransaction();
 
             // -------------------------------
             // 1. Validate input
@@ -219,7 +197,8 @@ class StudentDeleteDeacivateController extends Controller
 
             // -------------------------------
             // 2. Build student query (ROLE BASED)
-            // -------------------------------
+            // -------------------------------            
+            DB::beginTransaction();
             $studentQuery = DB::table('bs_student_master')
                 ->where('student_code', $data['student_code'])
                 ->lockForUpdate();
@@ -229,7 +208,7 @@ class StudentDeleteDeacivateController extends Controller
                 $studentQuery->where('school_code_fk', $userSchool->id);
 
                 // CIRCLE OFFICER
-            } elseif ($roleName === 'Cirlcle') {
+            } elseif ($roleName === 'Circle') {
                 $studentQuery->where('district_code_fk', $user->district_code_fk ?? 23)
                     ->where('circle_code_fk', $user->circle_code_fk ?? 52);
 
@@ -264,6 +243,7 @@ class StudentDeleteDeacivateController extends Controller
                 'operation_time'            => now(),
                 'operation_ip'              => $request->ip(),
                 'prev_status'               => $student->status,
+                'status'                    => 3 //add from config
             ]);
 
             // -------------------------------
@@ -290,7 +270,7 @@ class StudentDeleteDeacivateController extends Controller
             return response()->json([
                 'status'  => false,
                 'message' => 'Something went wrong',
-                'error'   => $e->getMessage(),
+                false   => $e->getMessage(),
             ], 500);
         }
     }
@@ -301,7 +281,9 @@ class StudentDeleteDeacivateController extends Controller
     {
         try {
             $user = Auth::user();
+            // dd($user);
             $roleName = optional($user->roles()->first())->name;
+            // dd($roleName);
             $userSchool = $user->schoolMaster;
 
             // ----------------------------------
@@ -311,7 +293,7 @@ class StudentDeleteDeacivateController extends Controller
                 ->with([
                     'studentInfo:student_code,studentname,dob,guardian_name,cur_roll_number',
                 ])
-                ->where('status', 1);
+                ->where('status', 2);
 
             // ----------------------------------
             // ROLE BASED FILTERING
@@ -323,11 +305,10 @@ class StudentDeleteDeacivateController extends Controller
                 $query->where('school_code_fk', $userSchool->id);
 
                 // CIRCLE OFFICER
-            } elseif ($roleName === 'Cirlcle') { // keep typo if role name exists like this
+            } elseif ($roleName === 'Circle') { // keep typo if role name exists like this
 
                 $query->where('district_code_fk', $user->district_code_fk ?? 23)
-                    ->where('circle_code_fk', $user->circle_code_fk ?? 52)
-                    ->where('delete_reject_status', 3);
+                    ->where('circle_code_fk', $user->circle_code_fk ?? 52);
 
                 // DISTRICT OFFICER
             } elseif ($roleName === 'District Officer') {
@@ -342,346 +323,17 @@ class StudentDeleteDeacivateController extends Controller
 
             return view(
                 'src.modules.student_delete_deactivate.student_delete',
-                compact('deleted_students')
+                compact('deleted_students','user')
             );
         } catch (\Throwable $e) {
             return response()->json([
-                'status'  => 'error',
+                'status'  => false,
                 'message' => 'An error occurred',
-                'error'   => $e->getMessage(),
+                false   => $e->getMessage(),
             ], 500);
         }
     }
 
-    public function deleteStudent_bkp(Request $request)
-    {
-
-        try {
-            DB::beginTransaction();
-
-            $data = $request->validate([
-                'student_code'          => 'required|string|size:14',
-                'delete_reason_code_fk' => 'required|integer|exists:bs_student_delete_reason,id',
-            ]);
-            $user = Auth::user();
-            $userRole = $user->roles()->first();
-            $roleName = $userRole ? $userRole->name : null;
-
-            // ===============================
-            // Determine user role types
-            // ===============================
-            $user_role_info = [
-                'is_super_admin' => $roleName === 'Super Admin',
-                'is_hoi_primary' => $roleName === 'HOI Primary',
-                'is_school_admin' => $roleName === 'School Admin',
-                'is_circle_officer' => $roleName === 'Cirlcle', // Note: typo in role name 'Circle'
-                'is_district_officer' => $roleName === 'District Officer', // Add if you have this role
-                'is_school_user' => $roleName === 'School Admin' || $roleName === 'HOI Primary',
-            ];
-
-            // ===============================
-            // Get user's school information if available
-            // ===============================
-            $userSchool = $user->schoolMaster ?? null;
-            $isSchoolUser = $user_role_info['is_school_user'] && $userSchool ? true : false;
-
-            // For circle officers, get their circle
-            $userCircle = null;
-            if ($user_role_info['is_circle_officer']) {
-                $userCircle = $user ?? null;
-            }
-
-            // ===============================
-            // Filter parameters - Set defaults based on role
-            // ===============================
-            $district_id = null;
-            $subdivision_id = null;
-            $circle_id = null;
-            $management_id = null;
-            $school_id = null;
-
-            // Role-based restrictions
-            if ($user_role_info['is_school_user'] && $userSchool) {
-                // School users (HOI Primary, School Admin) - restrict to their school
-                $district_id = $userSchool->district_code_fk;
-                $circle_id = $userSchool->circle_code_fk;
-                $subdivision_id = $userSchool->subdivision_code_fk;
-                $school_id = $userSchool->id;
-                $management_id = $userSchool->school_management_code_fk;
-            } elseif ($user_role_info['is_circle_officer'] && $userCircle) {
-                // Circle officers - restrict to their circle
-                $circle_id = $userCircle->id ?? 66;
-                $circle_id = 66;
-                $district_id = $userCircle->district_id ?? 1;
-                $district_id = 1;
-            }
-            // --------------------------------
-            // 1. Lock student row
-            // --------------------------------
-            $student = DB::table('bs_student_master')
-                ->where('district_code_fk', $userSchool->district_code_fk)
-                ->where('student_code', $data['student_code'])
-                ->lockForUpdate()
-                ->first();
-
-            if (!$student) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Student not found'
-                ], 404);
-            }
-
-            // --------------------------------
-            // 2. Archive FULL ROW (ALL FIELDS)
-            // --------------------------------
-            // if hoi deletes student
-            DB::table('bs_student_master')
-                ->where('student_code', $data['student_code'])
-                ->where('district_code_fk', $student->district_code_fk)
-                ->update([
-                    'status' => 2, // Deactivated
-                    'updated_at'    => now(),
-                    'update_ip'      => $request->ip(),
-                    'updated_by'      => Auth::id(),
-                ]);
-
-            // if SI deletes student
-
-            DB::statement("
-                INSERT INTO bs_student_delete_archive (
-                    district_code_fk,
-                    subdivision_code_fk,
-                    circle_code_fk,
-                    gs_ward_code_fk,
-                    academic_year,
-                    student_code,
-                    studentname,
-                    studentname_as_per_aadhaar,
-                    school_code_fk,
-                    gender_code_fk,
-                    dob,
-                    fathername,
-                    mothername,
-                    guardian_name,
-                    aadhaar_number,
-                    mothertonge_code_fk,
-                    social_category_code_fk,
-                    religion_code_fk,
-                    bpl_y_n,
-                    bpl_no,
-                    bpl_aay_beneficiary_y_n,
-                    disadvantaged_group_y_n,
-                    cwsn_y_n,
-                    cwsn_disability_type_code_fk,
-                    disability_percentage,
-                    nationality_code_fk,
-                    out_of_sch_child_y_n,
-                    child_mainstreamed,
-                    blood_group_code_fk,
-                    birth_registration_number,
-                    identification_mark,
-                    health_id,
-                    stu_guardian_relationship,
-                    guardian_family_income,
-                    stu_height_in_cms,
-                    stu_weight_in_kgs,
-                    guardian_qualification,
-                    stu_country_code_fk,
-                    stu_contact_address,
-                    stu_contact_district,
-                    stu_contact_panchayat,
-                    stu_police_station,
-                    stu_mobile_no,
-                    stu_state_code_fk,
-                    stu_contact_habitation,
-                    stu_contact_block,
-                    stu_post_office,
-                    stu_pin_code,
-                    stu_email,
-                    address_equal,
-                    guardian_country_code_fk,
-                    guardian_state_code_fk,
-                    guardian_contact_address,
-                    guardian_contact_habitation,
-                    guardian_contact_district,
-                    guardian_contact_block,
-                    guardian_contact_panchayat,
-                    guardian_post_office,
-                    guardian_police_station,
-                    guardian_pin_code,
-                    guardian_mobile_no,
-                    guardian_email,
-                    admission_no,
-                    admission_date,
-                    status_pre_year,
-                    prev_class_appeared_exam,
-                    prev_class_exam_result,
-                    prev_class_marks_percent,
-                    attendention_pre_year,
-                    pre_roll_number,
-                    pre_class_code_fk,
-                    pre_section_code_fk,
-                    pre_stream_code_fk,
-                    cur_class_code_fk,
-                    cur_section_code_fk,
-                    cur_stream_code_fk,
-                    cur_roll_number,
-                    medium_code_fk,
-                    admission_type_code_fk,
-                    bank_ifsc,
-                    stu_bank_acc_no,
-                    status,
-                    entry_ip,
-                    update_ip,
-                    created_by,
-                    updated_by,
-                    deleted_at,
-                    created_at,
-                    updated_at
-                )
-                SELECT
-                    district_code_fk,
-                    subdivision_code_fk,
-                    circle_code_fk,
-                    gs_ward_code_fk,
-                    academic_year,
-                    student_code,
-                    studentname,
-                    studentname_as_per_aadhaar,
-                    school_code_fk,
-                    gender_code_fk,
-                    dob,
-                    fathername,
-                    mothername,
-                    guardian_name,
-                    aadhaar_number,
-                    mothertonge_code_fk,
-                    social_category_code_fk,
-                    religion_code_fk,
-                    bpl_y_n,
-                    bpl_no,
-                    bpl_aay_beneficiary_y_n,
-                    disadvantaged_group_y_n,
-                    cwsn_y_n,
-                    cwsn_disability_type_code_fk,
-                    disability_percentage,
-                    nationality_code_fk,
-                    out_of_sch_child_y_n,
-                    child_mainstreamed,
-                    blood_group_code_fk,
-                    birth_registration_number,
-                    identification_mark,
-                    health_id,
-                    stu_guardian_relationship,
-                    guardian_family_income,
-                    stu_height_in_cms,
-                    stu_weight_in_kgs,
-                    guardian_qualification,
-                    stu_country_code_fk,
-                    stu_contact_address,
-                    stu_contact_district,
-                    stu_contact_panchayat,
-                    stu_police_station,
-                    stu_mobile_no,
-                    stu_state_code_fk,
-                    stu_contact_habitation,
-                    stu_contact_block,
-                    stu_post_office,
-                    stu_pin_code,
-                    stu_email,
-                    address_equal,
-                    guardian_country_code_fk,
-                    guardian_state_code_fk,
-                    guardian_contact_address,
-                    guardian_contact_habitation,
-                    guardian_contact_district,
-                    guardian_contact_block,
-                    guardian_contact_panchayat,
-                    guardian_post_office,
-                    guardian_police_station,
-                    guardian_pin_code,
-                    guardian_mobile_no,
-                    guardian_email,
-                    admission_no,
-                    admission_date,
-                    status_pre_year,
-                    prev_class_appeared_exam,
-                    prev_class_exam_result,
-                    prev_class_marks_percent,
-                    attendention_pre_year,
-                    pre_roll_number,
-                    pre_class_code_fk,
-                    pre_section_code_fk,
-                    pre_stream_code_fk,
-                    cur_class_code_fk,
-                    cur_section_code_fk,
-                    cur_stream_code_fk,
-                    cur_roll_number,
-                    medium_code_fk,
-                    admission_type_code_fk,
-                    bank_ifsc,
-                    stu_bank_acc_no,
-                    status,
-                    entry_ip,
-                    update_ip,
-                    ?,              -- created_by
-                    ?,              -- updated_by
-                    NOW(),          -- deleted_at (FIXED)
-                    created_at,
-                    updated_at
-                FROM bs_student_master
-                WHERE student_code = ?
-                AND district_code_fk = ?
-            ", [
-                Auth::id(),
-                Auth::id(),
-                $student->student_code,
-                $student->district_code_fk,
-            ]);
-
-
-            // --------------------------------
-            // 3. Insert delete track (audit)
-            // --------------------------------
-            StudentDeleteTrackModel::create([
-                'district_code_fk'      => $student->district_code_fk,
-                'circle_code_fk'        => $student->circle_code_fk,
-                'school_code_fk'        => $student->school_code_fk,
-                'student_code'          => $student->student_code,
-                'student_name'          => $student->studentname,
-                'delete_reason_code_fk' => $data['delete_reason_code_fk'],
-                'prev_delete_status'    => $student->status,
-                'entry_ip'              => $request->ip(),
-                'enter_by'              => Auth::id(),
-                'enter_by_stake_cd'     => Auth::user()->stake_cd ?? null,
-                'created_at'            => now(),
-            ]);
-
-            // --------------------------------
-            // 4. HARD DELETE
-            // --------------------------------
-            DB::table('bs_student_master')
-                ->where('student_code', $student->student_code)
-                ->where('district_code_fk', $student->district_code_fk)
-                ->delete();
-
-            DB::commit();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Student archived and permanently removed'
-            ]);
-        } catch (\Throwable $e) {
-
-            DB::rollBack();
-
-            return response()->json([
-                'status' => false,
-                'message' => 'Something went wrong',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
     public function deleteStudent(Request $request)
     {
         try {
@@ -693,7 +345,7 @@ class StudentDeleteDeacivateController extends Controller
             $data = $request->validate([
                 'student_code'          => 'required|string|size:14',
                 'delete_reason_code_fk' => 'nullable|integer|exists:bs_student_delete_reason,id',
-                'delete_reject_status'  => 'nullable|integer|in:1,2,3',
+                'status'  => 'nullable|integer|in:1,2,3',
             ]);
 
             $user = Auth::user();
@@ -709,7 +361,7 @@ class StudentDeleteDeacivateController extends Controller
 
             if ($roleName === 'HOI Primary' && $userSchool) {
                 $studentQuery->where('school_code_fk', $userSchool->id);
-            } elseif ($roleName === 'Cirlcle') {
+            } elseif ($roleName === 'Circle') {
                 $studentQuery->where('district_code_fk', $user->district_code_fk ?? 23)
                     ->where('circle_code_fk', $user->circle_code_fk ?? 52);
             }
@@ -745,8 +397,8 @@ class StudentDeleteDeacivateController extends Controller
                     'student_code'          => $student->student_code,
                     'student_name'          => $student->studentname,
                     'delete_reason_code_fk' => $data['delete_reason_code_fk'],
-                    'prev_delete_status'    => $student->status,
-                    'delete_reject_status'  => 1, // Requested
+                    'prev_status'    => $student->status,
+                    'status'  => 2, // Requested
                     'entry_ip'              => $request->ip(),
                     'enter_by'              => $user->id,
                     'enter_by_stake_cd'     => $user->stake_cd ?? null,
@@ -764,7 +416,7 @@ class StudentDeleteDeacivateController extends Controller
             // =================================================
             // CASE 2️⃣ : SI REJECTS DELETE
             // =================================================
-            if ($roleName === 'Cirlcle' && $data['delete_reject_status'] == 2) {
+            if ($roleName === 'Circle' && $data['status'] == 3) {
 
                 DB::table('bs_student_master')
                     ->where('student_code', $student->student_code)
@@ -782,8 +434,8 @@ class StudentDeleteDeacivateController extends Controller
                     'student_code'          => $student->student_code,
                     'student_name'          => $student->studentname,
                     'delete_reason_code_fk' => $data['delete_reason_code_fk'],
-                    'prev_delete_status'    => 2,
-                    'delete_reject_status'  => 2, // Rejected
+                    'prev_status'    => 2,
+                    'status'  => 2, // Rejected
                     'entry_ip'              => $request->ip(),
                     'enter_by'              => $user->id,
                     'enter_by_stake_cd'     => $user->stake_cd ?? null,
@@ -801,7 +453,7 @@ class StudentDeleteDeacivateController extends Controller
             // =================================================
             // CASE 3️⃣ : SI APPROVES DELETE
             // =================================================
-            if ($roleName === 'Cirlcle' && $data['delete_reject_status'] == 3) {
+            if ($roleName === 'Circle' && $data['status'] == 2) {
 
                 // -------- ARCHIVE
                 DB::statement("
@@ -1004,8 +656,8 @@ class StudentDeleteDeacivateController extends Controller
                     'student_code'          => $student->student_code,
                     'student_name'          => $student->studentname,
                     'delete_reason_code_fk' => $data['delete_reason_code_fk'],
-                    'prev_delete_status'    => $student->status,
-                    'delete_reject_status'  => 3, // Approved
+                    'prev_status'    => $student->status,
+                    'status'  => 3, // Approved
                     'entry_ip'              => $request->ip(),
                     'enter_by'              => $user->id,
                     'enter_by_stake_cd'     => $user->stake_cd ?? null,
@@ -1036,10 +688,179 @@ class StudentDeleteDeacivateController extends Controller
             return response()->json([
                 'status'  => false,
                 'message' => 'Something went wrong',
-                'error'   => $e->getMessage(),
+                false   => $e->getMessage(),
             ], 500);
         }
     }
+    public function activateStudent(Request $request)
+    {
+        $studentCode = $request->student_code;
+
+        DB::beginTransaction();
+
+        try {
+
+            /* -------------------------------------------------
+         * 1. Search student where status = 'D'
+         * ------------------------------------------------- */
+            $deletedStudent = DB::table('bs_student_master')
+                ->where('student_code', $studentCode)
+                ->where('status', 3)
+                ->first();
+
+            if (!$deletedStudent) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Deactivated student not found'
+                ], 404);
+            }
+
+            /* -------------------------------------------------
+         * 2. Check if already exists with status = 'N'
+         * ------------------------------------------------- */
+            $activeExists = DB::table('bs_student_master')
+                ->where('student_code', $studentCode)
+                ->where('status', 1)
+                ->exists();
+
+            if ($activeExists) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Student already exists as active'
+                ], 409);
+            }
+
+            /* -------------------------------------------------
+         * 3. Check activate/deactivate track
+         * ------------------------------------------------- */
+            $track = DB::table('bs_student_activate_deactivate_track')
+                ->where('student_code', $studentCode)
+                ->whereIn('status', [1, 2])
+                ->first();
+
+            if ($track && $track->status == 1) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Student already activated'
+                ], 409);
+            }
+
+            /* -------------------------------------------------
+         * 4. Check promotion status
+         * ------------------------------------------------- */
+            // if (!DB::table('bs_student_promotion_status')
+            //     ->where('student_code', $studentCode)
+            //     ->exists()) {
+
+            //     return response()->json([
+            //         'status' => false,
+            //         'message' => 'Promotion status record not found'
+            //     ], 404);
+            // }
+
+            /* -------------------------------------------------
+         * 5. Check promotion sent-up status
+         * ------------------------------------------------- */
+            // if (!DB::table('bs_student_sentup_status')
+            //     ->where('student_code', $studentCode)
+            //     ->exists()) {
+
+            //     return response()->json([
+            //         'status' => false,
+            //         'message' => 'Promotion sent-up status not found'
+            //     ], 404);
+            // }
+
+            /* -------------------------------------------------
+         * 6. Get student details from district API track
+         * ------------------------------------------------- */
+            // $district = $deletedStudent->district_code_fk;
+            // $apiTable = "bs_student_api_track_{$district}";
+
+            // $apiStudent = DB::table($apiTable)
+            //     ->where('student_code', $studentCode)
+            //     ->first();
+
+            // if ($apiStudent) {
+            //     /* -------------------------------------------------
+            //     * 11. Delete record from API track
+            //     * ------------------------------------------------- */
+            //         DB::table($apiTable)
+            //         ->where('student_code', $studentCode)
+            //         ->delete();
+            // }
+            // else{
+            //     /* -------------------------------------------------
+            //     * 12. Insert new record into API track
+            //     * ------------------------------------------------- */
+            //         DB::table($apiTable)->insert([
+            //             (array) $apiStudent
+            //         ]);
+            // }
+
+            /* -------------------------------------------------
+         * 7. Update bs_student_master → status = N
+         * ------------------------------------------------- */
+            DB::table('bs_student_master')
+                ->where('student_code', $studentCode)
+                ->update([
+                    'status' => 1,
+                    'updated_at' => now()
+                ]);
+
+            /* -------------------------------------------------
+         * 8. Update bs_student_history
+         * ------------------------------------------------- */
+            DB::table('bs_student_history')
+                ->where('student_code', $studentCode)
+                ->update([
+                    'status' => 1,
+                    'updated_at' => now()
+                ]);
+
+            /* -------------------------------------------------
+         * 9. Update or insert activate/deactivate track
+         * ------------------------------------------------- */
+            DB::table('bs_student_activate_deactivate_track')
+                ->updateOrInsert(
+                    ['student_code' => $studentCode],
+                    [
+                        'status' => 1,
+                        'status' => 1,
+                        'updated_at' => now(),
+                        'created_at' => now()
+                    ]
+                );
+
+            /* -------------------------------------------------
+         * 10. Update promotion status → status = O
+         * ------------------------------------------------- */
+            // DB::table('bs_student_promotion_status')
+            //     ->where('student_code', $studentCode)
+            //     ->update([
+            //         'status' => 1,
+            //         'updated_at' => now()
+            //     ]);
+
+
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Student activated successfully'
+            ],200);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Activation failed',
+                false => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
 
 

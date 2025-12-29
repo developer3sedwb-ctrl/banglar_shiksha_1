@@ -5,14 +5,15 @@
 @section('content')
 <div class="container-fluid full-width-content">
 
- <!-- PAGE HEADING -->
+
+
+  <!-- STUDENT SEARCH -->
+  
+   <!-- PAGE HEADING -->
   <div class="page-header mb-3 d-flex justify-content-between align-items-center">
     <h5 class="fw-bold mb-0">Search Student for Dectivation</h5>
   </div>
-
-  <!-- STUDENT SEARCH -->
-  @include('src.modules.student_delete_deactivate.student_search')
-
+    @include('src.modules.student_delete_deactivate.student_search')
  <!-- Table card -->
 <div class="card card-full mb-4">
     <div class="custom-header-data-table">
@@ -37,6 +38,10 @@
             <tr>
                 <th>SL No.</th>
                 <th>Student Code</th>
+                @if(optional($user->roles()->first())->name !== 'HOI Primary')
+                <th>School</th>
+                @endif
+
                 <th>Name</th>
                 <th>DOB</th>
                 <th>Guardian Name</th>
@@ -44,6 +49,9 @@
                 <th>Present Section</th>
                 <th>Present Roll No.</th>
                 <th>Deactivation Reason</th>
+                @if(optional($user->roles()->first())->name === 'Circle')
+                <th>Action</th>
+                @endif
             </tr>
         </thead>
 
@@ -52,7 +60,10 @@
               @foreach($deactive_students as $student)
                   <tr>
                       <td>{{ $loop->iteration}}</td>
-                      <td>{{ $student->student_code }}</td>
+                      <td class="student-code" data-student-code="{{ $student->student_code }}">{{ $student->student_code }}</td>
+                      @if(optional($user->roles()->first())->name !== 'HOI Primary')
+                      <td>{{ $student->schoolInfo->school_name ?? 'N/A' }}</td>
+                      @endif
                       <td>{{ $student->studentInfo->getAttributes()['studentname'] ?? 'N/A' }}</td>
                       <td>{{ $student->studentInfo->dob ?? 'N/A' }}</td>
                       <td>{{ $student->studentInfo->guardian_name ?? 'N/A' }}</td>
@@ -60,6 +71,14 @@
                       <td>{{ $student->currentSection->name ?? 'N/A'}}</td>
                       <td>{{ $student->studentInfo->cur_roll_number ?? 'N/A' }}</td>
                       <td>{{ $student->deleteReason->name ?? 'N/A' }}</td>
+                      @if(optional($user->roles()->first())->name === 'Circle')
+                        <td>
+                          <button type="button"
+                                  class="btn btn-success btn-activate btn-export">
+                              <i class="bx bx-check-circle"></i> Activate
+                          </button>
+                        </td>
+                      @endif
                   </tr>
               @endforeach
           @endif
@@ -73,12 +92,9 @@
 @endsection
 
 @push('styles')
-
-
   <!-- Local DataTables CSS -->
   <link rel="stylesheet" href="{{ asset('css/datatables.min.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/common.css') }}">
-
 @endpush
 
 @push('scripts')
@@ -163,6 +179,43 @@
 </script>
 <script>
 $(document).ready(function () {
+  const USER_ROLE = @json(optional($user->roles()->first())->name);
+  let DEACTIVATION_REASONS = [];
+  loadDeactivateReasons();
+  /* Fetch reasons only once */
+function loadDeactivateReasons() {
+    return sendRequest(
+        "{{ route('get.reason.for.deactivation') }}",
+        "GET"
+    )
+    .then(res => {
+        if (res.status && Array.isArray(res.data)) {
+            DEACTIVATION_REASONS = res.data;   // ✅ store data only
+        } else {
+            DEACTIVATION_REASONS = [];
+        }
+        return DEACTIVATION_REASONS;
+    })
+    .catch(err => {
+        console.error(err);
+        DEACTIVATION_REASONS = [];
+        return [];
+    });
+}
+function buildDeactivateReasonOptions() {
+    let options = `<option value="">Select Reason</option>`;
+
+    if (DEACTIVATION_REASONS.length > 0) {
+        DEACTIVATION_REASONS.forEach(item => {
+            options += `<option value="${item.id}">${item.name}</option>`;
+        });
+    } else {
+        options += `<option value="">No reasons available</option>`;
+    }
+
+    return options;
+}
+
   $("#search_purpose").val('1');
   $("#btn_search_student").on("click", function (e) {
       e.preventDefault();
@@ -181,9 +234,8 @@ $(document).ready(function () {
 
               $btn.prop('disabled', false).text('Search');
 
-              if (res.status === 'success') {
+              if (res.status) {
                   populateStudentRow(res.data);
-                  loadDeactivateReasons();
               } else {
                   showEmptyRow(res.message || 'Student not found');
               }
@@ -195,68 +247,66 @@ $(document).ready(function () {
       });
   });
   function populateStudentRow(d) {
-      console.log(d);
+    let actionTd = '';
 
-      // Build dropdown options
+    if (USER_ROLE === 'Circle') {
 
-      let row = `
-          <tr>
-              <td>${d.student_code ?? '-'}</td>
-              <td>${d.studentname ?? '-'}</td>
-              <td>${d.dob ?? '-'}</td>
-              <td>${d.guardian_name ?? '-'}</td>
-              <td>${d.current_class ?? '-'}</td>
-              <td>${d.current_section ?? '-'}</td>
-              <td>${d.cur_roll_number ?? '-'}</td>
+        actionTd = `
+            <td>
+                <button type="button"
+                        class="btn btn-success btn-activate">
+                    <i class="bx bx-check-circle"></i> Activate
+                </button>
+            </td>
+        `;
 
-              <td>
-                  <select class="form-select form-select-sm deactivation-reason" id="deactivate_reason"
-                          data-student-code="${d.student_code}">
-                      <option value="">Select Option</option>
-                  </select>
-              </td>
+    } else if (USER_ROLE === 'HOI Primary') {
 
-              <td>
-                  <button class="btn btn-sm btn-warning deactivate-btn"
-                          data-student-code="${d.student_code}" id="btn_deactivate">
-                      Deactivate
-                  </button>
-              </td>
-          </tr>
-      `;
+        actionTd = `
+            <td>
+                <select class="form-select form-select-sm deactivation-reason"
+                        data-student-code="${d.student_code}">
+                    ${buildDeactivateReasonOptions()}
+                </select>
+            </td>
+            <td>
+                <button class="btn btn-sm btn-warning btn-export deactivate-btn"
+                        data-student-code="${d.student_code}">
+                    <i class="bx bx-x-circle"></i> Deactivate
+                </button>
+            </td>
+        `;
 
-      $("#student_result_body").html(row); // replace old data
-  }
-  function loadDeactivateReasons() {
+    } else {
 
-    sendRequest(
-        "{{ route('get.reason.for.deactivation') }}",
-        "GET"
-    )
-    .then(res => {
+        actionTd = `
+            <td>
+                <span class="text-muted">No Action</span>
+            </td>
+        `;
+    }
 
-        let $dropdown = $('#deactivate_reason');
-        $dropdown.empty();
-        $dropdown.append('<option value="">Select Reason</option>');
+    let row = `
+        <tr>
+            <td class="student-code" data-student-code="${d.student_code}">
+                ${d.student_code}
+            </td>
+            <td>${d.studentname ?? '-'}</td>
+            <td>${d.dob ?? '-'}</td>
+            <td>${d.guardian_name ?? '-'}</td>
+            <td>${d.current_class ?? '-'}</td>
+            <td>${d.current_section ?? '-'}</td>
+            <td>${d.cur_roll_number ?? '-'}</td>
+            ${actionTd}
+        </tr>
+    `;
 
-        if (res.status && res.data.length > 0) {
-          console.log(res.data);
-            res.data.forEach(item => {
-                $dropdown.append(
-                    `<option value="${item.id}">
-                        ${item.name}
-                    </option>`
-                );
-            });
+    $("#student_result_body").html(row); // replace existing rows
+}
 
-        } else {
-            $dropdown.append('<option value="">No reasons available</option>');
-        }
-    })
-    .catch(err => {
-        console.error(err);
-    });
-  }
+
+
+
   function showEmptyRow(message) {
       $("#student_result_body").html(`
           <tr>
@@ -266,47 +316,81 @@ $(document).ready(function () {
           </tr>
       `);
   }
-$(document).on('click', '#btn_deactivate', function (e) {
-    e.preventDefault();
+  $(document).on('click', '.deactivate-btn', function (e) {
+      e.preventDefault();
 
-    let $btn = $(this);
-    $btn.prop('disabled', true).text('Deactivating...');
+      let $btn = $(this);
+      $btn.prop('disabled', true).text('Deactivating...');
 
-    // collect values (example: from hidden inputs)
-    let student_code              = $('input[name="student_code"]').val();
+      // collect values (example: from hidden inputs)
+      let student_code              = $('input[name="student_code"]').val();
 
-    let deactivate_reason_code_fk = $('select.deactivation-reason').val();
+      let deactivate_reason_code_fk = $('select.deactivation-reason').val();
 
-    if (!deactivate_reason_code_fk) {
-        alert('Please select a deactivation reason');
-        $btn.prop('disabled', false).text('Deactivate');
-        return;
-    }
+      if (!deactivate_reason_code_fk) {
+          alert('Please select a deactivation reason');
+          $btn.prop('disabled', false).text('Deactivate');
+          return;
+      }
 
-    let url = "{{ route('student.deactivate') }}";
+      let url = "{{ route('student.deactivate') }}";
 
-    sendRequest(url, "POST", null,{
-        student_code,
-        deactivate_reason_code_fk,
-        _token: "{{ csrf_token() }}"
-    })
-    .then(res => {
-        $btn.prop('disabled', false).text('Deactivate');
+      sendRequest(url, "POST", null,{
+          student_code,
+          deactivate_reason_code_fk,
+          _token: "{{ csrf_token() }}"
+      })
+      .then(res => {
+          $btn.prop('disabled', false).text('Deactivate');
 
-        if (res.status === true) {
-            alert(res.message);
-            location.reload();
-        } else {
-            alert(res.message || 'Failed to deactivate student');
-        }
-    })
-    .catch(err => {
-        $btn.prop('disabled', false).text('Deactivate');
-        console.error(err);
-        alert('Something went wrong');
-    });
-});
+          if (res.status === true) {
+              alert(res.message);
+              location.reload();
+          } else {
+              alert(res.message || 'Failed to deactivate student');
+          }
+      })
+      .catch(err => {
+          $btn.prop('disabled', false).text('Deactivate');
+          console.error(err);
+          alert('Something went wrong');
+      });
+  });
+  $(document).on('click', '.btn-activate', function (e) {
+    alert("hiioiio");
+      e.preventDefault();
 
+      let $btn = $(this);
+      $btn.prop('disabled', true).text('Activating...');
+
+      // collect values (example: from hidden inputs)
+    let student_code = $(this)
+      .closest('tr')
+      .find('.student-code')
+      .data('student-code');
+
+      let url = "{{ route('student.activate') }}";
+
+      sendRequest(url, "POST", null,{
+          student_code,
+          _token: "{{ csrf_token() }}"
+      })
+      .then(res => {
+          $btn.prop('disabled', false).text('Activate');
+
+          if (res.status === true) {
+              alert(res.message);
+              location.reload();
+          } else {
+              alert(res.message || 'Failed to activate student');
+          }
+      })
+      .catch(err => {
+          $btn.prop('disabled', false).text('Activate');
+          console.error(err);
+          alert('Something went wrong');
+      });
+  });
 });
 </script>
 @endpush

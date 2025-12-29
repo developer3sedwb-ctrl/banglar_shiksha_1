@@ -278,6 +278,8 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
         Route::post('/deactivate', [StudentDeleteDeacivateController::class, 'deactivateStudent'])->name('student.deactivate');
         Route::get('/delete/list', [StudentDeleteDeacivateController::class, 'deletedStudentView'])->name('student.delete.view');
         Route::post('/delete', [StudentDeleteDeacivateController::class, 'deleteStudent'])->name('student.delete');
+        Route::post('/activate', [StudentDeleteDeacivateController::class, 'activateStudent'])->name('student.activate');
+
     });
 
 

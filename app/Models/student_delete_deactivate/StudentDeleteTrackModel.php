@@ -24,7 +24,6 @@ class StudentDeleteTrackModel extends Model
         'student_code',
         'student_name',
         'delete_reason_code_fk',
-        'delete_reject_status',
         'prev_delete_status',
         'entry_ip',
         'enter_by',
@@ -39,8 +38,12 @@ class StudentDeleteTrackModel extends Model
     {
         return $this->belongsTo(ReasonForStudentDeletionnMaster::class, 'delete_reason_code_fk','id');
     }
-    public function studentInfo()
+    public function studentInfoArchive()
     {
         return $this->belongsTo(StudentDeleteArchive::class, 'student_code','student_code');
-    } 
+    }
+    public function studentInfo()
+    {
+        return $this->belongsTo(StudentMaster::class, 'student_code','student_code');
+    }  
 }

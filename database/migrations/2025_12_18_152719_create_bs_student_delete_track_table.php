@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('student_name', 100)->nullable();
             // Delete Tracking
             $table->integer('delete_reason_code_fk')->nullable();
-            $table->integer('delete_reject_status')->nullable();
+            // $table->integer('delete_reject_status')->nullable();
             $table->char('prev_delete_status', 1)->nullable();
             // Audit Fields
             $table->string('entry_ip', 15)->nullable();

@@ -9,6 +9,7 @@ use App\Models\ReasonStudentDeactivationMaster;
 use App\Models\StudentMaster;
 use App\Models\ClassMaster;
 use App\Models\ClassSectionMaster;
+use App\Models\SchoolMaster;
 
 class StudentDeactivateModel extends Model
 {
@@ -28,7 +29,8 @@ class StudentDeactivateModel extends Model
         'operation_by_stake_cd',
         'operation_time',
         'operation_ip',
-        'prev_status'
+        'prev_status',
+        'status'
     ];
     public function deleteReason()
     {
@@ -45,6 +47,10 @@ class StudentDeactivateModel extends Model
     public function currentSection()
     {
         return $this->belongsTo(ClassSectionMaster::class, 'cur_section_code_fk', 'id');
+    }
+    public function schoolInfo()
+    {
+        return $this->belongsTo(SchoolMaster::class,'school_code_fk','id');
     }
 
 }

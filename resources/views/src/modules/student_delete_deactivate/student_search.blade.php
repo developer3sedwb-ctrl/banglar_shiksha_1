@@ -45,7 +45,9 @@
                 <th>Present Class</th>
                 <th>Present Section</th>
                 <th>Present Roll No.</th>
-                <th>Reason for Deactivation</th>
+                @if(optional($user->roles()->first())->name === 'HOI Primary')
+                <th>Select Reason</th>
+                @endif
                 <th>Action</th>
             </tr>
         </thead>

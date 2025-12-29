@@ -59,7 +59,7 @@
                       <td>{{ $student->studentInfo->cur_roll_number ?? 'N/A' }}</td>
                       <td>{{ $student->deleteReason->name ?? 'N/A' }}</td>
                       <td>
-                          @switch($student->delete_reject_status)
+                          @switch($student->status)
                               @case(1)
                                   <span class="badge bg-primary">Sent to SI</span>
                                   @break
@@ -199,7 +199,7 @@ $(document).ready(function () {
 
               $btn.prop('disabled', false).text('Search');
 
-              if (res.status === 'success') {
+              if (res.status) {
                   populateStudentRow(res.data);
                   loadDeleteReasons();
               } else {
@@ -263,7 +263,7 @@ $(document).ready(function () {
               <td>
                   <button class="btn btn-sm btn-danger deactivate-btn"
                           data-student-code="${d.student_code}" id="btn_delete">
-                      Delete
+                      Send to SI
                   </button>
               </td>
           </tr>
