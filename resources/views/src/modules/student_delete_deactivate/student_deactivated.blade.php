@@ -2,13 +2,16 @@
 <div class="container-fluid full-width-content">
     <!-- STUDENT SEARCH -->
 
-    <!-- PAGE HEADING -->
+
+    @if(optional($user->roles()->first())->name ==='HOI Primary')
+        <!-- PAGE HEADING -->
     <div
         class="page-header mb-3 d-flex justify-content-between align-items-center"
     >
         <h5 class="fw-bold mb-0">Search Student for Dectivation</h5>
-    </div>
-    @include('src.modules.student_delete_deactivate.student_search')
+</div>
+        @include('src.modules.student_delete_deactivate.student_search')
+    @endif
     <!-- Table card -->
     <div class="card card-full mb-4">
         <div class="custom-header-data-table">
@@ -229,7 +232,7 @@
         )
         .then(res => {
             if (res.status && Array.isArray(res.data)) {
-                DEACTIVATION_REASONS = res.data;   /
+                DEACTIVATION_REASONS = res.data;   
             } else {
                 DEACTIVATION_REASONS = [];
             }
@@ -349,76 +352,115 @@
     });
     $(document).on('click', '.deactivate-btn', function (e) {
         e.preventDefault();
+        showAlert({
+            type: 'warning',
+            title: 'Deactivate',
+            message: 'Do you really want to deactivate this student?',
+            confirmText: 'Deactivate'
+        }).then(ok => {
+            if (ok) {
+            let $btn = $(this);
+            $btn.prop('disabled', true).text('Deactivating...');
 
-        let $btn = $(this);
-        $btn.prop('disabled', true).text('Deactivating...');
+            // collect values (example: from hidden inputs)
+            let student_code = $(this).data('student-code');
 
-        // collect values (example: from hidden inputs)
-        let student_code = $(this).data('student-code');
+            let deactivate_reason_code_fk = $('select.deactivation-reason').val();
 
-        let deactivate_reason_code_fk = $('select.deactivation-reason').val();
-
-        if (!deactivate_reason_code_fk) {
-            alert('Please select a deactivation reason');
-            $btn.prop('disabled', false).text('Deactivate');
-            return;
-        }
-
-        let url = "{{ route('student.deactivate') }}";
-
-        sendRequest(url, "POST", null,{
-            student_code,
-            deactivate_reason_code_fk,
-            _token: "{{ csrf_token() }}"
-        })
-        .then(res => {
-            $btn.prop('disabled', false).text('Deactivate');
-
-            if (res.status === true) {
-                alert(res.message);
-                location.reload();
-            } else {
-                alert(res.message || 'Failed to deactivate student');
+            if (!deactivate_reason_code_fk) {
+            showAlert({
+                    type: 'info',
+                    message: 'Please select a deactivation reason.'
+                });            
+                $btn.prop('disabled', false).text('Deactivate');
+                return;
             }
-        })
-        .catch(err => {
-            $btn.prop('disabled', false).text('Deactivate');
-            console.error(err);
-            alert('Something went wrong');
+
+            let url = "{{ route('student.deactivate') }}";
+
+            sendRequest(url, "POST", null,{
+                student_code,
+                deactivate_reason_code_fk,
+                _token: "{{ csrf_token() }}"
+            })
+            .then(res => {
+                $btn.prop('disabled', false).text('Deactivate');
+
+                if (res.status === true) {
+                showAlert({
+                    type: 'success',
+                    message: res.message
+                }).then(() => {
+                location.reload();
+                });
+
+                } else {
+                    showAlert({
+                        type: 'error',
+                        message: res.message || 'Failed to deactivate student'
+                    });
+                }
+            })
+            .catch(err => {
+                $btn.prop('disabled', false).text('Deactivate');
+            showAlert({
+                    type: 'error',
+                    message: 'Something went wrong.'
+                });
+            });
+        }
         });
     });
     $(document).on('click', '.btn-activate', function (e) {
         e.preventDefault();
+        showAlert({
+            type: 'warning',
+            title: 'Activate',
+            message: 'Do you really want to activate this student deletion?',
+            confirmText: 'Reject'
+        }).then(ok => {
+            if (ok) {
+            let $btn = $(this);
+            $btn.prop('disabled', true).text('Activating...');
 
-        let $btn = $(this);
-        $btn.prop('disabled', true).text('Activating...');
+            // collect values (example: from hidden inputs)
+            let student_code = $(this)
+            .closest('tr')
+            .find('.student-code')
+            .data('student-code');
 
-        // collect values (example: from hidden inputs)
-      let student_code = $(this)
-        .closest('tr')
-        .find('.student-code')
-        .data('student-code');
+            let url = "{{ route('student.activate') }}";
 
-        let url = "{{ route('student.activate') }}";
+            sendRequest(url, "POST", null,{
+                student_code,
+                _token: "{{ csrf_token() }}"
+            })
+            .then(res => {
+                $btn.prop('disabled', false).text('Activate');
 
-        sendRequest(url, "POST", null,{
-            student_code,
-            _token: "{{ csrf_token() }}"
-        })
-        .then(res => {
-            $btn.prop('disabled', false).text('Activate');
-
-            if (res.status === true) {
-                alert(res.message);
+                if (res.status === true) {
+                showAlert({
+                    type: 'success',
+                    message: res.message
+                }).then(() => {
                 location.reload();
-            } else {
-                alert(res.message || 'Failed to activate student');
-            }
-        })
-        .catch(err => {
-            $btn.prop('disabled', false).text('Activate');
-            console.error(err);
-            alert('Something went wrong');
+                });
+
+                } else {
+                    showAlert({
+                        type: 'error',
+                        message: res.message || 'Failed to activate student'
+                    });
+                }
+            })
+            .catch(err => {
+                $btn.prop('disabled', false).text('Activate');
+            showAlert({
+                    type: 'error',
+                    message: 'Something went wrong.'
+                });
+            });
+        }
         });
     });
     });

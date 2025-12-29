@@ -94,6 +94,38 @@
         <div class="layout-overlay layout-menu-toggle"></div>
     </div>
 
+<div class="modal fade" id="globalAlertModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header" id="globalAlertHeader">
+        <h5 class="modal-title" id="globalAlertTitle"></h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+    <div class="modal-body text-center">
+<i id="globalAlertIcon"
+   class="bx fs-1 d-block mb-3"></i>
+        <h6 id="globalAlertType" class="fw-bold mb-2"></h6>
+        <p id="globalAlertMessage" class="mb-0"></p>
+        <ul id="globalAlertList" class="small ps-3 d-none text-start mt-2"></ul>
+    </div>
+
+
+      <div class="modal-footer">
+        <!-- ALERT OK -->
+        <button type="button" class="btn btn-primary d-none" id="globalAlertOkBtn">OK</button>
+
+        <!-- CONFIRM -->
+        <button type="button" class="btn btn-secondary d-none" id="globalAlertCancelBtn">Cancel</button>
+        <button type="button" class="btn btn-danger d-none" id="globalAlertConfirmBtn">Confirm</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 
     <!-- Core JS -->
     <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
