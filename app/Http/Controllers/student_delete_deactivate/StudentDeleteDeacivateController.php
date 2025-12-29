@@ -6,13 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\{
-    StudentMaster,
-    StudentDeleteArchive
-};
+    StudentMaster};
 use App\Models\student_delete_deactivate\StudentDeactivateModel;
 use App\Models\student_delete_deactivate\StudentDeleteTrackModel;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class StudentDeleteDeacivateController extends Controller
 {
@@ -338,7 +335,6 @@ class StudentDeleteDeacivateController extends Controller
     public function deleteStudent(Request $request)
     {
         try {
-            DB::beginTransaction();
 
             // ---------------------------------
             // 1. Validate input
@@ -352,6 +348,7 @@ class StudentDeleteDeacivateController extends Controller
             $user = Auth::user();
             $roleName = optional($user->roles()->first())->name;
             $userSchool = $user->schoolMaster;
+            DB::beginTransaction();
 
             // ---------------------------------
             // 2. Fetch student (ROLE BASED)
@@ -695,11 +692,13 @@ class StudentDeleteDeacivateController extends Controller
     }
     public function activateStudent(Request $request)
     {
-        $studentCode = $request->student_code;
-
-        DB::beginTransaction();
-
         try {
+            $data = $request->validate([
+                'student_code'          => 'required|string|size:14'
+            ]);
+            $studentCode = $data['student_code'];
+
+            DB::beginTransaction();
 
             /* -------------------------------------------------
          * 1. Search student where status = 'D'

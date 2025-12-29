@@ -230,71 +230,43 @@
 </script>
 <script>
 $(document).ready(function () {
-const USER_ROLE = @json(optional($user->roles()->first())->name);
+  const USER_ROLE = @json(optional($user->roles()->first())->name);
   let DELETE_REASONS = [];
+  $("#search_purpose").val('2');
   loadDeleteReasons();
   /* Fetch reasons only once */
-function   loadDeleteReasons() {
-    return sendRequest(
-        "{{ route('get.reason.for.deletion') }}",
-        "GET"
-    )
-    .then(res => {
-        if (res.status && Array.isArray(res.data)) {
-            DELETE_REASONS = res.data;   // 
-        } else {
-            DELETE_REASONS = [];
-        }
-        return DELETE_REASONS;
-    })
-    .catch(err => {
-        console.error(err);
-        DELETE_REASONS = [];
-        return [];
-    });
-}
-function buildDeleteReasonOptions() {
-    let options = `<option value="">Select Reason</option>`;
+  function   loadDeleteReasons() {
+      return sendRequest(
+          "{{ route('get.reason.for.deletion') }}",
+          "GET"
+      )
+      .then(res => {
+          if (res.status && Array.isArray(res.data)) {
+              DELETE_REASONS = res.data;   // 
+          } else {
+              DELETE_REASONS = [];
+          }
+          return DELETE_REASONS;
+      })
+      .catch(err => {
+          console.error(err);
+          DELETE_REASONS = [];
+          return [];
+      });
+  }
+  function buildDeleteReasonOptions() {
+      let options = `<option value="">Select Reason</option>`;
 
-    if (DELETE_REASONS.length > 0) {
-        DELETE_REASONS.forEach(item => {
-            options += `<option value="${item.id}">${item.name}</option>`;
-        });
-    } else {
-        options += `<option value="">No reasons available</option>`;
-    }
-
-    return options;
-}
-  $("#search_purpose").val('2');
-
-  $("#btn_search_student").on("click", function (e) {
-      if (!validateRequiredFields("#student_search_form")) {
-          return;
+      if (DELETE_REASONS.length > 0) {
+          DELETE_REASONS.forEach(item => {
+              options += `<option value="${item.id}">${item.name}</option>`;
+          });
+      } else {
+          options += `<option value="">No reasons available</option>`;
       }
 
-      let $btn = $(this);
-      $btn.prop('disabled', true).text('Searching...');
-
-      let url = "{{ route('search.student.by.student_code') }}";
-
-      sendRequest(url, "POST", "#student_search_form")
-          .then(res => {
-
-              $btn.prop('disabled', false).text('Search');
-
-              if (res.status) {
-                  populateStudentRow(res.data);
-              } else {
-                  showEmptyRow(res.message || 'Student not found');
-              }
-          })
-          .catch(err => {
-              $btn.prop('disabled', false).text('Search');
-              console.error(err);
-              showEmptyRow('Something went wrong');
-      });
-  });
+      return options;
+  }
   function populateStudentRow(d) {
       let actionTd = '';
 
@@ -372,6 +344,33 @@ function buildDeleteReasonOptions() {
             </tr>
         `);
   }
+  $("#btn_search_student").on("click", function (e) {
+      if (!validateRequiredFields("#student_search_form")) {
+          return;
+      }
+
+      let $btn = $(this);
+      $btn.prop('disabled', true).text('Searching...');
+
+      let url = "{{ route('search.student.by.student_code') }}";
+
+      sendRequest(url, "POST", "#student_search_form")
+          .then(res => {
+
+              $btn.prop('disabled', false).text('Search');
+
+              if (res.status) {
+                  populateStudentRow(res.data);
+              } else {
+                  showEmptyRow(res.message || 'Student not found');
+              }
+          })
+          .catch(err => {
+              $btn.prop('disabled', false).text('Search');
+              console.error(err);
+              showEmptyRow('Something went wrong');
+      });
+  });
   $(document).on('click', '.btn-send-to-si', function (e) {
       e.preventDefault();
 
@@ -448,7 +447,7 @@ function buildDeleteReasonOptions() {
           alert('Something went wrong');
       });
   });
-    $(document).on('click', '.btn-reject', function (e) {
+  $(document).on('click', '.btn-reject', function (e) {
       e.preventDefault();
 
       let $btn = $(this);
