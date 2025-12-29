@@ -1550,7 +1550,7 @@ class StudentInfoController extends Controller
             } elseif ($user_role_info['is_circle_officer'] && $userCircle) {
                 // Circle officers - restrict to their circle
                 $circle_id = $userCircle->id ?? 66;
-                $circle_id = 66;
+                $circle_id =  66;
                 $district_id = $userCircle->district_id ?? 1;
                 $district_id = 1;
             }
