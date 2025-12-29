@@ -37,14 +37,21 @@
             <tr>
                 <th>SL No. </th>
                 <th>Student Code</th>
+                @if(optional($user->roles()->first())->name !== 'HOI Primary')
+                <th>School</th>
+                @endif
                 <th>Name</th>
                 <th>DOB</th>
                 <th>Guardian Name</th>
                 <th>Present Roll No.</th>
                 <th>Delete Reason</th>
+                @if(optional($user->roles()->first())->name === 'HOI Primary')
                 <th>Student Status</th>
-                <th>Deleted On</th>
-            </tr>
+                @endif
+                @if(optional($user->roles()->first())->name === 'Circle')
+                <th>Action</th>
+                @endif            
+              </tr>
         </thead>
 
         <tbody>
@@ -53,11 +60,15 @@
                   <tr>
                       <td>{{ $loop->iteration }}</td>
                       <td>{{ $student->student_code }}</td>
+                      @if(optional($user->roles()->first())->name !== 'HOI Primary')
+                      <td>{{ $student->schoolInfo->school_name ?? 'N/A' }}</td>
+                      @endif
                       <td>{{ $student->student_name ?? 'N/A' }}</td>
                       <td>{{ $student->studentInfo->dob ?? 'N/A' }}</td>
                       <td>{{ $student->studentInfo->guardian_name ?? 'N/A' }}</td>
                       <td>{{ $student->studentInfo->cur_roll_number ?? 'N/A' }}</td>
                       <td>{{ $student->deleteReason->name ?? 'N/A' }}</td>
+                      @if(optional($user->roles()->first())->name === 'HOI Primary')
                       <td>
                           @switch($student->status)
                               @case(1)
@@ -76,8 +87,46 @@
                                   <span class="badge bg-secondary">N/A</span>
                           @endswitch
                       </td>
-                      <td>{{ $student->created_at ?? 'N/A' }}</td>
+                      @endif
+                      @if(optional($user->roles()->first())->name === 'Circle')
+                      @switch($student->status)
+                        @case(1)
+                          <td>
+                            <div class="row g-2">
+                                <div class="col-6 text-center">
+                                    <button type="button"
+                                        class="btn btn-warning btn-sm w-100 btn-reject" data-student-code="{{ $student->student_code }}" data-status="3">
+                                        <i class="bx bx-x"></i> Reject
+                                    </button>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <button type="button"
+                                        class="btn btn-success btn-sm w-100 btn-approve" data-student-code="{{ $student->student_code }}" data-status="2">
+                                        <i class="bx bx-check-circle"></i> Approve
+                                    </button>
+                                </div>
+                            </div>
+                          </td>
+                          @break
+                        @case(2)
+                        <td>
+                          <span class="badge bg-danger">Deleted</span>
+                          @break
+                        </td>
 
+                      @case(3)
+                        <td>
+                          <span class="badge bg-warning text-dark">Rejected</span>
+                          @break
+                        </td>
+
+                      @default
+                      <td>
+                          <span class="badge bg-secondary">N/A</span>
+                      </td>
+                      @break
+                      @endswitch
+                      @endif
                   </tr>
               @endforeach
           @endif
@@ -181,10 +230,45 @@
 </script>
 <script>
 $(document).ready(function () {
-  $("#search_purpose").val('2');
-  $("#btn_search_student").on("click", function (e) {
-      e.preventDefault();
+const USER_ROLE = @json(optional($user->roles()->first())->name);
+  let DELETE_REASONS = [];
+  loadDeleteReasons();
+  /* Fetch reasons only once */
+function   loadDeleteReasons() {
+    return sendRequest(
+        "{{ route('get.reason.for.deletion') }}",
+        "GET"
+    )
+    .then(res => {
+        if (res.status && Array.isArray(res.data)) {
+            DELETE_REASONS = res.data;   // 
+        } else {
+            DELETE_REASONS = [];
+        }
+        return DELETE_REASONS;
+    })
+    .catch(err => {
+        console.error(err);
+        DELETE_REASONS = [];
+        return [];
+    });
+}
+function buildDeleteReasonOptions() {
+    let options = `<option value="">Select Reason</option>`;
 
+    if (DELETE_REASONS.length > 0) {
+        DELETE_REASONS.forEach(item => {
+            options += `<option value="${item.id}">${item.name}</option>`;
+        });
+    } else {
+        options += `<option value="">No reasons available</option>`;
+    }
+
+    return options;
+}
+  $("#search_purpose").val('2');
+
+  $("#btn_search_student").on("click", function (e) {
       if (!validateRequiredFields("#student_search_form")) {
           return;
       }
@@ -201,7 +285,6 @@ $(document).ready(function () {
 
               if (res.status) {
                   populateStudentRow(res.data);
-                  loadDeleteReasons();
               } else {
                   showEmptyRow(res.message || 'Student not found');
               }
@@ -212,116 +295,193 @@ $(document).ready(function () {
               showEmptyRow('Something went wrong');
       });
   });
-  function loadDeleteReasons() {
-
-    sendRequest(
-        "{{ route('get.reason.for.deletion') }}",
-        "GET"
-    )
-    .then(res => {
-
-        let $dropdown = $('#delete_reason');
-        $dropdown.empty();
-        $dropdown.append('<option value="">Select Reason</option>');
-
-        if (res.status && res.data.length > 0) {
-          console.log(res.data);
-            res.data.forEach(item => {
-                $dropdown.append(
-                    `<option value="${item.id}">
-                        ${item.name}
-                    </option>`
-                );
-            });
-
-        } else {
-            $dropdown.append('<option value="">No reasons available</option>');
-        }
-    })
-    .catch(err => {
-        console.error(err);
-    });
-  }
-
   function populateStudentRow(d) {
-      console.log(d);
+      let actionTd = '';
+
+      if (USER_ROLE === 'Circle') {
+
+          actionTd = `
+              <td>
+                  <div class="row g-2">
+                      <div class="col-6 text-center">
+                          <button type="button"
+                              class="btn btn-warning btn-sm w-100 btn-reject" data-status="3" data-student-code="${d.student_code}">
+                              <i class="bx bx-x"></i> Reject
+                          </button>
+                      </div>
+                      <div class="col-6 text-center">
+                          <button type="button"
+                              class="btn btn-success btn-sm w-100 btn-approve" data-status="2" data-student-code="${d.student_code}">
+                              <i class="bx bx-check-circle"></i> Approve
+                          </button>
+                      </div>
+                  </div>
+              </td>
+          `;
+      }
+      else if (USER_ROLE === 'HOI Primary') {
+
+          actionTd = `
+                <td>
+                    <select class="form-select form-select-sm delete-reason"
+                            data-student-code="${d.student_code}">
+                        ${buildDeleteReasonOptions()}
+                    </select>
+                </td>
+                <td>
+                  <button type="button"
+                      class="btn btn-info w-100 btn-send-to-si" data-student-code="${d.student_code}" data-status="1">
+                      <i class="bx bx-check-circle"></i> Send to SI
+                  </button>
+                    
+              </td>
+          `;
+
+      } else {
+
+          actionTd = `
+              <td>
+                  <span class="text-muted">No Action</span>
+              </td>
+          `;
+      }
+
       let row = `
           <tr>
-              <td>${d.student_code ?? '-'}</td>
+              <td class="student-code" data-student-code="${d.student_code}">
+                  ${d.student_code}
+              </td>
               <td>${d.studentname ?? '-'}</td>
               <td>${d.dob ?? '-'}</td>
               <td>${d.guardian_name ?? '-'}</td>
               <td>${d.current_class ?? '-'}</td>
               <td>${d.current_section ?? '-'}</td>
               <td>${d.cur_roll_number ?? '-'}</td>
-              <td>
-                  <select class="form-select form-select-sm delete-reason" id="delete_reason"
-                          data-student-code="${d.student_code}">
-                      <option value="">Select Option</option>
-                  </select>
-              </td>
-              <td>
-                  <button class="btn btn-sm btn-danger deactivate-btn"
-                          data-student-code="${d.student_code}" id="btn_delete">
-                      Send to SI
-                  </button>
-              </td>
+              ${actionTd}
           </tr>
       `;
 
-      $("#student_result_body").html(row); // replace old data
+      $("#student_result_body").html(row); // replace existing rows
   }
   function showEmptyRow(message) {
-      $("#student_result_body").html(`
-          <tr>
-              <td colspan="10" class="text-center text-danger">
-                  ${message}
-              </td>
-          </tr>
-      `);
+        $("#student_result_body").html(`
+            <tr>
+                <td colspan="10" class="text-center text-danger">
+                    ${message}
+                </td>
+            </tr>
+        `);
   }
-$(document).on('click', '#btn_delete', function (e) {
-    e.preventDefault();
+  $(document).on('click', '.btn-send-to-si', function (e) {
+      e.preventDefault();
 
-    let $btn = $(this);
-    $btn.prop('disabled', true).text('Deleting...');
+      let $btn = $(this);
+      $btn.prop('disabled', true).text('Deleting...');
 
-    // collect values (example: from hidden inputs)
-    let student_code = $('input[name="student_code"]').val();
+      // collect values (example: from hidden inputs)
+      let student_code = $(this).data('student-code');
+      let status = $(this).data('status');
 
-    let delete_reason_code_fk = $('select.delete-reason').val();
+      let delete_reason_code_fk = $('select.delete-reason').val();
 
-    if (!delete_reason_code_fk) {
-        alert('Please select a delete reason');
-        $btn.prop('disabled', false).text('Delete');
-        return;
-    }
+      if (!delete_reason_code_fk) {
+          alert('Please select a delete reason');
+          $btn.prop('disabled', false).text('Delete');
+          return;
+      }
+      let url = "{{ route('student.delete') }}";
 
-    let url = "{{ route('student.delete') }}";
+      sendRequest(url, "POST", null,{
+          student_code,
+          delete_reason_code_fk,
+          status,
+          _token: "{{ csrf_token() }}"
+      })
+      .then(res => {
+          $btn.prop('disabled', false).text('Delete');
 
-    sendRequest(url, "POST", null,{
-        student_code,
-        delete_reason_code_fk,
-        _token: "{{ csrf_token() }}"
-    })
-    .then(res => {
-        $btn.prop('disabled', false).text('Delete');
+          if (res.status === true) {
+              alert(res.message);
+              location.reload();
 
-        if (res.status === true) {
-            alert(res.message);
-            location.reload();
+          } else {
+              alert(res.message || 'Failed to delete student');
+          }
+      })
+      .catch(err => {
+          $btn.prop('disabled', false).text('Delete');
+          console.error(err);
+          alert('Something went wrong');
+      });
+  });
+  $(document).on('click', '.btn-approve', function (e) {
+      e.preventDefault();
 
-        } else {
-            alert(res.message || 'Failed to delete student');
-        }
-    })
-    .catch(err => {
-        $btn.prop('disabled', false).text('Delete');
-        console.error(err);
-        alert('Something went wrong');
-    });
-});
+      let $btn = $(this);
+      $btn.prop('disabled', true).text('Approving...');
 
+      // collect values (example: from hidden inputs)
+      let student_code = $(this).data('student-code');
+      let status = $(this).data('status');
+
+      let url = "{{ route('student.delete') }}";
+
+      sendRequest(url, "POST", null,{
+          student_code,
+          status,
+          _token: "{{ csrf_token() }}"
+      })
+      .then(res => {
+          $btn.prop('disabled', false).text('Approve');
+
+          if (res.status === true) {
+              alert(res.message);
+              location.reload();
+
+          } else {
+              alert(res.message || 'Failed to approve');
+          }
+      })
+      .catch(err => {
+          $btn.prop('disabled', false).text('Approve');
+          console.error(err);
+          alert('Something went wrong');
+      });
+  });
+    $(document).on('click', '.btn-reject', function (e) {
+      e.preventDefault();
+
+      let $btn = $(this);
+      $btn.prop('disabled', true).text('Rejecting...');
+
+      // collect values (example: from hidden inputs)
+      let student_code = $(this).data('student-code');
+      let status = $(this).data('status');
+
+      let url = "{{ route('student.delete') }}";
+
+      sendRequest(url, "POST", null,{
+          student_code,
+          status,
+          _token: "{{ csrf_token() }}"
+      })
+      .then(res => {
+          $btn.prop('disabled', false).text('Reject');
+
+          if (res.status === true) {
+              alert(res.message);
+              location.reload();
+
+          } else {
+              alert(res.message || 'Failed to reject');
+          }
+      })
+      .catch(err => {
+          $btn.prop('disabled', false).text('Reject');
+          console.error(err);
+          alert('Something went wrong');
+      });
+  });
 });
 </script>
 @endpush

@@ -5,6 +5,7 @@
         <div class="row align-items-center text-center">
         <div class="col-md-3"></div>
        <div class="col-md-5 mb-2">
+        <label class="d-none" for="student_code">Student Code</label>
           <div class="input-group">
             <span class="input-group-text"><i class="bx bx-id-card"></i></span>
             <input
@@ -18,11 +19,10 @@
                 pattern="[0-9]{14}"
                 inputmode="numeric"
                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                required
-            >
+                required/>
           </div>
         </div>
-        <input type="text" class="d-none" id="search_purpose" name="search_purpose" value="" required/>
+        <input type="text" class="d-none" id="search_purpose" name="search_purpose" value=""/>
         <div class="col-md-1 mb-2 text-end">
           <button type="submit" class="btn btn-primary w-100" id="btn_search_student">Search</button>
         </div>

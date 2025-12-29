@@ -8,9 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\ReasonForStudentDeletionnMaster;
 use App\Models\StudentDeleteArchive;
-use App\Models\ClassMaster;
-use App\Models\ClassSectionMaster;
 use App\Models\StudentMaster;
+use App\Models\SchoolMaster;
 class StudentDeleteTrackModel extends Model
 {
 
@@ -46,4 +45,8 @@ class StudentDeleteTrackModel extends Model
     {
         return $this->belongsTo(StudentMaster::class, 'student_code','student_code');
     }  
+     public function schoolInfo()
+    {
+        return $this->belongsTo(SchoolMaster::class,'school_code_fk','id');
+    }
 }

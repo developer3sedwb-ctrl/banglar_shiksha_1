@@ -292,8 +292,9 @@ class StudentDeleteDeacivateController extends Controller
             $query = StudentDeleteTrackModel::query()
                 ->with([
                     'studentInfo:student_code,studentname,dob,guardian_name,cur_roll_number',
+                    'schoolInfo:id,school_name'
                 ])
-                ->where('status', 2);
+                ->whereIn('status', [1,2,3]);
 
             // ----------------------------------
             // ROLE BASED FILTERING
@@ -362,7 +363,7 @@ class StudentDeleteDeacivateController extends Controller
             if ($roleName === 'HOI Primary' && $userSchool) {
                 $studentQuery->where('school_code_fk', $userSchool->id);
             } elseif ($roleName === 'Circle') {
-                $studentQuery->where('district_code_fk', $user->district_code_fk ?? 23)
+                    $studentQuery->where('district_code_fk', $user->district_code_fk ?? 23)
                     ->where('circle_code_fk', $user->circle_code_fk ?? 52);
             }
 
@@ -398,7 +399,7 @@ class StudentDeleteDeacivateController extends Controller
                     'student_name'          => $student->studentname,
                     'delete_reason_code_fk' => $data['delete_reason_code_fk'],
                     'prev_status'    => $student->status,
-                    'status'  => 2, // Requested
+                    'status'  => 1, // Sent to SI
                     'entry_ip'              => $request->ip(),
                     'enter_by'              => $user->id,
                     'enter_by_stake_cd'     => $user->stake_cd ?? null,
@@ -427,20 +428,21 @@ class StudentDeleteDeacivateController extends Controller
                         'updated_by'  => $user->id,
                     ]);
 
-                StudentDeleteTrackModel::create([
-                    'district_code_fk'      => $student->district_code_fk,
-                    'circle_code_fk'        => $student->circle_code_fk,
-                    'school_code_fk'        => $student->school_code_fk,
-                    'student_code'          => $student->student_code,
-                    'student_name'          => $student->studentname,
-                    'delete_reason_code_fk' => $data['delete_reason_code_fk'],
-                    'prev_status'    => 2,
-                    'status'  => 2, // Rejected
+               
+            StudentDeleteTrackModel::where('student_code', $student->student_code)
+                ->where('district_code_fk', $student->district_code_fk)
+                ->update([
+                    
+                    'prev_delete_status'           => $student->status,
+                    'status'                => $data['status'], //3 Rejected
+
                     'entry_ip'              => $request->ip(),
                     'enter_by'              => $user->id,
                     'enter_by_stake_cd'     => $user->stake_cd ?? null,
-                    'created_at'            => now(),
+
+                    'updated_at'            => now(), // 
                 ]);
+
 
                 DB::commit();
 
@@ -649,21 +651,20 @@ class StudentDeleteDeacivateController extends Controller
                 ]);
 
                 // -------- TRACK
-                StudentDeleteTrackModel::create([
-                    'district_code_fk'      => $student->district_code_fk,
-                    'circle_code_fk'        => $student->circle_code_fk,
-                    'school_code_fk'        => $student->school_code_fk,
-                    'student_code'          => $student->student_code,
-                    'student_name'          => $student->studentname,
-                    'delete_reason_code_fk' => $data['delete_reason_code_fk'],
-                    'prev_status'    => $student->status,
-                    'status'  => 3, // Approved
+
+            StudentDeleteTrackModel::where('student_code', $student->student_code)
+                ->where('district_code_fk', $student->district_code_fk)
+                ->update([
+                    
+                    'prev_delete_status'           => $student->status,
+                    'status'                => $data['status'], //2  Rejected
+
                     'entry_ip'              => $request->ip(),
                     'enter_by'              => $user->id,
                     'enter_by_stake_cd'     => $user->stake_cd ?? null,
-                    'created_at'            => now(),
-                ]);
 
+                    'updated_at'            => now(), // 
+                ]);
                 // -------- HARD DELETE
                 DB::table('bs_student_master')
                     ->where('student_code', $student->student_code)
