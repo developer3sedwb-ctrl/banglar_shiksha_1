@@ -1218,490 +1218,554 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
 
 
 
-
-
-// ===========================Student Entry Preview Modal Content====================================
-    const studentData = @json($data);
-    
-    document.getElementById('previewBtn').addEventListener('click', function () {
-
-      let html = `
-        <div class="alert alert-warning text-center fw-bold" 
-             style="top:0; z-index:20; padding:8px; border-radius:0;">
-            ⚠️ Please check all details before final submit
-        </div>
-      `;
-          // ===== Basic Info =====
-          if (studentData.basic_info) {
-              const b = studentData.basic_info;
-
-              html += `
-                  <h6 class="card-header bg-heading-primary text-white py-2">
-                    Basic Details
-                  </h6>
-                  
-                  <table class="table table-sm table-bordered">
-
-                      <tr>
-                          <th>Name</th><td>${b.student_name ?? ''}</td>
-                          <th>Name (Aadhaar)</th><td>${b.student_name_as_per_aadhaar ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Gender</th><td>${b.gender ?? ''}</td>
-                          <th>DOB</th><td>${b.dob ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Father Name</th><td>${b.father_name ?? ''}</td>
-                          <th>Mother Name</th><td>${b.mother_name ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Guardian Name</th><td>${b.guardian_name ?? ''}</td>
-                          <th>Aadhaar Number</th><td>${b.aadhaar_child ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Mother Tongue</th><td>${b.mother_tongue ?? ''}</td>
-                          <th>Social Category</th><td>${b.social_category ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Religion</th><td>${b.religion ?? ''}</td>
-                          <th>Nationality</th><td>${b.nationality ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Blood Group</th><td>${b.blood_group ?? ''}</td>
-                          <th>BPL Beneficiary</th><td>${b.bpl_beneficiary ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Antyodaya Anna Yojana</th><td>${b.antyodaya_anna_yojana ?? ''}</td>
-                          <th>BPL Number</th><td>${b.bpl_number ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Disadvantaged Group</th><td>${b.disadvantaged_group ?? ''}</td>
-                          <th>CWSN</th><td>${b.cwsn ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Type of Impairment</th><td>${b.type_of_impairment ?? ''}</td>
-                          <th>Disability %</th><td>${b.disability_percentage ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Out of School</th><td>${b.out_of_school ?? ''}</td>
-                          <th>Mainstreamed</th><td>${b.mainstreamed ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Birth Reg. No</th><td>${b.birth_reg_no ?? ''}</td>
-                          <th>Identification Mark</th><td>${b.identification_mark ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Health ID</th><td>${b.health_id ?? ''}</td>
-                          <th>Relationship With Guardian</th><td>${b.relationship_with_guardian ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Family Income</th><td>${b.family_income ?? ''}</td>
-                          <th>Guardian Qualifications</th><td>${b.guardian_qualifications ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Height (cm)</th><td>${b.student_height ?? ''}</td>
-                          <th>Weight (kg)</th><td>${b.student_weight ?? ''}</td>
-                      </tr>
-
-                  </table>
-                  <hr>
-              `;
-          }
-          // ===== Enrollment Info =====
-          if (studentData.enrollment_info) {
-              const e = studentData.enrollment_info;
-
-              html += `
-                  <h6 class="card-header bg-heading-primary text-white py-2">
-                  Enrollment Details
-                  </h6>
-                  <table class="table table-sm table-bordered">
-
-                      <tr>
-                          <th>Admission No</th><td>${e.admission_no ?? ''}</td>
-                          <th>Status Previous Year</th><td>${e.status_pre_year ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Prev Class Appeared Exam</th><td>${e.prev_class_appeared_exam ?? ''}</td>
-                          <th>Prev Class Result</th><td>${e.prev_class_exam_result ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Prev Class % Marks</th><td>${e.prev_class_marks_percent ?? ''}</td>
-                          <th>Attendance Previous Year</th><td>${e.attendention_pre_year ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Previous Class</th><td>${e.pre_class_code_fk ?? ''}</td>
-                          <th>Previous Section</th><td>${e.pre_section_code_fk ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Previous Stream</th><td>${e.pre_stream_code_fk ?? ''}</td>
-                          <th>Previous Roll No</th><td>${e.pre_roll_number ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Current Class</th><td>${e.cur_class_code_fk ?? ''}</td>
-                          <th>Academic Year</th><td>${e.academic_year ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Current Section</th><td>${e.cur_section_code_fk ?? ''}</td>
-                          <th>Medium</th><td>${e.medium_code_fk ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Current Roll No</th><td>${e.cur_roll_number ?? ''}</td>
-                          <th>Admission Date</th><td>${e.admission_date ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Current Stream</th><td>${e.cur_stream_code ?? ''}</td>
-                          <th>Admission Type</th><td>${e.admission_type_code_fk ?? ''}</td>
-                      </tr>
-
-                  </table>
-                  <hr>
-              `;
-          }
-          // ===== Facility Info =====
-          if (studentData.facility) {
-              const f = studentData.facility;
-
-              html += `
-                  <h6 class="card-header bg-heading-primary text-white py-2">
-                  Facility & Other Details
-                  </h6>
-                  <table class="table table-sm table-bordered">
-
-                      <!-- Facilities Provided -->
-                      <tr>
-                          <th>Facilities Provided (Year)</th><td>${f.facilities_provided_for_the_yeear ?? ''}</td>
-                          <th>Free Uniforms</th><td>${f.free_uniforms ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Free Transport</th><td>${f.free_transport_facility ?? ''}</td>
-                          <th>Free Escort</th><td>${f.free_escort ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Free Hostel</th><td>${f.free_host_facility ?? ''}</td>
-                          <th>Free Bicycle</th><td>${f.free_bicycle ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Free Shoes</th><td>${f.free_shoe ?? ''}</td>
-                          <th>Free Exercise Books</th><td>${f.free_exercise_book ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Complete Free Books</th><td>${f.complete_free_books ?? ''}</td>
-                          <th></th><td></td>
-                      </tr>
-
-                      <!-- Scholarships -->
-                      <tr>
-                          <th>Central Scholarship</th><td>${f.central_scholarship ?? ''}</td>
-                          <th>Central Scholarship Name</th><td>${f.central_scholarship_name ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Central Scholarship Amount</th><td>${f.central_scholarship_amount ?? ''}</td>
-                          <th>State Scholarship</th><td>${f.state_scholarship ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>State Scholarship Name</th><td>${f.state_scholarship_name ?? ''}</td>
-                          <th>State Scholarship Amount</th><td>${f.state_scholarship_amount ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Other Scholarship</th><td>${f.other_scholarship ?? ''}</td>
-                          <th>Other Scholarship Amount</th><td>${f.other_scholarship_amount ?? ''}</td>
-                      </tr>
-
-                      <!-- Gifted / Special Cases -->
-                      <tr>
-                          <th>Hyperactive Disorder</th><td>${f.child_hyperactive_disorder ?? ''}</td>
-                          <th>Extra-curricular Activities</th><td>${f.stu_extracurricular_activity ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Gifted in Mathematics</th><td>${f.gifted_math ?? ''}</td>
-                          <th>Gifted in Language</th><td>${f.gifted_language ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Gifted in Science</th><td>${f.gifted_science ?? ''}</td>
-                          <th>Gifted in Technical</th><td>${f.gifted_technical ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Gifted in Sports</th><td>${f.gifted_sports ?? ''}</td>
-                          <th>Gifted in Art</th><td>${f.gifted_art ?? ''}</td>
-                      </tr>
-
-                      <!-- Other details -->
-                      <tr>
-                          <th>Provided Mentors</th><td>${f.provided_mentors ?? ''}</td>
-                          <th>Participated in Nurturance Camp</th><td>${f.whether_participated_nurturance_camp ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>State Level Nurturance</th><td>${f.state_nurturance ?? ''}</td>
-                          <th>National Level Nurturance</th><td>${f.national_nurturance ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>State/National Competitions</th><td>${f.participated_competitions ?? ''}</td>
-                          <th>NCC/NSS/Guides</th><td>${f.ncc_nss_guides ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>RTE Free Education</th><td>${f.rte_free_education ?? ''}</td>
-                          <th>Homeless</th><td>${f.homeless ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Special Training</th><td>${f.special_training ?? ''}</td>
-                          <th>Able to Handle Digital Devices</th><td>${f.able_to_handle_devices ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Internet Access</th><td>${f.internet_access ?? ''}</td>
-                          <th></th><td></td>
-                      </tr>
-
-                  </table>
-                  <hr>
-              `;
-          }
-
-          // ===== Vocational Info =====
-          if (studentData.vocational) {
-              const v = studentData.vocational;
-
-              html += `
-                
-                  <h6 class="card-header bg-heading-primary text-white py-2">
-                  Vocational Details
-                  </h6>
-                  <table class="table table-sm table-bordered">
-
-                      <tr>
-                          <th>Exposure to Vocational Activities</th><td>${v.exposure ?? ''}</td>
-                          <th>Undertook Vocational Course</th><td>${v.undertook ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Trade / Sector</th><td>${v.trade_sector ?? ''}</td>
-                          <th>Job Role</th><td>${v.job_role ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Theory Hours</th><td>${v.theory_hours ?? ''}</td>
-                          <th>Practical Hours</th><td>${v.practical_hours ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Industry Training Hours</th><td>${v.industry_hours ?? ''}</td>
-                          <th>Field Visit Hours</th><td>${v.field_visit_hours ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Appeared in Exam</th><td>${v.appeared_exam ?? ''}</td>
-                          <th>Marks Obtained (%)</th><td>${v.marks_obtained ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Placement Applied</th><td>${v.placement_applied ?? ''}</td>
-                          <th>Apprenticeship Applied</th><td>${v.apprenticeship_applied ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>NSQF Level</th><td>${v.nsqf_level ?? ''}</td>
-                          <th>Employment Status</th><td>${v.employment_status ?? ''}</td>
-                      </tr>
-
-                      <tr>
-                          <th>Salary Offered</th><td>${v.salary_offered ?? ''}</td>
-                          <th></th><td></td>
-                      </tr>
-
-                  </table>
-                  <hr>
-              `;
-          }
-
-          // ===== Student Contact Info =====
-          if (studentData.student_contact) {
-          const c = studentData.student_contact;
-
-          html += `
-          <h6 class="card-header bg-heading-primary text-white py-2">
-          Student Contact Details
-          </h6>
-          <table class="table table-sm table-bordered">
-
-          <tr>
-          <th>Country Code</th><td>${c.stu_country_code ?? ''}</td>
-          <th>State</th><td>${c.stu_state_code ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>District</th><td>${c.stu_contact_district ?? ''}</td>
-          <th>Block</th><td>${c.stu_contact_block ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Panchayat</th><td>${c.stu_contact_panchayat ?? ''}</td>
-          <th>Habitation</th><td>${c.stu_contact_habitation ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Address</th><td>${c.stu_contact_address ?? ''}</td>
-          <th>Police Station</th><td>${c.stu_police_station ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Post Office</th><td>${c.stu_post_office ?? ''}</td>
-          <th>PIN Code</th><td>${c.stu_pin_code ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Mobile No</th><td>${c.stu_mobile_no ?? ''}</td>
-          <th>Email</th><td>${c.stu_email ?? ''}</td>
-          </tr>
-
-          </table>
-
-          <h6 class="card-header bg-heading-primary text-white py-2">
-          Guardian Contact Details
-          </h6>
-          <table class="table table-sm table-bordered">
-
-          <tr>
-          <th>Country Code</th><td>${c.guardian_country_code ?? ''}</td>
-          <th>State</th><td>${c.guardian_state_code ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>District</th><td>${c.guardian_contact_district ?? ''}</td>
-          <th>Block</th><td>${c.guardian_contact_block ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Panchayat</th><td>${c.guardian_contact_panchayat ?? ''}</td>
-          <th>Habitation</th><td>${c.guardian_contact_habitation ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Address</th><td>${c.guardian_contact_address ?? ''}</td>
-          <th>Police Station</th><td>${c.guardian_police_station ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Post Office</th><td>${c.guardian_post_office ?? ''}</td>
-          <th>PIN Code</th><td>${c.guardian_pin_code ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>Mobile No</th><td>${c.guardian_mobile_no ?? ''}</td>
-          <th>Email</th><td>${c.guardian_email ?? ''}</td>
-          </tr>
-
-          </table>
-          <hr>
-          `;
-          }
-
-          // ===== Student Bank Details =====
-          if (studentData.student_bank_details) {
-          const b = studentData.student_bank_details;
-
-          html += `
-          <h6 class="card-header bg-heading-primary text-white py-2">
-          Student Bank Details
-          </h6>
-          <table class="table table-sm table-bordered">
-
-          <tr>
-          <th>Bank</th><td>${b.bank_id_fk ?? ''}</td>
-          <th>Branch</th><td>${b.branch_id_fk ?? ''}</td>
-          </tr>
-
-          <tr>
-          <th>IFSC Code</th><td>${b.bank_ifsc ?? ''}</td>
-          <th>Account Number</th><td>${b.stu_bank_acc_no ?? ''}</td>
-          </tr>
-
-          </table>
-          <hr>
-          `;
-          }
-
-        // ===== Student Additional Details =====
-        if (studentData.student_additional_details) {
-            const a = studentData.student_additional_details;
-
+// ================= PREVIEW MASTER MAPS =================
+// ================= YES / NO =================
+const YES_NO_MAP = { 1: 'Yes', 2: 'No' };
+const yesNo = v => YES_NO_MAP[v] ?? '';
+
+// ================= MAP HELPER =================
+const mapValue = (map, key) => map?.[key] ?? '';
+
+// ================= MASTER MAPS =================
+const GENDER_MAP        = @json($gender_master);
+const MOTHER_TONGUE_MAP = @json($mother_tongue_master);
+const SOCIAL_CAT_MAP    = @json($social_category_master);
+const RELIGION_MAP      = @json($religion_master);
+const NATIONALITY_MAP   = @json($nationality_master);
+const BLOOD_GROUP_MAP   = @json($blood_group_master);
+
+const GUARDIAN_REL_MAP  = @json($guardian_relationship_master);
+const INCOME_MAP        = @json($income_master);
+const GUARDIAN_QUAL_MAP = @json($guardian_qualification_master);
+const DISABILITY_MAP    = @json($bs_stu_disability_type_master);
+
+const CLASS_MAP         = @json($bs_class_master);
+const SECTION_MAP       = @json($bs_class_section_master);
+const STREAM_MAP        = @json($bs_stream_master);
+const ADMISSION_MAP     = @json($bs_admission_type_master);
+
+const COUNTRY_MAP       = @json($bs_country_master);
+const STATE_MAP         = @json($state_master);
+const DISTRICT_MAP      = @json($district_master);
+const BLOCK_MAP         = @json($block_munc_corp_master);
+
+const BANK_MAP          = @json($bank_code_name_master);
+const BRANCH_MAP        = @json($bank_branch_master);
+
+const DISTANCE_MAP      = @json($bs_student_residence_to_school_distance);
+
+
+
+const PREV_STATUS_MAP   = @json($bs_previous_schooling_type_master);
+const APPEARED_MAP      = @json($bs_stu_appeared_master);
+
+const SCHOOL_MEDIUM_MAP = @json($bs_school_medium);
+
+// ================= DATA =================
+const studentData = @json($data);
+
+// ================= PREVIEW =================
+document.getElementById('previewBtn').addEventListener('click', function () {
+
+let html = `
+<div class="alert alert-warning text-center fw-bold">
+⚠️ Please check all details before final submit
+</div>`;
+
+// ================= 1. BASIC =================
+if (studentData.basic_info) {
+const b = studentData.basic_info;
+html += `
+<h6 class="card-header bg-heading-primary text-white">Basic Details</h6>
+<table class="table table-sm table-bordered">
+<tr><th>Name</th><td>${b.student_name ?? ''}</td><th>Aadhaar Name</th><td>${b.student_name_as_per_aadhaar ?? ''}</td></tr>
+<tr><th>Gender</th><td>${mapValue(GENDER_MAP,b.gender)}</td><th>DOB</th><td>${b.dob ?? ''}</td></tr>
+<tr><th>Father</th><td>${b.father_name ?? ''}</td><th>Mother</th><td>${b.mother_name ?? ''}</td></tr>
+<tr><th>Guardian</th><td>${b.guardian_name ?? ''}</td><th>Aadhaar</th><td>${b.aadhaar_child ?? ''}</td></tr>
+<tr><th>Mother Tongue</th><td>${mapValue(MOTHER_TONGUE_MAP,b.mother_tongue)}</td><th>Category</th><td>${mapValue(SOCIAL_CAT_MAP,b.social_category)}</td></tr>
+<tr><th>Religion</th><td>${mapValue(RELIGION_MAP,b.religion)}</td><th>Nationality</th><td>${mapValue(NATIONALITY_MAP,b.nationality)}</td></tr>
+<tr><th>Blood Group</th><td>${mapValue(BLOOD_GROUP_MAP,b.blood_group)}</td><th>BPL</th><td>${yesNo(b.bpl_beneficiary)}</td></tr>
+<tr><th>Antyodaya</th><td>${yesNo(b.antyodaya_anna_yojana)}</td><th>BPL No</th><td>${b.bpl_number ?? ''}</td></tr>
+<tr><th>Disadvantaged</th><td>${yesNo(b.disadvantaged_group)}</td><th>CWSN</th><td>${yesNo(b.cwsn)}</td></tr>
+<tr><th>Disability</th><td>${mapValue(DISABILITY_MAP,b.type_of_impairment)}</td><th>%</th><td>${b.disability_percentage ?? ''}</td></tr>
+<tr><th>Out of School</th><td>${yesNo(b.out_of_school)}</td><th>Mainstreamed</th><td>${yesNo(b.mainstreamed)}</td></tr>
+<tr><th>Health ID</th><td>${b.health_id ?? ''}</td><th>Guardian Relation</th><td>${mapValue(GUARDIAN_REL_MAP,b.relationship_with_guardian)}</td></tr>
+<tr><th>Family Income</th><td>${mapValue(INCOME_MAP,b.family_income)}</td><th>Guardian Qualification</th><td>${mapValue(GUARDIAN_QUAL_MAP,b.guardian_qualifications)}</td></tr>
+</table><hr>`;
+}
+// ================= HELPER =================
+function hasValue(v) {
+    return v !== null &&
+           v !== undefined &&
+           v !== '' &&
+           !(typeof v === 'string' && v.trim() === '');
+}
+
+// ================= 2. ENROLLMENT =================
+if (studentData.enrollment_info) {
+    const e = studentData.enrollment_info;
+
+    html += `
+    <h6 class="card-header bg-heading-primary text-white">Enrollment Details</h6>
+    <table class="table table-sm table-bordered">`;
+
+    if (hasValue(e.admission_no) || hasValue(e.academic_year)) {
+        html += `
+        <tr>
+            <th>Admission No</th><td>${e.admission_no ?? ''}</td>
+            <th>Academic Year</th><td>${e.academic_year ?? ''}</td>
+        </tr>`;
+    }
+
+    if (hasValue(e.status_pre_year) || hasValue(e.admission_date)) {
+        html += `
+        <tr>
+            <th>Previous Year Status</th>
+            <td>${mapValue(PREV_STATUS_MAP, e.status_pre_year)}</td>
+            <th>Admission Date</th>
+            <td>${e.admission_date ?? ''}</td>
+        </tr>`;
+    }
+
+    if (hasValue(e.prev_class_appeared_exam) || hasValue(e.prev_class_exam_result)) {
+        html += `
+        <tr>
+            <th>Prev Appeared</th>
+            <td>${mapValue(APPEARED_MAP, e.prev_class_appeared_exam)}</td>
+            <th>Prev Result</th>
+            <td>${e.prev_class_exam_result ?? ''}</td>
+        </tr>`;
+    }
+
+    if (hasValue(e.prev_class_marks_percent) || hasValue(e.attendention_pre_year)) {
+        html += `
+        <tr>
+            <th>Prev % Marks</th>
+            <td>${e.prev_class_marks_percent ?? ''}</td>
+            <th>Attendance (Prev Year)</th>
+            <td>${e.attendention_pre_year ?? ''}</td>
+        </tr>`;
+    }
+
+    if (hasValue(e.pre_class_code_fk) || hasValue(e.pre_section_code_fk)) {
+        html += `
+        <tr>
+            <th>Previous Class</th>
+            <td>${mapValue(CLASS_MAP, e.pre_class_code_fk)}</td>
+            <th>Previous Section</th>
+            <td>${mapValue(SECTION_MAP, e.pre_section_code_fk)}</td>
+        </tr>`;
+    }
+
+    if (hasValue(e.pre_stream_code_fk) || hasValue(e.pre_roll_number)) {
+        html += `
+        <tr>
+            <th>Previous Stream</th>
+            <td>${mapValue(STREAM_MAP, e.pre_stream_code_fk)}</td>
+            <th>Previous Roll</th>
+            <td>${e.pre_roll_number ?? ''}</td>
+        </tr>`;
+    }
+
+    if (hasValue(e.cur_class_code_fk) || hasValue(e.cur_section_code_fk)) {
+        html += `
+        <tr>
+            <th>Current Class</th>
+            <td>${mapValue(CLASS_MAP, e.cur_class_code_fk)}</td>
+            <th>Current Section</th>
+            <td>${mapValue(SECTION_MAP, e.cur_section_code_fk)}</td>
+        </tr>`;
+    }
+
+    if (hasValue(e.cur_stream_code) || hasValue(e.admission_type_code_fk)) {
+        html += `
+        <tr>
+            <th>Current Stream</th>
+            <td>${mapValue(STREAM_MAP, e.cur_stream_code)}</td>
+            <th>Admission Type</th>
+            <td>${mapValue(ADMISSION_MAP, e.admission_type_code_fk)}</td>
+        </tr>`;
+    }
+
+    if (hasValue(e.cur_roll_number) || hasValue(e.medium_code_fk)) {
+        html += `
+        <tr>
+            <th>Current Roll</th>
+            <td>${e.cur_roll_number ?? ''}</td>
+            <th>Medium</th>
+            <td>${mapValue(SCHOOL_MEDIUM_MAP, e.medium_code_fk)}</td>
+        </tr>`;
+    }
+
+    html += `</table><hr>`;
+}
+
+// ================= 3. FACILITY =================
+// ================= FACILITY & OTHER DETAILS =================
+if (studentData.facility) {
+    const f = studentData.facility;
+
+    if (Object.values(f).some(v => hasValue(v))) {
+
+        html += `
+        <h6 class="card-header bg-heading-primary text-white">
+            Facility & Other Details
+        </h6>
+        <table class="table table-sm table-bordered">`;
+
+        /* ================= FACILITIES ================= */
+        if (hasValue(f.facilities_provided_for_the_yeear)) {
             html += `
-            <h6 class="card-header bg-heading-primary text-white py-2">
-                Additional Details
-            </h6>
-
-            <table class="table table-sm table-bordered">
-
-                <tr>
-                    <th>RTE Entitlement Claimed Amount</th>
-                    <td>${a.rte_entitlement_claimed_amount ?? ''}</td>
-
-                    <th>Residence to School Distance</th>
-                    <td>${a.stu_residance_sch_distance_code_fk ?? ''}</td>
-                </tr>
-
-                <tr>
-                    <th>Appeared in Current Class Exam</th>
-                    <td>${a.cur_class_appeared_exam ?? ''}</td>
-
-                    <th>Current Class Marks (%)</th>
-                    <td>${a.cur_class_marks_percent ?? ''}</td>
-                </tr>
-
-                <tr>
-                    <th>Attendance (Current Year)</th>
-                    <td>${a.attendention_cur_year ?? ''}</td>
-
-                    <th></th>
-                    <td></td>
-                </tr>
-
-            </table>
-            <hr>
-            `;
+            <tr class="table-secondary fw-bold">
+                <td colspan="4">Facilities Provided</td>
+            </tr>
+            <tr>
+                <th>Facilities provided to the student</th>
+                <td colspan="3">${yesNo(f.facilities_provided_for_the_yeear)}</td>
+            </tr>`;
         }
 
-          document.getElementById('previewModalBody').innerHTML = html;
+        if (hasValue(f.free_transport_facility) || hasValue(f.free_host_facility)) {
+            html += `
+            <tr>
+                <th>Free Transport Facility</th><td>${yesNo(f.free_transport_facility)}</td>
+                <th>Free Host Facility</th><td>${yesNo(f.free_host_facility)}</td>
+            </tr>`;
+        }
 
-          const modal = new bootstrap.Modal(document.getElementById('previewModal'));
-          modal.show();
-      });
+        if (hasValue(f.free_bicycle) || hasValue(f.free_uniforms)) {
+            html += `
+            <tr>
+                <th>Free Bicycle</th><td>${yesNo(f.free_bicycle)}</td>
+                <th>Free Uniforms</th><td>${yesNo(f.free_uniforms)}</td>
+            </tr>`;
+        }
+
+        if (hasValue(f.free_escort) || hasValue(f.free_shoe)) {
+            html += `
+            <tr>
+                <th>Free Escort</th><td>${yesNo(f.free_escort)}</td>
+                <th>Free Shoe</th><td>${yesNo(f.free_shoe)}</td>
+            </tr>`;
+        }
+
+        if (hasValue(f.free_exercise_book) || hasValue(f.complete_free_books)) {
+            html += `
+            <tr>
+                <th>Free Exercise Book</th><td>${yesNo(f.free_exercise_book)}</td>
+                <th>Complete Set of Free Books</th><td>${yesNo(f.complete_free_books)}</td>
+            </tr>`;
+        }
+
+        /* ================= SCHOLARSHIP ================= */
+        if (
+            hasValue(f.central_scholarship) ||
+            hasValue(f.state_scholarship) ||
+            hasValue(f.other_scholarship)
+        ) {
+            html += `
+            <tr class="table-secondary fw-bold">
+                <td colspan="4">Scholarship Received</td>
+            </tr>`;
+        }
+
+        if (hasValue(f.central_scholarship)) {
+            html += `
+            <tr>
+                <th>Central Scholarship</th><td>${yesNo(f.central_scholarship)}</td>
+                <th>Amount</th><td>${f.central_scholarship_amount ?? ''}</td>
+            </tr>`;
+        }
+
+        if (hasValue(f.state_scholarship)) {
+            html += `
+            <tr>
+                <th>State Scholarship</th><td>${yesNo(f.state_scholarship)}</td>
+                <th>Amount</th><td>${f.state_scholarship_amount ?? ''}</td>
+            </tr>`;
+        }
+
+        if (hasValue(f.other_scholarship)) {
+            html += `
+            <tr>
+                <th>Other Scholarship</th><td>${yesNo(f.other_scholarship)}</td>
+                <th>Amount</th><td>${f.other_scholarship_amount ?? ''}</td>
+            </tr>`;
+        }
+
+        /* ================= GIFTED ================= */
+        if (
+            hasValue(f.child_hyperactive_disorder) ||
+            hasValue(f.stu_extracurricular_activity) ||
+            hasValue(f.gifted_math) ||
+            hasValue(f.gifted_language) ||
+            hasValue(f.gifted_science) ||
+            hasValue(f.gifted_technical) ||
+            hasValue(f.gifted_sports) ||
+            hasValue(f.gifted_art)
+        ) {
+            html += `
+            <tr class="table-secondary fw-bold">
+                <td colspan="4">Gifted / Talented Child</td>
+            </tr>`;
+        }
+
+        if (hasValue(f.child_hyperactive_disorder)) {
+            html += `
+            <tr>
+                <th>Screened for ADHD</th>
+                <td colspan="3">${yesNo(f.child_hyperactive_disorder)}</td>
+            </tr>`;
+        }
+
+        if (hasValue(f.stu_extracurricular_activity)) {
+            html += `
+            <tr>
+                <th>Extracurricular Activity</th>
+                <td colspan="3">${yesNo(f.stu_extracurricular_activity)}</td>
+            </tr>`;
+        }
+
+        if (
+            hasValue(f.gifted_math) ||
+            hasValue(f.gifted_language) ||
+            hasValue(f.gifted_science)
+        ) {
+            html += `
+            <tr>
+                <th>Mathematics</th><td>${yesNo(f.gifted_math)}</td>
+                <th>Language</th><td>${yesNo(f.gifted_language)}</td>
+            </tr>
+            <tr>
+                <th>Science</th><td>${yesNo(f.gifted_science)}</td>
+                <th>Technical</th><td>${yesNo(f.gifted_technical)}</td>
+            </tr>
+            <tr>
+                <th>Sports</th><td>${yesNo(f.gifted_sports)}</td>
+                <th>Art</th><td>${yesNo(f.gifted_art)}</td>
+            </tr>`;
+        }
+
+        /* ================= OTHER DETAILS ================= */
+        if (
+            hasValue(f.provided_mentors) ||
+            hasValue(f.whether_participated_nurturance_camp) ||
+            hasValue(f.participated_competitions) ||
+            hasValue(f.ncc_nss_guides) ||
+            hasValue(f.rte_free_education) ||
+            hasValue(f.homeless) ||
+            hasValue(f.special_training) ||
+            hasValue(f.able_to_handle_devices) ||
+            hasValue(f.internet_access)
+        ) {
+            html += `
+            <tr class="table-secondary fw-bold">
+                <td colspan="4">Other Details</td>
+            </tr>`;
+        }
+
+        if (hasValue(f.provided_mentors)) {
+            html += `<tr><th>Provided Mentors</th><td colspan="3">${yesNo(f.provided_mentors)}</td></tr>`;
+        }
+
+        if (hasValue(f.whether_participated_nurturance_camp)) {
+            html += `<tr><th>Nurturance Camp</th><td colspan="3">${yesNo(f.whether_participated_nurturance_camp)}</td></tr>`;
+        }
+
+        if (hasValue(f.participated_competitions) || hasValue(f.ncc_nss_guides)) {
+            html += `
+            <tr>
+                <th>Competitions</th><td>${yesNo(f.participated_competitions)}</td>
+                <th>NCC / NSS / Guides</th><td>${yesNo(f.ncc_nss_guides)}</td>
+            </tr>`;
+        }
+
+        if (hasValue(f.rte_free_education)) {
+            html += `<tr><th>RTE Free Education</th><td colspan="3">${yesNo(f.rte_free_education)}</td></tr>`;
+        }
+
+        if (hasValue(f.homeless)) {
+            html += `<tr><th>Homeless Status</th><td colspan="3">${f.homeless}</td></tr>`;
+        }
+
+        if (hasValue(f.special_training)) {
+            html += `<tr><th>Special Training</th><td colspan="3">${yesNo(f.special_training)}</td></tr>`;
+        }
+
+        if (hasValue(f.able_to_handle_devices) || hasValue(f.internet_access)) {
+            html += `
+            <tr>
+                <th>Digital Devices</th><td>${yesNo(f.able_to_handle_devices)}</td>
+                <th>Internet Access</th><td>${yesNo(f.internet_access)}</td>
+            </tr>`;
+        }
+
+        html += `</table><hr>`;
+    }
+}
+
+
+// ================= 4. VOCATIONAL =================
+// ================= VOCATIONAL DETAILS =================
+if (studentData.vocational) {
+    const v = studentData.vocational;
+
+    if (Object.values(v).some(val => hasValue(val))) {
+
+        html += `
+        <h6 class="card-header bg-heading-primary text-white">
+            Vocational Details
+        </h6>
+        <table class="table table-sm table-bordered">`;
+
+        /* ================= BASIC ================= */
+        if (hasValue(v.exposure) || hasValue(v.undertook)) {
+            html += `
+            <tr class="table-secondary fw-bold">
+                <td colspan="4">General</td>
+            </tr>
+            <tr>
+                <th>Exposure to Vocational Activities</th>
+                <td>${yesNo(v.exposure)}</td>
+                <th>Undertook Vocational Course</th>
+                <td>${yesNo(v.undertook)}</td>
+            </tr>`;
+        }
+
+        /* ================= COURSE DETAILS ================= */
+        if (hasValue(v.trade_sector) || hasValue(v.job_role)) {
+            html += `
+            <tr class="table-secondary fw-bold">
+                <td colspan="4">Course Details</td>
+            </tr>
+            <tr>
+                <th>Trade Sector</th>
+                <td>${mapValue(TRADE_SECTOR_MAP, v.trade_sector)}</td>
+                <th>Job Role</th>
+                <td>${mapValue(JOB_ROLE_MAP, v.job_role)}</td>
+            </tr>`;
+        }
+
+        /* ================= ATTENDANCE / HOURS ================= */
+        if (
+            hasValue(v.theory_hours) ||
+            hasValue(v.practical_hours) ||
+            hasValue(v.industry_hours) ||
+            hasValue(v.field_visit_hours)
+        ) {
+            html += `
+            <tr class="table-secondary fw-bold">
+                <td colspan="4">Class Attendance (Hours)</td>
+            </tr>
+            <tr>
+                <th>Theory</th><td>${v.theory_hours ?? ''}</td>
+                <th>Practical</th><td>${v.practical_hours ?? ''}</td>
+            </tr>
+            <tr>
+                <th>Industry Training</th><td>${v.industry_hours ?? ''}</td>
+                <th>Field Visit</th><td>${v.field_visit_hours ?? ''}</td>
+            </tr>`;
+        }
+
+        /* ================= EXAM ================= */
+        if (hasValue(v.appeared_exam) || hasValue(v.marks_obtained)) {
+            html += `
+            <tr class="table-secondary fw-bold">
+                <td colspan="4">Examination</td>
+            </tr>
+            <tr>
+                <th>Appeared in Exam</th>
+                <td>${yesNo(v.appeared_exam)}</td>
+                <th>Marks (%)</th>
+                <td>${v.marks_obtained ?? ''}</td>
+            </tr>`;
+        }
+
+        /* ================= PLACEMENT ================= */
+        if (
+            hasValue(v.placement_applied) ||
+            hasValue(v.apprenticeship_applied) ||
+            hasValue(v.nsqf_level) ||
+            hasValue(v.employment_status) ||
+            hasValue(v.salary_offered)
+        ) {
+            html += `
+            <tr class="table-secondary fw-bold">
+                <td colspan="4">Placement / Employment</td>
+            </tr>`;
+        }
+
+        if (hasValue(v.placement_applied) || hasValue(v.apprenticeship_applied)) {
+            html += `
+            <tr>
+                <th>Applied for Placement</th>
+                <td>${yesNo(v.placement_applied)}</td>
+                <th>Applied for Apprenticeship</th>
+                <td>${yesNo(v.apprenticeship_applied)}</td>
+            </tr>`;
+        }
+
+        if (hasValue(v.nsqf_level) || hasValue(v.employment_status)) {
+            html += `
+            <tr>
+                <th>NSQF Level</th>
+                <td>${v.nsqf_level ?? ''}</td>
+                <th>Employment Status</th>
+                <td>${yesNo(v.employment_status)}</td>
+            </tr>`;
+        }
+
+        if (hasValue(v.salary_offered)) {
+            html += `
+            <tr>
+                <th>Salary Offered</th>
+                <td colspan="3">${v.salary_offered}</td>
+            </tr>`;
+        }
+
+        html += `</table><hr>`;
+    }
+}
+
+
+// ================= 5. CONTACT =================
+if (studentData.student_contact) {
+const c = studentData.student_contact;
+html += `
+<h6 class="card-header bg-heading-primary text-white">Contact Details</h6>
+<table class="table table-sm table-bordered">
+<tr><th>Country</th><td>${mapValue(COUNTRY_MAP,c.stu_country_code)}</td><th>State</th><td>${mapValue(STATE_MAP,c.stu_state_code)}</td></tr>
+<tr><th>District</th><td>${mapValue(DISTRICT_MAP,c.stu_contact_district)}</td><th>Block</th><td>${mapValue(BLOCK_MAP,c.stu_contact_block)}</td></tr>
+<tr><th>Mobile</th><td>${c.stu_mobile_no ?? ''}</td><th>Email</th><td>${c.stu_email ?? ''}</td></tr>
+</table><hr>`;
+}
+
+// ================= 6. BANK =================
+if (studentData.student_bank_details) {
+const b = studentData.student_bank_details;
+html += `
+<h6 class="card-header bg-heading-primary text-white">Bank Details</h6>
+<table class="table table-sm table-bordered">
+<tr><th>Bank</th><td>${mapValue(BANK_MAP,b.bank_id_fk)}</td><th>Branch</th><td>${mapValue(BRANCH_MAP,b.branch_id_fk)}</td></tr>
+<tr><th>IFSC</th><td>${b.bank_ifsc ?? ''}</td><th>Account</th><td>${b.stu_bank_acc_no ?? ''}</td></tr>
+</table><hr>`;
+}
+
+// ================= 7. ADDITIONAL =================
+if (studentData.student_additional_details) {
+const a = studentData.student_additional_details;
+html += `
+<h6 class="card-header bg-heading-primary text-white">Additional Details</h6>
+<table class="table table-sm table-bordered">
+<tr><th>RTE Amount</th><td>${a.rte_entitlement_claimed_amount ?? ''}</td><th>Distance</th><td>${mapValue(DISTANCE_MAP,a.stu_residance_sch_distance_code_fk)}</td></tr>
+<tr><th>Appeared</th><td>${yesNo(a.cur_class_appeared_exam)}</td><th>Marks %</th><td>${a.cur_class_marks_percent ?? ''}</td></tr>
+<tr><th>Attendance</th><td>${a.attendention_cur_year ?? ''}</td><th></th><td></td></tr>
+</table><hr>`;
+}
+
+document.getElementById('previewModalBody').innerHTML = html;
+new bootstrap.Modal(document.getElementById('previewModal')).show();
+});
   // ===============================
 (function () {
   // Map tabs to numeric steps

@@ -677,6 +677,8 @@ class StudentInfoController extends Controller
         ], 200);
     }
 
+
+    
     // =======================Fetch Student Data===========================
     public function getStudentEntry()
     {
