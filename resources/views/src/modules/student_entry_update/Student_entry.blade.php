@@ -389,7 +389,8 @@
                 // Example: show success message
                 // You can customize this as per your UI
                 alert(response.message || 'Bank details saved successfully!');
-                document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 7 } }));
+                document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 6 } }));
+                
                 // Optional: move to next tab, reset form, etc.
                 // $('#next_tab_btn').click();
             },
@@ -757,7 +758,7 @@ $(document).ready(function () {
             if (res && res.success) {
               if (window.toastr) toastr.success(res.message || 'Contact info saved.');
               else alert(res.message || 'Contact info saved.');
-              document.querySelector('[data-bs-target="#bank_dtls_tab"]').click();
+        
               document.dispatchEvent(new CustomEvent('tabSaved', { detail: { tab: 5} }));
               // maybe move to next tab or reset
             } else {
@@ -1656,12 +1657,52 @@ document.getElementById("confirmDeleteEntry")?.addEventListener("click", functio
           `;
           }
 
-        document.getElementById('previewModalBody').innerHTML = html;
+        // ===== Student Additional Details =====
+        if (studentData.student_additional_details) {
+            const a = studentData.student_additional_details;
 
-        const modal = new bootstrap.Modal(document.getElementById('previewModal'));
-        modal.show();
-    });
-// ===============================
+            html += `
+            <h6 class="card-header bg-heading-primary text-white py-2">
+                Additional Details
+            </h6>
+
+            <table class="table table-sm table-bordered">
+
+                <tr>
+                    <th>RTE Entitlement Claimed Amount</th>
+                    <td>${a.rte_entitlement_claimed_amount ?? ''}</td>
+
+                    <th>Residence to School Distance</th>
+                    <td>${a.stu_residance_sch_distance_code_fk ?? ''}</td>
+                </tr>
+
+                <tr>
+                    <th>Appeared in Current Class Exam</th>
+                    <td>${a.cur_class_appeared_exam ?? ''}</td>
+
+                    <th>Current Class Marks (%)</th>
+                    <td>${a.cur_class_marks_percent ?? ''}</td>
+                </tr>
+
+                <tr>
+                    <th>Attendance (Current Year)</th>
+                    <td>${a.attendention_cur_year ?? ''}</td>
+
+                    <th></th>
+                    <td></td>
+                </tr>
+
+            </table>
+            <hr>
+            `;
+        }
+
+          document.getElementById('previewModalBody').innerHTML = html;
+
+          const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+          modal.show();
+      });
+  // ===============================
 (function () {
   // Map tabs to numeric steps
   const tabMap = {
