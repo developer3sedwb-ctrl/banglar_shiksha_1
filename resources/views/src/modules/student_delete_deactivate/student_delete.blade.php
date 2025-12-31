@@ -234,70 +234,70 @@
 </script>
 <script>
 $(document).ready(function () {
-  const USER_ROLE = @json(optional($user->roles()->first())->name);
-  let DELETE_REASONS = [];
-  $("#search_purpose").val('2');
-  loadDeleteReasons();
-  /* Fetch reasons only once */
-  function   loadDeleteReasons() {
-      return sendRequest(
-          "{{ route('get.reason.for.deletion') }}",
-          "GET"
-      )
-      .then(res => {
-          if (res.status && Array.isArray(res.data)) {
-              DELETE_REASONS = res.data;   // 
-          } else {
-              DELETE_REASONS = [];
-          }
-          return DELETE_REASONS;
-      })
-      .catch(err => {
-          console.error(err);
-          DELETE_REASONS = [];
-          return [];
-      });
-  }
-  function buildDeleteReasonOptions() {
-      let options = `<option value="">Select Reason</option>`;
+    const USER_ROLE = @json(optional($user->roles()->first())->name);
+    let DELETE_REASONS = [];
+    $("#search_purpose").val('2');
+    loadDeleteReasons();
+    /* Fetch reasons only once */
+    function   loadDeleteReasons() {
+        return sendRequest(
+            "{{ route('get.reason.for.deletion') }}",
+            "GET"
+        )
+        .then(res => {
+            if (res.status && Array.isArray(res.data)) {
+                DELETE_REASONS = res.data;   // 
+            } else {
+                DELETE_REASONS = [];
+            }
+            return DELETE_REASONS;
+        })
+        .catch(err => {
+            console.error(err);
+            DELETE_REASONS = [];
+            return [];
+        });
+    }
+    function buildDeleteReasonOptions() {
+        let options = `<option value="">Select Reason</option>`;
 
-      if (DELETE_REASONS.length > 0) {
-          DELETE_REASONS.forEach(item => {
-              options += `<option value="${item.id}">${item.name}</option>`;
-          });
-      } else {
-          options += `<option value="">No reasons available</option>`;
-      }
+        if (DELETE_REASONS.length > 0) {
+            DELETE_REASONS.forEach(item => {
+                options += `<option value="${item.id}">${item.name}</option>`;
+            });
+        } else {
+            options += `<option value="">No reasons available</option>`;
+        }
 
-      return options;
-  }
-  function populateStudentRow(d) {
-      let actionTd = '';
+        return options;
+    }
+    function populateStudentRow(d) {
+        let actionTd = '';
 
-      if (USER_ROLE === 'Circle') {
+        if (USER_ROLE === 'Circle') {
 
-          actionTd = `
-              <td>
-                  <div class="row g-2">
-                      <div class="col-6 text-center">
-                          <button type="button"
-                              class="btn btn-warning btn-sm w-100 btn-reject" data-status="3" data-student-code="${d.student_code}">
-                              <i class="bx bx-x"></i> Reject
-                          </button>
-                      </div>
-                      <div class="col-6 text-center">
-                          <button type="button"
-                              class="btn btn-success btn-sm w-100 btn-approve" data-status="2" data-student-code="${d.student_code}">
-                              <i class="bx bx-check-circle"></i> Approve
-                          </button>
-                      </div>
-                  </div>
-              </td>
-          `;
-      }
-      else if (USER_ROLE === 'HOI Primary') {
+            actionTd = `
+                <td>
+                    <div class="row g-2">
+                        <div class="col-6 text-center">
+                            <button type="button"
+                                class="btn btn-warning btn-sm w-100 btn-reject" data-status="3" data-student-code="${d.student_code}">
+                                <i class="bx bx-x"></i> Reject
+                            </button>
+                        </div>
+                        <div class="col-6 text-center">
+                            <button type="button"
+                                class="btn btn-success btn-sm w-100 btn-approve" data-status="2" data-student-code="${d.student_code}">
+                                <i class="bx bx-check-circle"></i> Approve
+                            </button>
+                        </div>
+                    </div>
+                </td>
+            `;
+        }
+        else if (USER_ROLE === 'HOI Primary') {
 
-          actionTd = `
+            actionTd = `
                 <td>
                     <select class="form-select form-select-sm delete-reason"
                             data-student-code="${d.student_code}">
@@ -305,41 +305,41 @@ $(document).ready(function () {
                     </select>
                 </td>
                 <td>
-                  <button type="button"
-                      class="btn btn-info w-100 btn-send-to-si" data-student-code="${d.student_code}" data-status="1">
-                      <i class="bx bx-check-circle"></i> Send to SI
-                  </button>
+                    <button type="button"
+                        class="btn btn-info w-100 btn-send-to-si" data-student-code="${d.student_code}" data-status="1">
+                        <i class="bx bx-check-circle"></i> Send to SI
+                    </button>
                     
-              </td>
-          `;
+                </td>
+            `;
 
-      } else {
+        } else {
 
-          actionTd = `
-              <td>
-                  <span class="text-muted">No Action</span>
-              </td>
-          `;
-      }
+            actionTd = `
+                <td>
+                    <span class="text-muted">No Action</span>
+                </td>
+            `;
+        }
 
-      let row = `
-          <tr>
-              <td class="student-code" data-student-code="${d.student_code}">
-                  ${d.student_code}
-              </td>
-              <td>${d.studentname ?? '-'}</td>
-              <td>${d.dob ?? '-'}</td>
-              <td>${d.guardian_name ?? '-'}</td>
-              <td>${d.current_class ?? '-'}</td>
-              <td>${d.current_section ?? '-'}</td>
-              <td>${d.cur_roll_number ?? '-'}</td>
-              ${actionTd}
-          </tr>
-      `;
+        let row = `
+            <tr>
+                <td class="student-code" data-student-code="${d.student_code}">
+                    ${d.student_code}
+                </td>
+                <td>${d.studentname ?? '-'}</td>
+                <td>${d.dob ?? '-'}</td>
+                <td>${d.guardian_name ?? '-'}</td>
+                <td>${d.current_class ?? '-'}</td>
+                <td>${d.current_section ?? '-'}</td>
+                <td>${d.cur_roll_number ?? '-'}</td>
+                ${actionTd}
+            </tr>
+        `;
 
-      $("#student_result_body").html(row); // replace existing rows
-  }
-  function showEmptyRow(message) {
+        $("#student_result_body").html(row); // replace existing rows
+    }
+    function showEmptyRow(message) {
         $("#student_result_body").html(`
             <tr>
                 <td colspan="10" class="text-center text-danger">
@@ -347,33 +347,33 @@ $(document).ready(function () {
                 </td>
             </tr>
         `);
-  }
-  $("#btn_search_student").on("click", function (e) {
-      if (!validateRequiredFields("#student_search_form")) {
-          return;
-      }
+    }
+    $("#btn_search_student").on("click", function (e) {
+        if (!validateRequiredFields("#student_search_form")) {
+            return;
+        }
 
-      let $btn = $(this);
-      $btn.prop('disabled', true).text('Searching...');
+        let $btn = $(this);
+        $btn.prop('disabled', true).text('Searching...');
 
-      let url = "{{ route('search.student.by.student_code') }}";
+        let url = "{{ route('search.student.by.student_code') }}";
 
-      sendRequest(url, "POST", "#student_search_form")
-          .then(res => {
+        sendRequest(url, "POST", "#student_search_form")
+            .then(res => {
 
-              $btn.prop('disabled', false).text('Search');
+                $btn.prop('disabled', false).text('Search');
 
-              if (res.status) {
-                  populateStudentRow(res.data);
-              } else {
-                  showEmptyRow(res.message || 'Student not found');
-              }
-          })
-          .catch(err => {
-              $btn.prop('disabled', false).text('Search');
-              showEmptyRow('Something went wrong');
-      });
-  });
+                if (res.status) {
+                    populateStudentRow(res.data);
+                } else {
+                    showEmptyRow(res.message || 'Student not found');
+                }
+            })
+            .catch(err => {
+                $btn.prop('disabled', false).text('Search');
+                showEmptyRow('Something went wrong');
+        });
+    });
     $(document).on('click', '.btn-send-to-si', function (e) {
         e.preventDefault();
         showAlert({

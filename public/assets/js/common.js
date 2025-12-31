@@ -142,67 +142,70 @@ function showAlert({
 
         if (!config[type]) type = 'info';
 
-        const modalEl  = document.getElementById('globalAlertModal');
-        const modal    = new bootstrap.Modal(modalEl);
+        const $modal  = $('#globalAlertModal');
+        const modal   = new bootstrap.Modal($modal[0]);
 
-        const headerEl = document.getElementById('globalAlertHeader');
-        const titleEl  = document.getElementById('globalAlertTitle');
+        const $header = $('#globalAlertHeader');
+        const $title  = $('#globalAlertTitle');
 
-        const iconEl   = document.getElementById('globalAlertIcon');
-        const typeEl   = document.getElementById('globalAlertType');
-        const msgEl    = document.getElementById('globalAlertMessage');
-        const listEl   = document.getElementById('globalAlertList');
+        const $icon   = $('#globalAlertIcon');
+        const $type   = $('#globalAlertType');
+        const $msg    = $('#globalAlertMessage');
+        const $list   = $('#globalAlertList');
 
-        const okBtn      = document.getElementById('globalAlertOkBtn');
-        const cancelBtn  = document.getElementById('globalAlertCancelBtn');
-        const confirmBtn = document.getElementById('globalAlertConfirmBtn');
+        const $okBtn      = $('#globalAlertOkBtn');
+        const $cancelBtn  = $('#globalAlertCancelBtn');
+        const $confirmBtn = $('#globalAlertConfirmBtn');
 
-        /* ================= RESET EVERYTHING ================= */
-        headerEl.classList.remove('bg-success','bg-danger','bg-warning','bg-info');
-        titleEl.classList.remove('text-white','text-dark');
+        /* ================= RESET ================= */
+        $header.removeClass('bg-success bg-danger bg-warning bg-info');
+        $title.removeClass('text-white text-dark text-success text-danger text-primary');
 
-        okBtn.classList.add('d-none');
-        cancelBtn.classList.add('d-none');
-        confirmBtn.classList.add('d-none');
+        $okBtn.addClass('d-none');
+        $cancelBtn.addClass('d-none');
+        $confirmBtn.addClass('d-none');
 
-        listEl.classList.add('d-none');
-        listEl.innerHTML = '';
+        $list.addClass('d-none').empty();
 
         /* ================= APPLY TYPE ================= */
         const { label, icon, bg, text } = config[type];
 
-        headerEl.classList.add(bg);
-        titleEl.classList.add(text);
-        titleEl.textContent = label;
+        $header.addClass(bg);
+        $title.addClass(text).text(label);
 
-        iconEl.className = `bx ${icon} fs-1 ${text}`;
-        typeEl.textContent = label;
-        typeEl.className = `fw-bold ${text}`;
+        $icon
+            .attr('class', '')
+            .addClass(`bx ${icon} fs-1 ${text}`);
 
-        msgEl.textContent = message;
+        $type
+            .attr('class', '')
+            .addClass(`fw-bold ${text}`)
+            .text(label);
+
+        $msg.text(message);
 
         if (messages.length) {
-            listEl.classList.remove('d-none');
-            messages.forEach(err => {
-                const li = document.createElement('li');
-                li.textContent = err;
-                listEl.appendChild(li);
+            $list.removeClass('d-none');
+            $.each(messages, function (_, err) {
+                $('<li>').text(err).appendTo($list);
             });
         }
 
         /* ================= ALERT MODE ================= */
-        okBtn.classList.remove('d-none');
-        okBtn.onclick = () => modal.hide();
+        $okBtn.removeClass('d-none').off('click').on('click', function () {
+            modal.hide();
+        });
 
-        modalEl.addEventListener(
-            'hidden.bs.modal',
-            () => resolve(true),
-            { once: true }
-        );
+        $modal
+            .off('hidden.bs.modal')
+            .one('hidden.bs.modal', function () {
+                resolve(true);
+            });
 
         modal.show();
     });
 }
+
 
 
 
