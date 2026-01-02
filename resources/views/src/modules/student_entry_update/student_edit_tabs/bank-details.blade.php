@@ -74,12 +74,10 @@
         </div>
 
         <div class="form-actions text-end mt-3">
-            <button class="btn btn-secondary me-2" data-bs-toggle="tab" data-bs-target="#tab5" type="button">
-                Previous
-            </button>
+
 
             <button class="btn btn-success" type="submit">
-                Next
+                Save Changes
             </button>
         </div>
 

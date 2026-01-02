@@ -84,7 +84,12 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
     Route::prefix('hoi')->group(function () {
         // routes/web.php
         Route::get('/student-entry', [StudentInfoController::class, 'getStudentEntry'])->name('student.entry');
-        Route::get('/student-edit', [StudentInfoController::class, 'getStudentEditDetailsByStudentCode'])->name('student.edit');
+        // Route::get('/student-edit', [StudentInfoController::class, 'getStudentEditDetailsByStudentCode'])->name('student.edit');
+
+        Route::match(['get','post'], '/student-edit',
+    [StudentInfoController::class, 'getStudentEditDetailsByStudentCode']
+)->name('student.edit');
+
         Route::post('/save-student-facility-and-other-details', [StudentInfoController::class, 'storeStudentFacilityAndOtherDetails'])->name('hoi.student.facility');
         Route::post('/save-student-vocational-details', [StudentInfoController::class, 'saveVocationalDetails'])->name('save.vocational.details');
         Route::delete('/student-entry/reset', [StudentInfoController::class, 'resetEntry'])->name('student.entry.reset');
@@ -97,7 +102,7 @@ Route::middleware(['sso.auth', 'prevent.back'])->group(function () {
         Route::post( '/student/student_additional_details', [StudentInfoController::class, 'StudentAdditionalDetails'])->name('student.student_additional_details');
 
 
-        Route::get('/get_studet_details_by_stu_code', [StudentInfoController::class, 'StudentDetailsByStudentCode']);
+
     });
 
 

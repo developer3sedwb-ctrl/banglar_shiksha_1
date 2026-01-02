@@ -1,4 +1,27 @@
-  <!-- =========TAB 1: Contact Info -- SUBHAJIT DAS--================================ -->
+@php
+    // ================= SAFE DATA MAPPING =================
+    $basic = $data['basic_info'] ?? [];
+    $configDropdowns = config('student');
+
+    $gender_master = DB::table('bs_gender_master')->pluck('name', 'id')->toArray();
+    $mother_tongue_master = DB::table('bs_mother_tongue_master')->pluck('name', 'id')->toArray();
+    $social_category_master = DB::table('bs_social_category_master')->pluck('name', 'id')->toArray();
+            
+    $religion_master = DB::table('bs_religion_master')->pluck('name', 'id')->toArray();
+    $nationality_master = DB::table('bs_nationality_master')->pluck('name', 'id')->toArray();
+    $blood_group_master = DB::table('bs_blood_group_master')->pluck('name', 'id')->toArray();  
+
+    $guardian_relationship_master = DB::table('bs_guardian_relationship_master')->pluck('name', 'id')->toArray();
+    $income_master = DB::table('bs_income_master')->pluck('name', 'id')->toArray();
+    $guardian_qualification_master = DB::table('bs_guardian_qualification_master')->pluck('name', 'id')->toArray();  
+    $bs_stu_disability_type_master = DB::table('bs_stu_disability_type_master')->pluck('name', 'id')->toArray();  
+    $bs_child_mainstreamed_master = DB::table('bs_child_mainstreamed_master')->pluck('name', 'id')->toArray();  
+
+
+
+@endphp
+
+<!-- =========TAB 1: Contact Info -- SUBHAJIT DAS--================================ -->
           <div class="tab-pane fade show active" id="general_info" role="tabpanel" aria-labelledby="general_info-tab">
             <form id="basic_info_of_student" method="POST" action="{{ route('student.store_student_entry_basic_details') }}" novalidate>
 
@@ -25,9 +48,9 @@
                     <label class="form-label small">Gender <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bx bx-book"></i></span>
-                        <select name="gender" class="form-select" required>
+                       <select name="gender" class="form-select" required>
                             <option value="">-Please Select-</option>
-                              @foreach($genders as $val => $label)
+                              @foreach($gender_master as $val => $label)
                                 <option value="{{ $val }}" 
                                     {{ ($basic['gender'] ?? '') == $val ? 'selected' : '' }}>
                                     {{ $label }}
@@ -118,7 +141,7 @@
                           <span class="input-group-text"><i class="bx bx-message-alt-detail"></i></span>
                           <select name="mother_tongue" class="form-select">
                            <option value="">-Select-</option>
-                            @foreach($mother_tongue as $val => $label)
+                            @foreach($mother_tongue_master as $val => $label)
                                 <option value="{{ $val }}" 
                                     {{ ($basic['mother_tongue'] ?? '') == $val ? 'selected' : '' }}>
                                     {{ $label }}
@@ -135,7 +158,7 @@
                     <select name="social_category" class="form-select" required>
                      <option value="">-Please Select-</option>
 
-                      @foreach($social_category ?? [] as $val => $label)
+                      @foreach($social_category_master ?? [] as $val => $label)
                           <option value="{{ $val }}" 
                               {{ ($basic['social_category'] ?? '') == $val ? 'selected' : '' }}>
                               {{ $label }}
@@ -153,7 +176,7 @@
                       <select name="religion" class="form-select" required>
                           <option value="">-Please Select-</option>
 
-                          @foreach($religion ?? [] as $val => $label)
+                          @foreach($religion_master ?? [] as $val => $label)
                               <option value="{{ $val }}"
                                   {{ ($basic['religion'] ?? '') == $val ? 'selected' : '' }}>
                                   {{ $label }}
@@ -170,7 +193,7 @@
                       <span class="input-group-text"><i class="bx bx-check"></i></span>
                     <select name="bpl_beneficiary" id="bpl_beneficiary" class="form-select">
                       <option value="">-Please Select-</option>
-                      @foreach($dropdowns['yes_no'] as $val => $label)
+                    @foreach($configDropdowns['yes_no'] as $val => $label)
                           <option value="{{ $val }}"
                               {{ ($basic['bpl_beneficiary'] ?? '') == $val ? 'selected' : '' }}>
                               {{ $label }}
@@ -187,14 +210,11 @@
                         <span class="input-group-text"><i class="bx bx-check"></i></span>
                         <select name="antyodaya_anna_yojana" id="antyodaya_anna_yojana" class="form-select">
                             <option value="">-Please Select-</option>
-
-                             @foreach($dropdowns['yes_no'] as $val => $label)
-                            <option value="{{ $val }}"
-                                {{ ($basic['antyodaya_anna_yojana'] ?? '') == $val ? 'selected' : '' }}>
-                                {{ $label }}
+                            @foreach($configDropdowns['yes_no'] ?? [] as $val => $label)
+                            <option value="{{ $val }}" {{ ($basic['antyodaya_anna_yojana'] ?? '') == $val ? 'selected' : '' }}>
+                            {{ $label }}
                             </option>
                             @endforeach
-
                         </select>
                       </div>
                   </div>
@@ -213,36 +233,35 @@
                       <span class="input-group-text"><i class="bx bx-wallet"></i></span>
                       <select name="disadvantaged_group" class="form-select">
                         <option value="">-Please Select-</option>
-                             @foreach($dropdowns['yes_no'] as $val => $label)
-                            <option value="{{ $val }}"
-                                {{ ($basic['disadvantaged_group'] ?? '') == $val ? 'selected' : '' }}>
-                                {{ $label }}
-                            </option>
-                            @endforeach
+                          @foreach($configDropdowns['yes_no'] ?? [] as $val => $label)
+                          <option value="{{ $val }}" {{ ($basic['disadvantaged_group'] ?? '') == $val ? 'selected' : '' }}>
+                          {{ $label }}
+                          </option>
+                          @endforeach                            
                       </select>
                     </div>
                   </div>
 
 
                   <div class="mb-3">
-    <label class="form-label small">Upload Student Photo</label>
-    <div class="input-group">
-        <span class="input-group-text"><i class="bx bx-image"></i></span>
-        <input 
-            type="file" 
-            name="student_photo" 
-            id="student_photo" 
-            class="form-control"
-            accept="image/*">
-    </div>
+                  <label class="form-label small">Upload Student Photo</label>
+                  <div class="input-group">
+                      <span class="input-group-text"><i class="bx bx-image"></i></span>
+                      <input 
+                          type="file" 
+                          name="student_photo" 
+                          id="student_photo" 
+                          class="form-control"
+                          accept="image/*">
+                  </div>
 
-    <!-- Preview section -->
-    <div class="mt-2">
-        <img id="photo_preview" 
-             src="{{ isset($basic['student_photo']) ? asset('uploads/students/'.$basic['student_photo']) : '' }}" 
-             style="max-width:150px; display: {{ isset($basic['student_photo']) ? 'block' : 'none' }}; border:1px solid #ccc; padding: 4px;">
-    </div>
-</div>
+          <!-- Preview section -->
+          <div class="mt-2">
+              <img id="photo_preview" 
+                  src="{{ isset($basic['student_photo']) ? asset('uploads/students/'.$basic['student_photo']) : '' }}" 
+                  style="max-width:150px; display: {{ isset($basic['student_photo']) ? 'block' : 'none' }}; border:1px solid #ccc; padding: 4px;">
+           </div>
+        </div>
 
                 </div>
 
@@ -253,12 +272,11 @@
                       <span class="input-group-text"><i class="bx bx-heart"></i></span>
                       <select name="cwsn" id ="cwsn"class="form-select">
                         <option value="">-Please Select-</option>
-                            @foreach($dropdowns['yes_no'] as $val => $label)
-                              <option value="{{ $val }}"
-                                  {{ ($basic['cwsn'] ?? '') == $val ? 'selected' : '' }}>
-                                  {{ $label }}
-                              </option>
-                            @endforeach
+                         @foreach($configDropdowns['yes_no'] ?? [] as $val => $label)
+                          <option value="{{ $val }}" {{ ($basic['cwsn'] ?? '') == $val ? 'selected' : '' }}>
+                          {{ $label }}
+                          </option>
+                          @endforeach
                       </select>
                     </div>
                   </div>
@@ -295,7 +313,7 @@
                       <span class="input-group-text"><i class="bx bx-flag"></i></span>
                     <select name="nationality" class="form-select">
                         <option value="">-Please Select-</option>
-                        @foreach($nationality ?? [] as $val => $label)
+                        @foreach($nationality_master ?? [] as $val => $label)
                             <option value="{{ $val }}"
                                 {{ ($basic['nationality'] ?? '') == $val ? 'selected' : '' }}>
                                 {{ $label }}
@@ -311,12 +329,10 @@
                       <span class="input-group-text"><i class="bx bx-school"></i></span>
                       <select name="out_of_school" id="out_of_school" class="form-select">
                         <option value="">-Please Select-</option>
-
-                           @foreach($dropdowns['yes_no'] as $val => $label)
-                              <option value="{{ $val }}"
-                                  {{ ($basic['out_of_school'] ?? '') == $val ? 'selected' : '' }}>
-                                  {{ $label }}
-                              </option>
+                            @foreach($configDropdowns['yes_no'] ?? [] as $val => $label)
+                            <option value="{{ $val }}" {{ ($basic['out_of_school'] ?? '') == $val ? 'selected' : '' }}>
+                            {{ $label }}
+                            </option>
                             @endforeach
                       </select>
                     </div>
@@ -344,7 +360,7 @@
                       <span class="input-group-text"><i class="bx bx-droplet"></i></span>
                       <select name="blood_group" class="form-select">
                         <option value="">-Please Select-</option>
-                          @foreach($blood_group ?? [] as $val => $label)
+                          @foreach($blood_group_master ?? [] as $val => $label)
                             <option value="{{ $val }}"
                                 {{ ($basic['blood_group'] ?? '') == $val ? 'selected' : '' }}>
                                 {{ $label }}
@@ -384,7 +400,7 @@
                       <span class="input-group-text"><i class="bx bx-link-alt"></i></span>
                       <select name="relationship_with_guardian" class="form-select">
                         <option value="">-Please Select-</option>
-                          @foreach($guardian_relationship ?? [] as $val => $label)
+                          @foreach($guardian_relationship_master ?? [] as $val => $label)
                             <option value="{{ $val }}"
                                 {{ ($basic['relationship_with_guardian'] ?? '') == $val ? 'selected' : '' }}>
                                 {{ $label }}
@@ -400,7 +416,7 @@
                       <span class="input-group-text"><i class="bx bx-school"></i></span>
                       <select name="family_income" class="form-select">
                         <option value="">-Please Select-</option>
-                          @foreach($income ?? [] as $val => $label)
+                          @foreach($income_master ?? [] as $val => $label)
                             <option value="{{ $val }}"
                                 {{ ($basic['family_income'] ?? '') == $val ? 'selected' : '' }}>
                                 {{ $label }}
@@ -434,8 +450,7 @@
                       <option value="">-Select-</option>
                       <option value="1" {{ ($basic['guardian_qualifications'] ?? '' )==1 ? 'selected' : '' }}>GRADUATE</option>
                       <option value="2" {{ ($basic['guardian_qualifications'] ?? '' )==2 ? 'selected' : '' }}>BELOW GRADUATE</option>
-
-                        <option value="2" {{ ($basic['guardian_qualifications'] ?? '' )==3 ? 'selected' : '' }}>POST GRADUATE </option>
+                      <option value="2" {{ ($basic['guardian_qualifications'] ?? '' )==3 ? 'selected' : '' }}>POST GRADUATE </option>
                         </select>
                       </div>
                     </div>
@@ -443,151 +458,8 @@
                 </div>
 
               <div class="form-actions text-end mt-3">
-                <button id="basic_info_save_btn" class="btn btn-success" type="button">Next</button>
+                <button id="basic_info_save_btn" class="btn btn-success" type="button">Save Changes</button>
               </div>
             </form>
           </div>
 
-
-          <script>
-
-             document.addEventListener("DOMContentLoaded", function () {
-      let aadhaar_child = document.getElementById("aadhaar_child");
-
-      aadhaar_child.addEventListener("input", function () {
-          this.value = this.value.replace(/[^0-9]/g, "").slice(0, 12);
-      });
-  });
-
-
-  document.addEventListener('DOMContentLoaded', function () {
-
-    const bplSelect   = document.getElementById('bpl_beneficiary');
-    const aaySection  = document.getElementById('aay_section');
-    const bplNumberID = document.getElementById('bpl_numberID');
-    const aayInput    = document.getElementById('antyodaya_anna_yojana');
-    const bplInput    = document.getElementById('bpl_number');
-
-    function toggleFields() {
-
-        if (!bplSelect) return;
-        let value = bplSelect.value;
-        if (value === "1" || value.toLowerCase() === "yes") {
-
-            if (aaySection) aaySection.style.display = "block";
-            if (bplNumberID) bplNumberID.style.display = "block";
-
-        } else {
-
-            if (aaySection) aaySection.style.display = "none";
-            if (aayInput)   aayInput.value = "";
-
-            if (bplNumberID) bplNumberID.style.display = "none";
-            if (bplInput)    bplInput.value = "";
-        }
-    }
-
-    toggleFields();
-    bplSelect.addEventListener("change", toggleFields);
-
-});
-
-
-
- document.addEventListener('DOMContentLoaded', function () {
-
-    const cwsnSelect   = document.getElementById('cwsn');
-    const impairment   = document.getElementById('impairment');
-    const disPercent   = document.getElementById('disability');
-    const impairmentVal = document.getElementById('type_of_impairment');
-    const percentVal    = document.getElementById('disability_percentage');
-
-    function toggleCWSNFields() {
-
-        if (!cwsnSelect) return;
-
-        let value = cwsnSelect.value;
-
-        // YES = 1 (or "yes")
-        if (value === '1' || value.toLowerCase() === 'yes') {
-
-            if (impairment) impairment.style.display = 'block';
-            if (disPercent) disPercent.style.display = 'block';
-
-        } else {
-
-            // Hide sections
-            if (impairment) impairment.style.display = 'none';
-            if (disPercent) disPercent.style.display = 'none';
-
-            // Reset values
-            if (impairmentVal) impairmentVal.value = '';
-            if (percentVal) percentVal.value = '';
-        }
-    }
-
-    // Run on page load (important for edit mode)
-    toggleCWSNFields();
-
-    // Run on change
-    cwsnSelect.addEventListener('change', toggleCWSNFields);
-});
-
-
-
-  document.addEventListener('DOMContentLoaded', function () {
-
-    const outOfSchool     = document.getElementById('out_of_school');
-    const mainstreamedSec = document.getElementById('mainstreamed_section');
-    const mainstreamedVal = document.getElementById('mainstreamed');
-
-    function toggleMainstreamed() {
-
-        if (!outOfSchool) return;
-
-        let value = outOfSchool.value;
-
-        // If YES (1 or "yes")
-        if (value === '1' || value.toLowerCase() === 'yes') {
-
-            if (mainstreamedSec) mainstreamedSec.style.display = 'block';
-
-        } else {
-
-            if (mainstreamedSec) mainstreamedSec.style.display = 'none';
-
-            // reset selected value
-            if (mainstreamedVal) mainstreamedVal.value = '';
-        }
-    }
-
-    // Run when page loads (important for edit mode)
-    toggleMainstreamed();
-
-    // Run whenever user changes Out of School field
-    outOfSchool.addEventListener('change', toggleMainstreamed);
-
-});
-
-
-
-
-document.addEventListener('DOMContentLoaded', function () {
-
-    const inputPhoto = document.getElementById('student_photo');
-    const previewImg = document.getElementById('photo_preview');
-
-    if (inputPhoto) {
-        inputPhoto.addEventListener('change', function (event) {
-            const file = event.target.files[0];
-            if (file) {
-                previewImg.src = URL.createObjectURL(file);
-                previewImg.style.display = 'block';
-            }
-        });
-    }
-
-});
-
-
-          </script>
